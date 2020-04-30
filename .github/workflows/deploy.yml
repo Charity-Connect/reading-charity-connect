@@ -11,6 +11,6 @@ jobs:
     - name: FTP-Deploy-Action
       uses: SamKirkland/FTP-Deploy-Action@3.0.0
       with:
-        ftp-server: ftp://ftp.rdg-connect.org/public_html
-        ftp-username: iaoo4tce
+        ftp-server: ftp://ftp.rdg-connect.org/
+        ftp-username: gituser@rdg-connect.org
         ftp-password: ${{ secrets.FTP_PASSWORD }}
