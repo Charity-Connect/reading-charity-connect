@@ -1,0 +1,108 @@
+<?php
+
+include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/offer.php';
+
+$connection=initRest();
+
+
+    $offer = new Offer($connection);
+$data = json_decode(file_get_contents('php://input'), true);
+if(isset($data)) {
+    // doing a create or update
+    header("Access-Control-Allow-Methods: POST");
+    header("Access-Control-Max-Age: 3600");
+    header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+
+
+    $offer->organization_id = $data['organization_id'];
+    $offer->name = $data['name'];
+    $offer->type = $data['type'];
+    $offer->details = $data['details'];
+    $offer->quantity = $data['quantity'];
+    $offer->date_available = $data['date_available'];
+
+    if(isset($data['id'])){
+        $offer->id = $data['id'];
+        if($offer->update()){
+            $offer->read();
+            echo json_encode($offer);
+        }else{
+            echo '{';
+                echo '"message": "Unable to update offer."';
+            echo '}';
+        }
+
+    } else {
+	$id=$offer->create();
+        if($id>0){
+            $offer_arr  = array(
+                    "id" => $offer->id,
+                    "organization_id" => $offer->organization_id,
+                    "name" => $offer->name,
+                    "type" => $offer->type,
+                    "details" => $offer->details,
+                    "quantity" => $offer->quantity,
+                    "date_available" => $offer->date_available
+                    );
+            echo json_encode($offer_arr);
+
+        }else{
+            echo '{';
+                echo '"message": "Unable to create offer."';
+            echo '}';
+        }
+    }
+
+} else {
+
+    // querying
+
+    $view = "";
+    if(isset($_GET["view"]))
+	    $view = $_GET["view"];
+
+    if($view=="one") {
+        $offer->id=$_GET["id"];
+        $offer->read();
+        echo json_encode($offer);
+    } else {
+        $stmt = $offer->readAll();
+        $count = $stmt->rowCount();
+
+        if($count > 0){
+
+            $offers = array();
+            $offers["offers"] = array();
+            $offers["count"] = $count;
+
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+
+                extract($row);
+
+                $offer  = array(
+                "organization_id" => $organization_id,
+                "id" => $id,
+                "name" => $name,
+                "type" => $type,
+                "type_name" => $type_name,
+                "details" => $details,
+                "quantity" => $quantity,
+                "date_available" => $date_available
+                );
+
+                array_push($offers["offers"], $offer);
+            }
+
+            echo json_encode($offers);
+        } else {
+            $offers = array();
+            $offers["offers"] = array();
+            $offers["count"] = 0;
+
+            echo json_encode($offers);
+        }
+    }
+
+}
+?>
