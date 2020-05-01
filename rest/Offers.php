@@ -21,6 +21,8 @@ if(isset($data)) {
     $offer->details = $data['details'];
     $offer->quantity = $data['quantity'];
     $offer->date_available = $data['date_available'];
+    $offer->date_end = $data['date_end'];
+    $offer->postcode = $data['postcode'];
 
     if(isset($data['id'])){
         $offer->id = $data['id'];
@@ -43,7 +45,9 @@ if(isset($data)) {
                     "type" => $offer->type,
                     "details" => $offer->details,
                     "quantity" => $offer->quantity,
-                    "date_available" => $offer->date_available
+                    "date_available" => $offer->date_available,
+                    "date_end" => $offer->date_end,
+                    "postcode" => $offer->postcode
                     );
             echo json_encode($offer_arr);
 
@@ -88,8 +92,10 @@ if(isset($data)) {
                 "type_name" => $type_name,
                 "details" => $details,
                 "quantity" => $quantity,
-                "date_available" => $date_available
-                );
+                "date_available" => $date_available,
+                "date_end" => $date_end,
+                "postcode" => $postcode
+              );
 
                 array_push($offers["offers"], $offer);
             }

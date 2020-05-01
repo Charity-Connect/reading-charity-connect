@@ -30,6 +30,14 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         exit;
     }
 }
+$_SESSION["loggedin"] = true;
+$_SESSION["id"] = $session_user['id'];
+$_SESSION["email"] = $session_user['email'];
+if(isset($session_user['display_name'])){
+  $_SESSION["display_name"] = $session_user['display_name'];
+} else {
+  $_SESSION["display_name"] = $session_user['email'];
+}
 
     header("Content-Type: application/json; charset=UTF-8");
 
