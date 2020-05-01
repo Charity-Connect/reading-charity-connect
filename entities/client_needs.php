@@ -24,7 +24,7 @@ class ClientNeed{
 
     public function create(){
 
-    	$stmt=client->readOne($this->client_id);
+    	$stmt=$client->readOne($this->client_id);
     	if($stmt->rowCount()==1){
 
 		$sql = "INSERT INTO client_needs ( client_id,type,date_needed,need_met,notes) values (:client_id,:type,:date_needed,:need_met,:notes)";
@@ -40,22 +40,22 @@ class ClientNeed{
 	}
 
     }
-    public function readAll(){
+    public function readAll($client_id){
         if(is_admin()){
-        	$query = "SELECT id,client_id,type,date_needed,need_met,notes from client_needs ORDER BY id";
+        	$query = "SELECT id,client_id,type,date_needed,need_met,notes from client_needs where client_id = :client_id ORDER BY id";
         	$stmt = $this->connection->prepare($query);
-        	$stmt->execute();
+        	$stmt->execute(['client_id'=>$client_id]);
         	return $stmt;
         } else {
-        	$query = "SELECT cn.id,cn.client_id,cn.type,cn.date_needed,cn.need_met,cn.notes from client_needs cn, users u, client_links l where cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=u.organization_id and u.id=:user_id ORDER BY cn.id";
+        	$query = "SELECT cn.id,cn.client_id,cn.type,cn.date_needed,cn.need_met,cn.notes from client_needs cn, users u, client_links l where cn.client_id=:client_id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=u.organization_id and u.id=:user_id ORDER BY cn.id";
         	$stmt = $this->connection->prepare($query);
-        	$stmt->execute(['user_id'=>$_SESSION["id"]]);
+        	$stmt->execute(['user_id'=>$_SESSION["id"],'client_id'=>$client_id]);
         	return $stmt;
         }
     }
 
     public function read(){
-        $stmt=$this->readOne($this->id);
+        $stmt=$this->readOne($this->client_id,$this->id);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $this->client_id=$row['client_id'];
         $this->type=$row['type'];
@@ -64,16 +64,16 @@ class ClientNeed{
         $this->notes=$row['notes'];
    }
 
-    public function readOne($id){
+    public function readOne($client_id,$id){
         if(is_admin()){
-        	$query = "SELECT id,client_id,type,date_needed,need_met,notes from client_needs where id=:id";
+        	$query = "SELECT id,client_id,type,date_needed,need_met,notes from client_needs where id=:id and client_id=:client_id";
         	$stmt = $this->connection->prepare($query);
-        	$stmt->execute(['id'=>$id]);
+        	$stmt->execute(['id'=>$id,'client_id'=>$client_id]);
         	return $stmt;
         } else {
-        	$query = "SELECT cn.id,cn.client_id,cn.type,cn.date_needed,cn.need_met,cn.notes from client_needs cn, users u, client_links l where cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=u.organization_id and u.id=:user_id ORDER BY cn.id";
+        	$query = "SELECT cn.id,cn.client_id,cn.type,cn.date_needed,cn.need_met,cn.notes from client_needs cn, users u, client_links l where cn.client_id=:client_id and cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=u.organization_id and u.id=:user_id ORDER BY cn.id";
         	$stmt = $this->connection->prepare($query);
-        	$stmt->execute(['id'=>$id,'user_id'=>$_SESSION["id"]]);
+        	$stmt->execute(['client_id'=>$client_id,'id'=>$id,'user_id'=>$_SESSION["id"]]);
         	return $stmt;
         }
 
@@ -81,7 +81,7 @@ class ClientNeed{
 
     public function update(){
 
-    	$stmt=readOne($this->id);
+    	$stmt=readOne($this->client_id,$this->id);
 		if($stmt->rowCount()==1){
 	        $sql = "UPDATE client_needs SET client_id=:client_id, type=:type, date_needed=:date_needed, need_met=:need_met notes=:notes WHERE id=:id";
 	        $stmt= $this->connection->prepare($sql);
@@ -92,7 +92,7 @@ class ClientNeed{
     }
 
     public function delete(){
-    	$stmt=readOne($this->id);
+    	$stmt=readOne($this->client_id,$this->id);
 		if($stmt->rowCount()==1){
 	        $sql = "DELETE FROM client_needs WHERE id=:id";
 	        $stmt= $this->connection->prepare($sql);

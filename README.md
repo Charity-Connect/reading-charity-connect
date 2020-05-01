@@ -23,3 +23,17 @@ Offers can be created by users in an organization to record the things that thei
 
 /rest/offers - GET to get a list of all offers for your organization, POST to create or update
 /rest/offers/{offer id} - GET a single offer
+
+### Clients
+
+Clients record an individual or an organization who may have needs, and exist for one or more organizations
+
+/rest/clients - GET to get a list of all clients for your organization, POST to create or update
+/rest/clients/{client id} - GET a single client
+
+### Client Needs
+
+Clients can have multiple needs, and this records those needs and whether they have been met
+
+/rest/client/{client id}/client_needs - GET to get a list of all clients for this client, POST to create or update
+/rest/client/{client id}/client_needs/{client need id} - GET a single client need

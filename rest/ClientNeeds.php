@@ -6,7 +6,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/client_needs.php';
 $connection=initRest();
 
 
-    $client_needs = new client_needs($connection);
+    $client_needs = new ClientNeed($connection);
 $data = json_decode(file_get_contents('php://input'), true);
 if(isset($data)) {
     // doing a create or update
@@ -23,6 +23,7 @@ if(isset($data)) {
 
     if(isset($data['id'])){
         $client_needs->id = $data['id'];
+        $client_needs->client_id=$_GET["client_id"];
         if($client_needs->update()){
             $client_needs->read();
             echo json_encode($client_needs);
@@ -33,7 +34,8 @@ if(isset($data)) {
         }
 
     } else {
-	$id=$client_needs->create();
+        $client_needs->client_id=$_GET["client_id"];
+		$id=$client_needs->create();
         if($id>0){
             $client_needs_arr  = array(
                     "id" => $client_needs->id,
@@ -62,23 +64,24 @@ if(isset($data)) {
 
     if($view=="one") {
         $client_needs->id=$_GET["id"];
+        $client_needs->client_id=$_GET["client_id"];
         $client_needs->read();
         echo json_encode($client_needs);
     } else {
-        $stmt = $client_needs->readAll();
+        $client_needs->client_id=$_GET["client_id"];
+        $stmt = $client_needs->readAll($client_needs->client_id);
         $count = $stmt->rowCount();
 
         if($count > 0){
 
             $client_needs = array();
-            $client_needs["client_needss"] = array();
+            $client_needs["client_needs"] = array();
             $client_needs["count"] = $count;
 
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-
                 extract($row);
 
-                $client_needs  = array(
+                $client_need  = array(
                 "id" => $id,
                 "client_id" => $client_id,
                 "type" => $type,
@@ -87,10 +90,10 @@ if(isset($data)) {
                 "notes" => $notes
                 );
 
-                array_push($client_needs["client_needs"], $client_needs);
+                array_push($client_needs["client_needs"], $client_need);
             }
 
-            echo json_encode($client_needss);
+            echo json_encode($client_needs);
         } else {
             $client_needs = array();
             $client_needs["client_needs"] = array();

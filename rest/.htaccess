@@ -1,0 +1,20 @@
+Options +SymLinksIfOwnerMatch 
+RewriteEngine On 
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+RewriteRule ^users/current   Users.php?view=current [L,qsa]
+RewriteRule ^users/([0-9]+)   Users.php?view=one&id=$1 [L,qsa]
+RewriteRule ^users   Users.php [L,qsa]
+RewriteRule ^organizations/([0-9]+)   Organizations.php?view=one&id=$1 [L,qsa]
+RewriteRule ^organizations   Organizations.php [L,qsa]
+RewriteRule ^offers/([0-9]+)   Offers.php?view=one&id=$1 [L,qsa]
+RewriteRule ^offers   Offers.php [L,qsa]
+RewriteRule ^clients/([0-9]+)/client_needs   ClientNeeds.php?view=all&client_id=$1 [L,qsa]
+RewriteRule ^clients/([0-9]+)/client_needs/([0-9]+)   ClientNeeds.php?view=one&client_id=$1&id=$2 [L,qsa]
+RewriteRule ^clients/([0-9]+)   Clients.php?view=one&id=$1 [L,qsa]
+RewriteRule ^clients   Clients.php [L,qsa]
+
+#RewriteCond %{REQUEST_FILENAME} !-f 
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule . /index.html [L]
+

@@ -51,12 +51,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
                             // Store data in session variables
                             $_SESSION["loggedin"] = true;
-                            $_SESSION["id"] = $id;
-                            $_SESSION["email"] = $email;
+                            $_SESSION["id"] = $row['id'];
+                            $_SESSION["email"] = $row['email'];
                             if(isset($row['display_name'])){
                               $_SESSION["display_name"] = $row['display_name'];
                             } else {
-                              $_SESSION["display_name"] = $email;
+                              $_SESSION["display_name"] = $row['email'];
                             }
 
                             // Redirect user to welcome page
