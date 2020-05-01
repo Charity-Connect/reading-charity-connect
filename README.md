@@ -37,3 +37,19 @@ Clients can have multiple needs, and this records those needs and whether they h
 
 /rest/client/{client id}/client_needs - GET to get a list of all clients for this client, POST to create or update
 /rest/client/{client id}/client_needs/{client need id} - GET a single client need
+
+### Offer Types
+
+Types of thing that organizations are offering, and types of thing that clients need
+
+/rest/offer_types - GET to get a list of all offer types, POST to create or update
+/rest/offer_types/active - GET to get a list of all active offer types
+/rest/offer_types/{type} - GET to get a single offer types
+
+### Offer Type Categories
+
+Categories of Offer Types
+
+/rest/offer_type_categories - GET to get a list of all offer type categoriess, POST to create or update
+/rest/offer_type_categories/{code} - GET to get a single offer type category
+/rest/offer_type_categories/{code}/offer_types - GET to get all offer types in a single category
