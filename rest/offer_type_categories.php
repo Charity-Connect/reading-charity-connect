@@ -1,7 +1,7 @@
 <?php
 
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/offer_type_category.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/TypeCategory.php';
 
 $connection=initRest();
 

@@ -1,5 +1,5 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/client.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Client.php';
 class ClientNeed{
 
     // Connection instance

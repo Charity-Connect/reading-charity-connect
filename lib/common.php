@@ -29,14 +29,14 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         header("location: /login/login.php");
         exit;
     }
-}
-$_SESSION["loggedin"] = true;
-$_SESSION["id"] = $session_user['id'];
-$_SESSION["email"] = $session_user['email'];
-if(isset($session_user['display_name'])){
-  $_SESSION["display_name"] = $session_user['display_name'];
-} else {
-  $_SESSION["display_name"] = $session_user['email'];
+	$_SESSION["loggedin"] = true;
+	$_SESSION["id"] = $session_user['id'];
+	$_SESSION["email"] = $session_user['email'];
+	if(isset($session_user['display_name'])){
+	  $_SESSION["display_name"] = $session_user['display_name'];
+	} else {
+	  $_SESSION["display_name"] = $session_user['email'];
+	}
 }
 
     header("Content-Type: application/json; charset=UTF-8");
@@ -62,7 +62,6 @@ $connection = $dbclass->getConnection();
 
 return $connection;
 }
-
 
 function is_admin(){
 global $connection;
@@ -93,3 +92,16 @@ function generate_string($strength = 16) {
     return $random_string;
 }
 
+function getGeocode($postcode){
+
+	$url='http://api.getthedata.com/postcode/'.urlencode($postcode);
+	$location_str = file_get_contents($url);
+	$location = json_decode ($location_str);
+	if($location->{"status"}=="match"){
+		$longitude=$location->{'data'}->{'longitude'};
+		$latitude=$location->{'data'}->{'latitude'};
+		return array($latitude,$longitude);
+	} else {
+		return array(-1,-1);
+	}
+}

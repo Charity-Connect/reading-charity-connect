@@ -1,12 +1,12 @@
 <?php
 
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/client.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Client.php';
 
 $connection=initRest();
 
 
-    $client = new client($connection);
+    $client = new Client($connection);
 $data = json_decode(file_get_contents('php://input'), true);
 if(isset($data)) {
     // doing a create or update
@@ -18,6 +18,7 @@ if(isset($data)) {
     $client->organization_id = $data['organization_id'];
     $client->name = $data['name'];
     $client->address = $data['address'];
+    $client->postcode = $data['postcode'];
     $client->phone = $data['phone'];
     $client->email = $data['email'];
     $client->notes = $data['notes'];
@@ -40,6 +41,7 @@ if(isset($data)) {
                     "id" => $client->id,
                     "name" => $client->name,
                     "address" => $client->address,
+                    "postcode" => $client->postcode,
                     "phone" => $client->phone,
                     "email" => $client->email,
                     "notes" => $client->notes
@@ -54,7 +56,6 @@ if(isset($data)) {
     }
 
 } else {
-
     // querying
 
     $view = "";
@@ -83,6 +84,7 @@ if(isset($data)) {
                 "id" => $id,
                 "name" => $name,
                 "address" => $address,
+                "postcode" => $postcode,
                 "phone" => $phone,
                 "email" => $email,
                 "notes" => $notes

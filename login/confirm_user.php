@@ -1,6 +1,6 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/user.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/User.php';
 
 global $connection;
 // Initialize the session

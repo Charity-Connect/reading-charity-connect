@@ -1,5 +1,5 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/user.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/User.php';
 class Client{
 
     // Connection instance
@@ -11,6 +11,9 @@ class Client{
     public $id;
     public $name;
     public $address;
+    public $postcode;
+    private $latitude;
+    private $longitude;
     public $phone;
     public $email;
     public $notes;
@@ -20,11 +23,24 @@ class Client{
     }
 
     public function create(){
-        $sql = "INSERT INTO clients ( name,address,phone,email,notes) values (:name,:address,:phone,:email,:notes)";
+
+		if(isset($this->postcode)&&$this->postcode!=""){
+			list($latitude,$longitude)=getGeocode($this->postcode);
+		}
+
+        $sql = "INSERT INTO clients ( name,address,postcode,latitude,longitude,phone,email,notes) values (:name,:address,:postcode,:latitude,:longitude,:phone,:email,:notes)";
         $stmt= $this->connection->prepare($sql);
-        if( $stmt->execute(['name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone,'email'=>$this->email,'notes'=>$this->notes])){
+        if( $stmt->execute(['name'=>$this->name
+        	,'address'=>$this->address
+        	,'postcode'=>$this->postcode
+        	,'latitude'=>($latitude==-1) ? null:$latitude
+        	,'longitude'=>($latitude==-1) ? null:$longitude
+        	,'phone'=>$this->phone
+        	,'email'=>$this->email
+        	,'notes'=>$this->notes])){
             $this->id=$this->connection->lastInsertId();
-			$user = new User($connection);
+
+			$user = new User($this->connection);
         	$user->id=$_SESSION["id"];
         	$user->read();
 
@@ -57,6 +73,9 @@ class Client{
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $this->name=$row['name'];
         $this->address=$row['address'];
+        $this->postcode=$row['postcode'];
+        $this->latitude=$row['latitude'];
+        $this->longitude=$row['longitude'];
         $this->phone=$row['phone'];
         $this->email=$row['email'];
         $this->notes=$row['notes'];
@@ -64,27 +83,50 @@ class Client{
 
     public function readOne($id){
         if(is_admin()){
-        	$query = "SELECT id,name,address,phone,email,notes from clients where id=:id";
+        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes from clients c where c.id=:id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$id]);
         	return $stmt;
         } else {
-        	$query = "SELECT c.id,c.name,c.address,c.phone,c.email,c.notes from clients c, users u, client_links l where c.id=:id and c.id=l.client_id and l.link_type='ORG' and l.link_id=u.organization_id and u.id=:user_id ORDER BY c.id";
+        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes from clients c, users u, client_links l where c.id=:id and c.id=l.client_id and l.link_type='ORG' and l.link_id=u.organization_id and u.id=:user_id ORDER BY c.id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$id,'user_id'=>$_SESSION["id"]]);
         	return $stmt;
         }
 
 	}
+    public function getLatitude(){
+    	return $this->latitude;
+    }
+    public function getLongitude(){
+    	return $this->longitude;
+    }
 
     public function update(){
 
-    	$stmt=readOne($this->id);
+    	$stmt=$this->readOne($this->id);
 		if($stmt->rowCount()==1){
-	        $sql = "UPDATE clients SET name=:name, address=:address, phone=:phone, email=:email notes=:notes WHERE id=:id";
-	        $stmt= $this->connection->prepare($sql);
-	        return $stmt->execute(['id'=>$this->id,'name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone,'email'=>$this->email,'notes'=>$this->notes]);
+
+			$clientOrig=new Client($this->connection);
+			$clientOrig->id=$this->id;
+			$clientOrig->read();
+			if($clientOrig->postcode!=$this->postcode&&isset($this->postcode)&&$this->postcode!=""){
+				list($latitude,$longitude)=getGeocode($this->postcode);
+			} else {
+				$latitude=$clientOrig->getLatitude();
+				$longitude=$clientOrig->getLongitude();
+			}
+
+	        $sql = "UPDATE clients SET name=:name, address=:address, postcode=:postcode,latitude=:latitude,longitude=:longitude,phone=:phone, email=:email, notes=:notes WHERE id=:id";
+
+			$stmt= $this->connection->prepare($sql);
+	        $result= $stmt->execute(['id'=>$this->id,'name'=>$this->name,'address'=>$this->address,'postcode'=>$this->postcode
+           		,'latitude'=>($latitude==-1) ? null:$latitude
+				,'longitude'=>($latitude==-1) ? null:$longitude
+				,'phone'=>$this->phone,'email'=>$this->email,'notes'=>$this->notes]);
+			return $result;
 		} else {
+		echo $this->connection->errorInfo();
 			return false;
 		}
     }
