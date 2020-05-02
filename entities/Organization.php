@@ -1,10 +1,7 @@
 <?php
 class Organization{
 
-    // Connection instance
     private $connection;
-
-    // table name
 
     // table columns
     public $id;

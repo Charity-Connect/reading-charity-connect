@@ -1,7 +1,7 @@
 <?php
 
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Organization.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
 
 class User{
 
@@ -16,9 +16,8 @@ class User{
     public $display_name;
     public $email;
     public $phone;
-    public $organization_id;
-    public $organization_name;
     public $confirmed;
+    public $organization_id;
     private $confirmation_string;
 
     public function __construct($connection){
@@ -26,24 +25,30 @@ class User{
     }
 
     public function create(){
-        $sql = "INSERT INTO users ( password,display_name,email,phone,organization_id,confirmation_string) values (:password,:display_name,:email,:phone,:organization_id,:confirmation_string)";
+        $sql = "INSERT INTO users ( password,display_name,email,phone,confirmation_string) values (:password,:display_name,:email,:phone,:confirmation_string)";
         $this->confirmation_string=generate_string(60);
         $stmt= $this->connection->prepare($sql);
         if( $stmt->execute(['password'=>$this->password
         ,'display_name'=>$this->display_name
         ,'email'=>$this->email
         ,'phone'=>$this->phone
-        ,'organization_id'=>$this->organization_id
         ,'confirmation_string'=>$this->confirmation_string
         ])){
             $this->id=$this->connection->lastInsertId();
 
             if(isset($this->organization_id)){
-                $organization = new Organization($this->connection);
-                $organization->id=$this->organization_id;
-                $organization->read();
-                mail($organization->approver_email,"New Connect Reading User Approval","A new user, ".$this->email.", has registered on Connect Reading with your organization. Please confirm this user should be granted access by clicking on http://connect-reading.ai-apps.com/login/confirm_user.php?id=".$this->id."&key=".$this->confirmation_string);
+                $organization_user = new UserOrganization($this->connection);
+                $organization_user->user_id=$this->id;
+                $organization_user->organization_id=$this->organization_id;
+                $organization_user->admin='N';
+                $organization_user->user_approver='N';
+                $organization_user->need_approver='N';
+                $organization_user->create();
             }
+
+            $messageString=get_string("new_user_confirmation",array("%NAME%"=>$user->display_name,"%LINK%"=>"http://www.rdg-connect.org/rest/confirm_user.php?id=".$this->id."&key=".$this->confirmation_string));
+			sendHtmlMail($this->email,get_string("new_user_subject"),$messageString);
+
             return $this->id;
         } else {
             return -1;
@@ -56,7 +61,7 @@ class User{
     }
 
     public function readAll(){
-        $query = "SELECT u.id,u.display_name,u.email,u.phone,o.name as organization_name from users u left join organizations o on u.organization_id=o.id ORDER BY u.id";
+        $query = "SELECT u.id,u.display_name,u.email,u.phone from users u ORDER BY u.id";
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -68,13 +73,11 @@ class User{
         $this->display_name=$row['display_name'];
         $this->email=$row['email'];
         $this->phone=$row['phone'];
-        $this->organization_id=$row['organization_id'];
-        $this->organization_name=$row['organization_name'];
         $this->confirmation_string=$row['confirmation_string'];
     }
 
     public function readOne($id){
-	        $query = "SELECT u.id,u.display_name,u.email,u.phone,u.organization_id, u.confirmation_string, o.name as organization_name from users u left join organizations o on u.organization_id=o.id where u.id=:id";
+	        $query = "SELECT u.id,u.display_name,u.email,u.phone, u.confirmation_string,  from users u where u.id=:id";
 	        $stmt = $this->connection->prepare($query);
 	        $stmt->execute(['id'=>$id]);
 	        return $stmt;

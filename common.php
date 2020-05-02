@@ -113,25 +113,32 @@ $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 
 function login($connection,$email,$password){
 
+
 // Check if the user is logged in, if not then check for basic auth and if not, redirect them to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 	$stmt = $connection->prepare("SELECT * FROM users WHERE email = :email");
     $stmt->execute(["email"=>$email]);
     $session_user = $stmt->fetch();
-    if (!$session_user || !password_verify($password, $session_user['password'])){
-    	return false;
+
+        if (!$session_user || !password_verify($password, $session_user['password']))
+        {
+            return false;
+        }
+    } else {
+        return false;
     }
 	session_start();
-	$id=$session_user['id'];
+	$id=$row['id'];
 	// Store data in session variables
 	$_SESSION["loggedin"] = true;
 	$_SESSION["id"] = $id;
-	$_SESSION["email"] = $session_user['email'];
-	if(isset($session_user['display_name'])){
-	  $_SESSION["display_name"] = $session_user['display_name'];
+	$_SESSION["email"] = $row['email'];
+	if(isset($row['display_name'])){
+	  $_SESSION["display_name"] = $row['display_name'];
 	} else {
-	  $_SESSION["display_name"] = $session_user['email'];
+	  $_SESSION["display_name"] = $row['email'];
 	}
+
 	$sql = "SELECT organization_id FROM user_organizations WHERE user_id=:id and confirmed='Y' order by organization_id";
 	$stmt= $connection->prepare($sql);
 	$stmt->execute(['id'=>$id]);
@@ -140,19 +147,6 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 			$_SESSION["organization_id"] = $row['organization_id'];
 		}
 	}
-}
-return true;
-}
-
-function logout(){
-	// Initialize the session
-	session_start();
-
-	// Unset all of the session variables
-	$_SESSION = array();
-
-	// Destroy the session.
-	session_destroy();
-
+	return true;
 }
 

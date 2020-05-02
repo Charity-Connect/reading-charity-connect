@@ -2,7 +2,7 @@
 
 ## Available Services
 
-###Users
+### Users
 
 Users are the people who log in to the system, and who belong to an organization
 
@@ -12,10 +12,20 @@ Users are the people who log in to the system, and who belong to an organization
 
 ### Organizations
 
-Organizations are the charities that the users belong to. A user can only belong to one organization
+Organizations are the charities that the users belong to. 
 
 /rest/organizations - GET to get the list of organizations, POST to create or update
 /rest/organizations/{organization id} - GET a single organization
+
+### User Organizations
+
+User Organizations track which organizations a user is a member of (they can be a member of more than one)
+
+/rest/user_organizations - GET to get the list of user organization memberships, POST to create or update
+/rest/user_organizations/{user organization id} - GET a single user organization membership
+/rest/users/{user id}/user_organizations - GET the user organization membership for a single user
+/rest/users/current/user_organizations - GET the user organization membership for the logged in user
+
 
 ### Offers
 
@@ -53,3 +63,10 @@ Categories of Offer Types
 /rest/offer_type_categories - GET to get a list of all offer type categoriess, POST to create or update
 /rest/offer_type_categories/{code} - GET to get a single offer type category
 /rest/offer_type_categories/{code}/offer_types - GET to get all offer types in a single category
+
+### Session Management
+
+/rest/login - POST a form with email and password as parameters to log in
+/rest/login_check - GET returns true if logged in, false if not
+/rest/logout - GET logs you out
+

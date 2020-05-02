@@ -3,6 +3,7 @@
 session_start();
 
 include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
 $dbclass = new DBClass();
 $connection = $dbclass->getConnection();
 
@@ -35,43 +36,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
     // Validate credentials
     if(empty($email_err) && empty($password_err)){
-        // Prepare a select statement
-        $sql = "SELECT id, email, password,display_name FROM users WHERE email = :email";
 
-		$stmt= $connection->prepare($sql);
-
-        if($stmt->execute(['email'=>$email])){
-
-                // Check if email exists, if yes then verify password
-                if($stmt->rowCount() == 1){
-                    if($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-                        if(password_verify($password, $row['password'])){
-                            // Password is correct, so start a new session
-                            session_start();
-
-                            // Store data in session variables
-                            $_SESSION["loggedin"] = true;
-                            $_SESSION["id"] = $row['id'];
-                            $_SESSION["email"] = $row['email'];
-                            if(isset($row['display_name'])){
-                              $_SESSION["display_name"] = $row['display_name'];
-                            } else {
-                              $_SESSION["display_name"] = $row['email'];
-                            }
-
-                            // Redirect user to welcome page
-                            header("location: /index.php");
-                        } else{
-                            // Display an error message if password is not valid
-                            $password_err = "The password you entered was not valid.";
-                        }
-                    }
-                } else{
-                    // Display an error message if email doesn't exist
-                    $email_err = "No account found with that email.";
-                }
-        }
-    }
+		if (login($connection,$email,$password)){
+  			header("location: /index.php");
+  			exit;
+		} else {
+		   $password_err = "The password you entered was not valid.";
+		}
+	}
 
 }
 ?>
