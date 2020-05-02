@@ -2,7 +2,7 @@
 
 ## Available Services
 
-###Users
+### Users
 
 Users are the people who log in to the system, and who belong to an organization
 
