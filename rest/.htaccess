@@ -2,9 +2,12 @@ Options +SymLinksIfOwnerMatch
 RewriteEngine On 
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
+RewriteRule ^users/current/user_organizations   user_organizations.php?view=current_user [L,qsa]
 RewriteRule ^users/current   users.php?view=current [L,qsa]
+RewriteRule ^users/([0-9]+)/user_organizations   user_organizations.php?view=user&user_id=$1 [L,qsa]
 RewriteRule ^users/([0-9]+)   users.php?view=one&id=$1 [L,qsa]
 RewriteRule ^users   users.php [L,qsa]
+RewriteRule ^organizations/([0-9]+)/user_organizations   user_organizations.php?view=org&organization_id=$1 [L,qsa]
 RewriteRule ^organizations/([0-9]+)   organizations.php?view=one&id=$1 [L,qsa]
 RewriteRule ^organizations   organizations.php [L,qsa]
 RewriteRule ^offers/([0-9]+)   offers.php?view=one&id=$1 [L,qsa]
@@ -19,6 +22,11 @@ RewriteRule ^offer_type_categories   offer_type_categories.php?view=all [L,qsa]
 RewriteRule ^offer_types/active   offer_types.php?view=active [L,qsa]
 RewriteRule ^offer_types/(.*)   offer_types.php?view=one&type=$1 [L,qsa]
 RewriteRule ^offer_types   offer_types.php?view=all [L,qsa]
+RewriteRule ^user_organizations/([0-9]+)   user_organizations.php?view=one&id=$1 [L,qsa]
+RewriteRule ^user_organizations   user_organizations.php?view=all [L,qsa]
+RewriteRule ^login_check   session_check.php [L,qsa]
+RewriteRule ^login   session_login.php [L,qsa]
+RewriteRule ^logout   session_logout.php [L,qsa]
 
 #RewriteCond %{REQUEST_FILENAME} !-f 
 #RewriteCond %{REQUEST_FILENAME} !-d

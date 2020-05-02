@@ -82,8 +82,7 @@ if(isset($data)) {
                 "id" => $id,
                 "display_name" => $display_name,
                 "email" => $email,
-                "phone" => $phone,
-                "organization_name" => $organization_name
+                "phone" => $phone
                 );
 
                 array_push($users["users"], $user);
