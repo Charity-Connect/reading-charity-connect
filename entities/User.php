@@ -8,8 +8,6 @@ class User{
     // Connection instance
     private $connection;
 
-    // table name
-
     // table columns
     public $id;
     private $password;
@@ -61,9 +59,22 @@ class User{
     }
 
     public function readAll(){
-        $query = "SELECT u.id,u.display_name,u.email,u.phone from users u ORDER BY u.id";
-        $stmt = $this->connection->prepare($query);
-        $stmt->execute();
+
+    	if(is_admin()){
+        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u ORDER BY u.id";
+        	$stmt = $this->connection->prepare($query);
+        	$stmt->execute();
+        } else if(is_org_admin()){
+        	$organization_id=$_SESSION["organization_id"];
+        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u, user_organizations o where u.id=o.user_id and o.organization_id=:organization_id ORDER BY u.id";
+        	$stmt = $this->connection->prepare($query);
+        	$stmt->execute(['organization_id'=>$organization_id]);
+        } else {
+			$userId=$_SESSION["id"];
+        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u where u.id=:id";
+        	$stmt = $this->connection->prepare($query);
+        	$stmt->execute(['id'=>$userId]);
+        }
         return $stmt;
     }
 
@@ -77,23 +88,44 @@ class User{
     }
 
     public function readOne($id){
-	        $query = "SELECT u.id,u.display_name,u.email,u.phone, u.confirmation_string,  from users u where u.id=:id";
-	        $stmt = $this->connection->prepare($query);
-	        $stmt->execute(['id'=>$id]);
+        	if(is_admin()){
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone, u.confirmation_string,  from users u where u.id=:id";
+	        	$stmt = $this->connection->prepare($query);
+	        	$stmt->execute(['id'=>$id]);
+	        } else if(is_org_admin()){
+	        	$organizationId=$_SESSION["organization_id"];
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u, user_organizations o where u.user_id=o.user_id and o.organization_id=:organization_id and u.id=:id";
+	        	$stmt = $this->connection->prepare($query);
+	        	$stmt->execute(['organization_id'=>$organization_id,'id'=>$id]);
+	        } else {
+				$user_id=$_SESSION["id"];
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u where u.id=:id and u.id=:id2";
+	        	$stmt = $this->connection->prepare($query);
+		        $stmt->execute(['id'=>$id,'id2'=>$user_id]);
+        }
 	        return $stmt;
 	    }
 
     public function update(){
-
-        $sql = "UPDATE users SET display_name=:display_name, email=:email,phone=:phone WHERE id=:id";
-        $stmt= $this->connection->prepare($sql);
-        return $stmt->execute(['id'=>$this->id,'display_name'=>$this->display_name,'email'=>$this->email,'phone'=>$this->phone]);
+    	$stmt=$this->readOne($this->id);
+		if($stmt->rowCount()==1){
+			$sql = "UPDATE users SET display_name=:display_name, email=:email,phone=:phone WHERE id=:id";
+			$stmt= $this->connection->prepare($sql);
+			return $stmt->execute(['id'=>$this->id,'display_name'=>$this->display_name,'email'=>$this->email,'phone'=>$this->phone]);
+		} else {
+			return false;
+		}
     }
 
     public function delete(){
-        $sql = "DELETE FROM users WHERE id=:id";
-        $stmt= $this->connection->prepare($sql);
-        return $stmt->execute(['id'=>$this->id]);
+    	$stmt=$this->readOne($this->id);
+		if($stmt->rowCount()==1){
+			$sql = "DELETE FROM users WHERE id=:id";
+			$stmt= $this->connection->prepare($sql);
+			return $stmt->execute(['id'=>$this->id]);
+		} else {
+			return false;
+		}
     }
 
     public function confirmUser($confirmation_string){

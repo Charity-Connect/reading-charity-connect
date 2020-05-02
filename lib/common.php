@@ -43,7 +43,7 @@ return $connection;
 }
 
 function is_admin(){
-global $connection;
+	global $connection;
 
   if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
 
@@ -52,6 +52,23 @@ global $connection;
 	$stmt = $connection->prepare($query);
 	$stmt->execute(['user_id'=>$userId]);
 	return ($stmt->rowCount()==1);
+
+  }
+  return false;
+
+}
+
+function is_org_admin(){
+	global $connection;
+
+  if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
+
+	$userId=$_SESSION["id"];
+	$organizationId=$_SESSION["organization_id"];
+	$query = "SELECT id from user_organizations where user_id=:user_id and organization_id=:organization_id and confirmed='Y' and admin='Y'";
+	$stmt = $connection->prepare($query);
+	$stmt->execute(['user_id'=>$userId,'organization_id'=>$organizationId]);
+	return ($stmt->rowCount()>0);
 
   }
   return false;

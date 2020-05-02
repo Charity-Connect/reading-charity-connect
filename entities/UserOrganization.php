@@ -43,9 +43,21 @@ class UserOrganization{
 
     }
     public function readAll(){
-        $query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,confirmed from user_organizations ORDER BY id";
-        $stmt = $this->connection->prepare($query);
-        $stmt->execute();
+        if(is_admin()){
+			$query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,confirmed from user_organizations ORDER BY id";
+			$stmt = $this->connection->prepare($query);
+			$stmt->execute();
+	    } else if(is_org_admin()){
+	       	$organization_id=$_SESSION["organization_id"];
+			$query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,confirmed from user_organizations where organization_id=:organization_id ORDER BY id";
+			$stmt = $this->connection->prepare($query);
+			$stmt->execute(['organization_id'=>$organization_id]);
+		} else {
+			$user_id=$_SESSION["id"];
+			$query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,confirmed from user_organizations where user_id=:user_id ORDER BY id";
+			$stmt = $this->connection->prepare($query);
+			$stmt->execute(['user_id'=>$user_id]);
+		}
         return $stmt;
     }
 
@@ -90,23 +102,46 @@ class UserOrganization{
    }
 
     public function readOne($id){
+        if(is_admin()){
 	        $query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,confirmed,confirmation_string from user_organizations where id=:id";
 	        $stmt = $this->connection->prepare($query);
 	        $stmt->execute(['id'=>$id]);
-	        return $stmt;
+	    } else if(is_org_admin()){
+	       	$organization_id=$_SESSION["organization_id"];
+	        $query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,confirmed,confirmation_string from user_organizations where organization_id=:organization_id and id=:id";
+			$stmt = $this->connection->prepare($query);
+			$stmt->execute(['organization_id'=>$organization_id,'id'=>$id]);
+	    } else {
+			$user_id=$_SESSION["id"];
+	        $query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,confirmed,confirmation_string from user_organizations where user_id=:user_id and id=:id";
+			$stmt = $this->connection->prepare($query);
+			$stmt->execute(['user_id'=>$user_id,'id'=>$id]);
 	    }
+	        return $stmt;
+	}
 
     public function update(){
 
-        $sql = "UPDATE user_organizations SET user_id=:user_id, organization_id=:organization_id, admin=:admin, user_approver=:user_approver, need_approver=:need_approver WHERE id=:id";
-        $stmt= $this->connection->prepare($sql);
-        return $stmt->execute(['id'=>$this->id,'user_id'=>$this->user_id,'organization_id'=>$this->organization_id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver]);
+    	$stmt=$this->readOne($this->id);
+		if($stmt->rowCount()==1){
+			$sql = "UPDATE user_organizations SET user_id=:user_id, organization_id=:organization_id, admin=:admin, user_approver=:user_approver, need_approver=:need_approver WHERE id=:id";
+			$stmt= $this->connection->prepare($sql);
+			return $stmt->execute(['id'=>$this->id,'user_id'=>$this->user_id,'organization_id'=>$this->organization_id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver]);
+		} else {
+			return false;
+		}
     }
 
     public function delete(){
-        $sql = "DELETE FROM user_organizations WHERE id=:id";
-        $stmt= $this->connection->prepare($sql);
-        return $stmt->execute(['id'=>$this->id]);
+
+    	$stmt=$this->readOne($this->id);
+		if($stmt->rowCount()==1){
+			$sql = "DELETE FROM user_organizations WHERE id=:id";
+			$stmt= $this->connection->prepare($sql);
+			return $stmt->execute(['id'=>$this->id]);
+		} else {
+			return false;
+		}
 
     }
 

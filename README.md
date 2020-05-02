@@ -10,6 +10,11 @@ Users are the people who log in to the system, and who belong to an organization
 /rest/users/{user id} - GET a single user
 /rest/users/current - GET the current user
 
+#### Security
+All users are visible to admins
+Users within an organization are visible to organization admins
+Other users can only see themselves
+
 ### Organizations
 
 Organizations are the charities that the users belong to. 
@@ -26,6 +31,9 @@ User Organizations track which organizations a user is a member of (they can be 
 /rest/users/{user id}/user_organizations - GET the user organization membership for a single user
 /rest/users/current/user_organizations - GET the user organization membership for the logged in user
 
+#### Security
+
+User Organization memberships are only visible for users that you can see
 
 ### Offers
 

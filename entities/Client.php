@@ -126,7 +126,6 @@ class Client{
 				,'phone'=>$this->phone,'email'=>$this->email,'notes'=>$this->notes]);
 			return $result;
 		} else {
-		echo $this->connection->errorInfo();
 			return false;
 		}
     }
