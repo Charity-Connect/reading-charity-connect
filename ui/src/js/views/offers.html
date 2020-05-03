@@ -3,8 +3,146 @@
  The Universal Permissive License (UPL), Version 1.0
  -->
 <div class="oj-hybrid-padding">
-  <h1>About Content Area</h1>
-  <div>
-      To change the content of this section, you will make edits to the about.html file located in the /js/views folder.
-  </div>
+    <oj-bind-if test="[[offersLoaded() !== true]]">
+        Loading...
+        <oj-progress id="progressBar" value="-1"></oj-progress>
+    </oj-bind-if>
+    <oj-bind-if test="[[offersLoaded() == true]]">
+
+        <oj-bind-if test="[[offersValid() !== true]]">
+            <oj-bind-text :style.color="red">
+                Critical Error: Offers not loaded
+            </oj-bind-text>
+        </oj-bind-if>
+
+        <oj-bind-if test="[[offersValid() == true]]">
+            <div class="spacer-sm">
+                <div class="oj-panel">
+                    <strong>Info:</strong>                    
+                    please select a row from the below table to edit an offer
+                </div>
+            </div>
+            
+            <div class="spacer-sm">
+                <div class="oj-panel oj-panel-alt2">
+                    <div class="oj-flex sm-1x-row">
+                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
+                            <h2>Offers</h2>    
+                        </div>                    
+                        <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+                            <div class="oj-helper-clearfix">                                        
+                                <oj-button id="addOfferButton" class="oj-sm-float-end"
+                                    on-oj-action='[[addOfferButton]]'>
+                                    <span>Add Offer</span>
+                                </oj-button>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />                    
+                    <oj-table id="executionsTable" class="row-selectable" aria-label="table using array"
+                        selection="{{offerRowSelected}}"
+                        on-selection-changed="[[handleOfferRowChanged]]"
+                        selection-mode='{"row": "single"}'
+                        columns="{{offersTableColumns}}"
+                        display='grid'
+                        data="[[offersDataProvider]]">                
+                    </oj-table>
+                    <oj-paging-control id="offersPaging" data='[[offersDataProvider]]'
+                        page-size='5' slot='bottom'>
+                    </oj-paging-control>
+                </div>
+            </div>
+            
+            <oj-bind-if test="[[offerSelected()]]">
+                <div class="oj-panel oj-panel-alt2">
+                    <div class="oj-flex sm-1x-row">
+                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
+                            <h3>Edit offer</h3>
+                        </div>                    
+                        <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+                            <div class="oj-helper-clearfix">                                        
+                                <oj-button id="submitEditButton" class="oj-sm-float-end"
+                                    on-oj-action='[[submitEditButton]]'>
+                                    <span>Submit edit</span>
+                                </oj-button>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />                    
+                    <div class="oj-flex sm-1x-row">                                                               
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editQuantityLabel">Quantity:</oj-label>
+                            <oj-input-text id="inputEditQuantity" labelled-by="editQuantityLabel"
+                                value="{{offerSelected().quantity}}"
+                                placeholder="Input quantity"
+                                title="Edit quantity input">
+                            </oj-input-text>
+                        </div>
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editTypeNameLabel">Type Name:</oj-label>
+                            <oj-input-text id="inputEditTypeName" labelled-by="editTypeNameLabel"
+                                value="{{offerSelected().type_name}}"
+                                placeholder="Input type name"
+                                title="Edit typename input">
+                            </oj-input-text>
+                        </div>
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editNameLabel">Name:</oj-label>
+                            <oj-input-text id="inputEditName" labelled-by="editNameLabel"
+                                value="{{offerSelected().name}}"
+                                placeholder="Input name"
+                                title="Edit name input">
+                            </oj-input-text>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="oj-flex sm-1x-row">                                
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editDetailsLabel">Details:</oj-label>
+                            <oj-input-text id="inputEditDetails" labelled-by="editDetailsLabel"
+                                value="{{offerSelected().details}}"
+                                placeholder="Input details"
+                                title="Edit details input">
+                            </oj-input-text>
+                        </div>
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editOrganizationLabel">Organization:</oj-label>
+                            <oj-input-text id="inputEditOrganization" labelled-by="editOrganizationLabel"
+                                value="{{offerSelected().organization_id}}"
+                                placeholder="Input organization"
+                                title="Edit organization input">
+                            </oj-input-text>
+                        </div>
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editPostcodeLabel">Postcode:</oj-label>
+                            <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"
+                                value="{{offerSelected().postcode}}"
+                                placeholder="Input postcode"
+                                title="Edit postcode input">
+                            </oj-input-text>
+                        </div>                                
+                    </div>
+                    <hr />
+                    <div class="oj-flex sm-1x-row"> 
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editDateAvailableLabel">Date Available:</oj-label>
+                            <oj-input-text id="inputEditDateAvailable" labelled-by="editDateAvailableLabel"
+                                value="{{offerSelected().date_available}}"
+                                placeholder="Input date available"
+                                title="Edit date available input">
+                            </oj-input-text>
+                        </div>
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editDateEndLabel">Date End:</oj-label>
+                            <oj-input-text id="inputEditDateEnd" labelled-by="editDateEndLabel"
+                                value="{{offerSelected().date_end}}"
+                                placeholder="Input date end"
+                                title="Edit date end input">
+                            </oj-input-text>
+                        </div>                                
+                    </div>
+                </div>
+            </oj-bind-if>
+        </oj-bind-if>            
+    </oj-bind-if>
 </div>

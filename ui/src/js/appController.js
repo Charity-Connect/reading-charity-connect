@@ -32,7 +32,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 self.smScreen = ResponsiveKnockoutUtils.createMediaQueryObservable(smQuery);
 
                 // User role
-                const userRole = "system-admin";
+                const userRole = "user";
                 
                 // Header
                 // Application Name used in Branding Area
@@ -49,14 +49,11 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 if (userRole === "system-admin") {
                     self.appName("Charity Connect - System Admin");
                     self.router.configure({
-                        'organizations': {label: 'Organizations', isDefault: true},
-                        'clientNeeds': {label: 'Client Needs'}
+                        'admin': {label: 'Admin', isDefault: true}
                     });
                     navData = [
-                        {name: 'Organizations', id: 'organizations',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-home-icon-24'},
-                        {name: 'Client Needs', id: 'clientNeeds',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
+                        {name: 'Admin', id: 'admin',
+                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-person-icon-24'}
                     ];
                 } else if (userRole === "organization-admin") {
                     self.appName("Charity Connect - Organization Admin");
@@ -71,13 +68,16 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                     self.appName("Charity Connect  - User Account");
                     self.router.configure({
                         'offers': {label: 'Offers', isDefault: true},
-                        'clients': {label: 'Clients'}
+                        'clients': {label: 'Clients'},
+                        'requests': {label: 'Requests'}                        
                     });
                     navData = [
                         {name: 'Offers', id: 'offers',
                             iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
                         {name: 'Clients', id: 'clients',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
+                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'},
+                        {name: 'Requests', id: 'requests',
+                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'}
                     ];                     
                 };
                 Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
