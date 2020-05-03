@@ -7,6 +7,7 @@ class User{
 
     // Connection instance
     private $connection;
+    global $site_address;
 
     // table columns
     public $id;
@@ -44,7 +45,7 @@ class User{
                 $organization_user->create();
             }
 
-            $messageString=get_string("new_user_confirmation",array("%NAME%"=>$user->display_name,"%LINK%"=>"http://www.rdg-connect.org/rest/confirm_user.php?id=".$this->id."&key=".$this->confirmation_string));
+            $messageString=get_string("new_user_confirmation",array("%NAME%"=>$user->display_name,"%LINK%"=>$site_address."/rest/confirm_user.php?id=".$this->id."&key=".$this->confirmation_string));
 			sendHtmlMail($this->email,get_string("new_user_subject"),$messageString);
 
             return $this->id;

@@ -114,4 +114,6 @@ Can be ready by all logged in users
 /rest/logout - GET logs you out
 /rest/admin_check - GET returns true if the logged in user is a system administrator, false if not
 /rest/org_admin_check - GET returns true if the logged in user is an admin of the current organization, false if not
+/rest/password_reset_request - POST email address to request a password reset e-mail
+/rest/password_reset_confirm - POST email address, key, password and password2 to reset the password
 

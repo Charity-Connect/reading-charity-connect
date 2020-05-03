@@ -194,6 +194,7 @@ return true;
 }
 
 function set_current_organizaton($organization_id){
+  $_SESSION["organization_id"] = $organization_id;
 }
 
 function logout(){
@@ -208,3 +209,93 @@ function logout(){
 
 }
 
+function password_reset_request($email){
+	global $connection;
+	global $site_address;
+	if(!isset($connection)){
+		include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+		$dbclass = new DBClass();
+		$connection = $dbclass->getConnection();
+	}
+	$reset_string=generate_string(60);
+
+	$stmt = $connection->prepare("UPDATE users set password_confirmation_string = :confirmation_string WHERE email = :email");
+    $success= $stmt->execute(["confirmation_string"=>$reset_string,"email"=>$email]);
+
+    if($success==true){
+    	sendHtmlMail($email,get_string("password_reset_subject"),get_string("password_reset_body",array("%LINK%"=>$site_address."/reset_confirm.html?email=".urlencode($email)."&key=".urlencode($reset_string))));
+    	return true;
+    } else {
+    	return false;
+    }
+}
+
+function password_reset_confirm($email,$key,$new_password){
+	global $connection;
+	if(!isset($connection)){
+		include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+		$dbclass = new DBClass();
+		$connection = $dbclass->getConnection();
+	}
+
+	$sql="SELECT id from users WHERE email = :email and password_confirmation_string=:key and password_confirmation_string is not null";
+	$stmt= $connection->prepare($sql);
+	$stmt->execute(['email'=>$email,'key'=>$key]);
+	if($stmt->rowCount() >0){
+		if($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+			$id = $row['id'];
+			$stmt = $connection->prepare("UPDATE users set password = :password,password_confirmation_string=null WHERE id = :id");
+			$success= $stmt->execute(["password"=>password_hash($new_password, PASSWORD_DEFAULT),"id"=>$id]);
+			return $success;
+		}
+	}
+    return false;
+}
+
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+/*::                                                                         :*/
+/*::  This routine calculates the distance between two points (given the     :*/
+/*::  latitude/longitude of those points). It is being used to calculate     :*/
+/*::  the distance between two locations using GeoDataSource(TM) Products    :*/
+/*::                                                                         :*/
+/*::  Definitions:                                                           :*/
+/*::    South latitudes are negative, east longitudes are positive           :*/
+/*::                                                                         :*/
+/*::  Passed to function:                                                    :*/
+/*::    lat1, lon1 = Latitude and Longitude of point 1 (in decimal degrees)  :*/
+/*::    lat2, lon2 = Latitude and Longitude of point 2 (in decimal degrees)  :*/
+/*::    unit = the unit you desire for results                               :*/
+/*::           where: 'M' is statute miles (default)                         :*/
+/*::                  'K' is kilometers                                      :*/
+/*::                  'N' is nautical miles                                  :*/
+/*::  Worldwide cities and other features databases with latitude longitude  :*/
+/*::  are available at https://www.geodatasource.com                          :*/
+/*::                                                                         :*/
+/*::  For enquiries, please contact sales@geodatasource.com                  :*/
+/*::                                                                         :*/
+/*::  Official Web site: https://www.geodatasource.com                        :*/
+/*::                                                                         :*/
+/*::         GeoDataSource.com (C) All Rights Reserved 2018                  :*/
+/*::                                                                         :*/
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+function distance($lat1, $lon1, $lat2, $lon2, $unit) {
+  if (($lat1 == $lat2) && ($lon1 == $lon2)) {
+    return 0;
+  }
+  else {
+    $theta = $lon1 - $lon2;
+    $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+    $dist = acos($dist);
+    $dist = rad2deg($dist);
+    $miles = $dist * 60 * 1.1515;
+    $unit = strtoupper($unit);
+
+    if ($unit == "K") {
+      return ($miles * 1.609344);
+    } else if ($unit == "N") {
+      return ($miles * 0.8684);
+    } else {
+      return $miles;
+    }
+  }
+}

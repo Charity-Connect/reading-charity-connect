@@ -54,12 +54,12 @@ class Client{
     }
     public function readAll(){
         if(is_admin()){
-        	$query = "SELECT id,name,address,phone,email,notes from clients ORDER BY id";
+        	$query = "SELECT id,name,address,postcode,phone,email,notes from clients ORDER BY id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute();
         	return $stmt;
         } else {
-        	$query = "SELECT c.id,c.name,c.address,c.phone,c.email,c.notes from clients c, client_links l where c.id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id  ORDER BY c.id";
+        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.phone,c.email,c.notes from clients c, client_links l where c.id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id  ORDER BY c.id";
 			$stmt = $this->connection->prepare($query);
         	$stmt->execute(['organization_id'=>$_SESSION["organization_id"]]);
         	return $stmt;

@@ -1,0 +1,49 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Password reset</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <style type="text/css">
+        body{ font: 14px sans-serif; }
+        .wrapper{ width: 350px; padding: 20px; }
+	</style>
+	        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+		<script>
+
+		$(document).ready(function() {
+
+			const queryString = window.location.search;
+			const urlParams = new URLSearchParams(queryString);
+			if(urlParams.has('key')){
+				$("#key").val(urlParams.get('key'))
+			}
+			if(urlParams.has('email')){
+				$("#email").val(urlParams.get('email'))
+			}
+
+		});
+	</script>
+
+</head>
+<body>
+    <div class="wrapper">
+        <h2>Password reset</h2>
+        <p>Please enter your e-mail address. If you have an account, we'll e-mail you a link to reset your password.</p>
+        <form action="/rest/password_reset_confirm" method="post">
+            <div class="form-group">
+            <input type="hidden" name="key" id="key">
+            <input type="hidden" name="email" id="email">
+                <label>Password</label>
+                <input type="password" name="password" class="form-control">
+                <label>Confirm Password</label>
+                <input type="password" name="password2" class="form-control">
+                <span class="help-block"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="Confirm Reset">
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+

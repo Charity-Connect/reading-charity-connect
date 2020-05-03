@@ -1,0 +1,49 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <style type="text/css">
+        body{ font: 14px sans-serif; }
+        .wrapper{ width: 350px; padding: 20px; }
+    </style>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script>
+
+	$(document).ready(function() {
+
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		if(urlParams.has('redirect')){
+			$("#redirect").val(urlParams.get('redirect'))
+		}
+
+	});
+</script>
+
+</head>
+<body>
+    <div class="wrapper">
+        <h2>Login</h2>
+        <p>Please fill in your credentials to login.</p>
+        <form action="/rest/login" method="post">
+            <div class="form-group">
+            <input type="hidden" name="redirect" id="redirect" value="/client_list.html">
+                <label>E-mail address</label>
+                <input type="email" name="email" class="form-control">
+                <span class="help-block"></span>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" class="form-control">
+                <span class="help-block"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="Login">
+            </div>
+            <p>Don't have an account? <a href="/login/register.php">Sign up now</a>.</p>
+        </form>
+    </div>
+</body>
+</html>
+

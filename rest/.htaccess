@@ -30,6 +30,8 @@ RewriteRule ^admin_check   session_check.php?view=is_admin [L,qsa]
 RewriteRule ^org_admin_check   session_check.php?view=is_org_admin [L,qsa]
 RewriteRule ^login   session_login.php [L,qsa]
 RewriteRule ^logout   session_logout.php [L,qsa]
+RewriteRule ^password_reset_request   password_reset_request.php [L,qsa]
+RewriteRule ^password_reset_confirm   password_reset_confirm.php [L,qsa]
 
 #RewriteCond %{REQUEST_FILENAME} !-f 
 #RewriteCond %{REQUEST_FILENAME} !-d

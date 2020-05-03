@@ -18,7 +18,7 @@ if(isset($data)) {
     $client_needs->client_id = $data['client_id'];
     $client_needs->type = $data['type'];
     $client_needs->date_needed = $data['date_needed'];
-    $client_needs->need_met = $data['need_met'];
+    $client_needs->need_met = isset($data['need_met'])?$data['need_met']:'N';
     $client_needs->notes = $data['notes'];
 
     if(isset($data['id'])){
