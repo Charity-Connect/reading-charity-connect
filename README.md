@@ -77,4 +77,6 @@ Categories of Offer Types
 /rest/login - POST a form with email and password as parameters to log in
 /rest/login_check - GET returns true if logged in, false if not
 /rest/logout - GET logs you out
+/rest/admin_check - GET returns true if the logged in user is a super admin, false if not
+/rest/org_admin_check - GET returns true if the logged in user is an admin of the current organization, false if not
 

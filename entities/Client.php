@@ -5,8 +5,6 @@ class Client{
     // Connection instance
     private $connection;
 
-    // table name
-
     // table columns
     public $id;
     public $name;
@@ -61,9 +59,9 @@ class Client{
         	$stmt->execute();
         	return $stmt;
         } else {
-        	$query = "SELECT c.id,c.name,c.address,c.phone,c.email,c.notes from clients c, users u, client_links l where c.id=l.client_id and l.link_type='ORG' and l.link_id=u.organization_id and u.id=:user_id ORDER BY c.id";
-        	$stmt = $this->connection->prepare($query);
-        	$stmt->execute(['user_id'=>$_SESSION["id"]]);
+        	$query = "SELECT c.id,c.name,c.address,c.phone,c.email,c.notes from clients c, client_links l where c.id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id  ORDER BY c.id";
+			$stmt = $this->connection->prepare($query);
+        	$stmt->execute(['organization_id'=>$_SESSION["organization_id"]]);
         	return $stmt;
         }
     }
@@ -88,9 +86,9 @@ class Client{
         	$stmt->execute(['id'=>$id]);
         	return $stmt;
         } else {
-        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes from clients c, users u, client_links l where c.id=:id and c.id=l.client_id and l.link_type='ORG' and l.link_id=u.organization_id and u.id=:user_id ORDER BY c.id";
+        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes from clients c, client_links l where c.id=:id and c.id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY c.id";
         	$stmt = $this->connection->prepare($query);
-        	$stmt->execute(['id'=>$id,'user_id'=>$_SESSION["id"]]);
+        	$stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
         	return $stmt;
         }
 

@@ -69,7 +69,6 @@ if(isset($data)) {
     } else {
         $stmt = $client->readAll();
         $count = $stmt->rowCount();
-
         if($count > 0){
 
             $clients = array();

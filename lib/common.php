@@ -1,12 +1,12 @@
 <?php
 
 $connection;
-$dev_headers=true;
+$force_login=false;
 
 function initRest(){
 
 global $connection;
-global $dev_headers;
+global $force_login;
 // Initialize the session
 session_start();
 
@@ -49,6 +49,12 @@ return $connection;
 function is_admin(){
 	global $connection;
 
+	if(!isset($connection)){
+		include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+		$dbclass = new DBClass();
+		$connection = $dbclass->getConnection();
+	}
+
   if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
 
 	$userId=$_SESSION["id"];
@@ -64,6 +70,12 @@ function is_admin(){
 
 function is_org_admin(){
 	global $connection;
+
+	if(!isset($connection)){
+		include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+		$dbclass = new DBClass();
+		$connection = $dbclass->getConnection();
+	}
 
   if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
 
@@ -133,8 +145,8 @@ $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 }
 
 function login($connection,$email,$password){
-global $dev_headers;
-if($dev_headers==true){
+global $force_login;
+if($force_login===false){
 	$_SESSION["loggedin"] = true;
 	$_SESSION["id"] = 19;
 	$_SESSION["email"] = "oli@test.com";

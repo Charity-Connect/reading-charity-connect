@@ -3,12 +3,23 @@
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
 logout();
 
-global $dev_headers;
+global $force_login;
 
-$dev_headers=false;
+$force_login=true;
+
+$redirect=$_GET["redirect"];
+
+if(isset($redirect)&&$redirect!==""){
+		header("location: ".$redirect);
+		exit;
+}
+$redirect=$_POST["redirect"];
+
+if(isset($redirect)&&$redirect!==""){
+		header("location: ".$redirect);
+		exit;
+}
+
 echo "true";
 exit;
-
-
-echo "true";
 ?>

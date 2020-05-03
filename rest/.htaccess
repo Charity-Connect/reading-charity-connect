@@ -25,6 +25,8 @@ RewriteRule ^offer_types   offer_types.php?view=all [L,qsa]
 RewriteRule ^user_organizations/([0-9]+)   user_organizations.php?view=one&id=$1 [L,qsa]
 RewriteRule ^user_organizations   user_organizations.php?view=all [L,qsa]
 RewriteRule ^login_check   session_check.php [L,qsa]
+RewriteRule ^admin_check   session_check.php?view=is_admin [L,qsa]
+RewriteRule ^org_admin_check   session_check.php?view=is_org_admin [L,qsa]
 RewriteRule ^login   session_login.php [L,qsa]
 RewriteRule ^logout   session_logout.php [L,qsa]
 
