@@ -1,0 +1,116 @@
+/*
+    Document   : override
+    Created on : <date>
+    Author     : <author>
+    Description:
+        This is where any of your application specific styles should be included
+*/
+
+/* -----------------------------------------------
+:: OJ Structure
+-------------------------------------------------- */
+.sm-1x-row {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.sm-2x-row {
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.sm-4x-row {
+    margin-left: -20px;
+    margin-right: -20px;
+}
+
+
+/* -----------------------------------------------
+:: OJ Element control
+-------------------------------------------------- */
+oj-table {
+    width: 100%;
+}
+
+oj-table td:not(.oj-table-body-message) {
+    white-space: normal !important;
+    word-wrap:break-word;
+}
+
+
+/* -----------------------------------------------
+:: Element control
+-------------------------------------------------- */
+.spacer-sm {
+    padding-bottom: 1.25rem;
+}
+
+.text-ellipsis {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* needed for text-wrapping */
+    max-width: 100px;
+}
+
+
+/* -----------------------------------------------
+:: Element control - breadcrumbs
+-------------------------------------------------- */
+#breadcrumbs {
+    padding: 0;
+}
+
+#breadcrumbs li {
+    position: relative;
+}
+
+#breadcrumbs li:after {
+    content: '\3009';
+    position: absolute;
+    top: 12px;
+    right: -8px;
+    color: #0572ce;
+    font-weight: 700;
+    line-height: 1;
+}
+
+#breadcrumbs li:last-of-type:after {
+    content: "";
+}
+
+
+/* -----------------------------------------------
+:: .oj-table.row-selectable
+-------------------------------------------------- */
+ keep table-row highlight when user clicks header 
+.oj-table.row-selectable .oj-table-column-header-cell {
+    pointer-events: none;
+}
+.oj-table.row-selectable .oj-table-column-header-asc-icon,
+.oj-table.row-selectable .oj-table-sort-icon-container,
+.oj-table.row-selectable .oj-table-column-header-dsc-icon {
+    pointer-events: auto;
+}
+
+.oj-table.row-selectable .oj-table-data-cell {
+    cursor: pointer;    
+}
+
+.oj-table.row-selectable .oj-table-data-cell.oj-selected {
+    background-color: #fef9e8;
+}
+
+
+/* -----------------------------------------------
+:: default accessibility style
+-------------------------------------------------- */
+.sendOffScreen {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
