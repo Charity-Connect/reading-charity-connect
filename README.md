@@ -10,6 +10,11 @@ Users are the people who log in to the system, and who belong to an organization
 /rest/users/{user id} - GET a single user  
 /rest/users/current - GET the current user  
 
+#### Attributes
+- email  
+- display_name  
+- phone  
+
 #### Security
 All users are visible to the system administrator  
 Users within an organization are visible to organization admins  
@@ -22,6 +27,11 @@ Organizations are the charities that the users belong to.
 /rest/organizations - GET to get the list of organizations, POST to create or update  
 /rest/organizations/{organization id} - GET a single organization  
 /rest/organizations/public - GET to get the list of organizations without requiring login  
+
+#### Attributes
+- name
+- address
+- phone
 
 #### Security
 Only system administrators can create an organization  
@@ -39,6 +49,14 @@ User Organizations track which organizations a user is a member of (they can be 
 /rest/users/{user id}/user_organizations - GET the user organization membership for a single user  
 /rest/users/current/user_organizations - GET the user organization membership for the logged in user  
 
+#### Attributes
+- organization_id
+- user_id
+- admin
+- user_approver
+- need_approver
+- confirmed
+
 #### Security
 Users can request organization membership for anyone  
 User Organization memberships are only visible and updateable for the users that you have security to access  
@@ -49,6 +67,16 @@ Offers can be created by users in an organization to record the things that thei
 
 /rest/offers - GET to get a list of all offers for your organization, POST to create or update  
 /rest/offers/{offer id} - GET a single offer  
+
+#### Attributes
+- organization_id
+- name
+- type
+- details
+- quantity
+- date_available
+- date_end
+- postcode
 
 #### Security
 
@@ -63,6 +91,15 @@ Clients record an individual or an organization who may have needs, and exist fo
 /rest/clients - GET to get a list of all clients for your organization, POST to create or update  
 /rest/clients/{client id} - GET a single client  
 
+#### Attributes
+- name  
+- address  
+- postcode  
+- phone  
+- email  
+- notes  
+
+
 #### Security
 
 All clients are visible to the system administrator  
@@ -75,6 +112,14 @@ Clients can have multiple needs, and this records those needs and whether they h
 /rest/client/{client id}/client_needs - GET to get a list of all clients for this client, POST to create or update  
 /rest/client/{client id}/client_needs/{client need id} - GET a single client need  
 
+#### Attributes
+- client_id  
+- type  
+- date_needed  
+- need_met  
+- notes  
+
+
 #### Security
 
 Client needs can only be created and read for clients who the user has access to  
@@ -86,6 +131,13 @@ Types of thing that organizations are offering, and types of thing that clients 
 /rest/offer_types - GET to get a list of all offer types, POST to create or update  
 /rest/offer_types/active - GET to get a list of all active offer types  
 /rest/offer_types/{type} - GET to get a single offer types  
+
+#### Attributes
+- type  
+- name  
+- category  
+- default_text  
+- active  
 
 #### Security
 
@@ -100,6 +152,11 @@ Categories of Offer Types
 /rest/offer_type_categories - GET to get a list of all offer type categoriess, POST to create or update  
 /rest/offer_type_categories/{code} - GET to get a single offer type category  
 /rest/offer_type_categories/{code}/offer_types - GET to get all offer types in a single category  
+
+#### Attributes
+- code  
+- name  
+
 
 #### Security
 
@@ -116,11 +173,3 @@ Can be ready by all logged in users
 /rest/org_admin_check - GET returns true if the logged in user is an admin of the current organization, false if not  
 /rest/password_reset_request - POST email address to request a password reset e-mail  
 /rest/password_reset_confirm - POST email address, key, password and password2 to reset the password  
-
-
-# UI Build instuctions
-
-cd ui
-npm install --save-dev @oracle/ojet-cli  
-ojet restore  
-ojet build  --release
