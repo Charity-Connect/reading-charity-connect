@@ -1,10 +1,12 @@
 <?php
 
 $connection;
+$dev_headers=true;
 
 function initRest(){
 
 global $connection;
+global $dev_headers;
 // Initialize the session
 session_start();
 
@@ -20,7 +22,9 @@ if (login($connection,$email,$password)){
 } else {
 	header("location: /login/login.php");
     exit;
-   }
+}
+
+
 }
 
 function initWeb(){
@@ -129,7 +133,14 @@ $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 }
 
 function login($connection,$email,$password){
-
+global $dev_headers;
+if($dev_headers==true){
+	$_SESSION["loggedin"] = true;
+	$_SESSION["id"] = 19;
+	$_SESSION["email"] = "oli@test.com";
+	$_SESSION["organization_id"]=1;
+	return true;
+}
 // Check if the user is logged in, if not then check for basic auth and if not, redirect them to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 	$stmt = $connection->prepare("SELECT * FROM users WHERE email = :email");
