@@ -89,7 +89,7 @@ class User{
 
     public function readOne($id){
         	if(is_admin()){
-	        	$query = "SELECT u.id,u.display_name,u.email,u.phone, u.confirmation_string,  from users u where u.id=:id";
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone, u.confirmation_string  from users u where u.id=:id";
 	        	$stmt = $this->connection->prepare($query);
 	        	$stmt->execute(['id'=>$id]);
 	        } else if(is_org_admin()){

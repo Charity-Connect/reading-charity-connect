@@ -21,6 +21,10 @@ class Offer{
     }
 
     public function create(){
+
+    	if(!is_admin()){
+    		$this->id=$_SESSION('organization_id');
+    	}
 		if(isset($this->postcode)&&$this->postcode!=""){
 			list($latitude,$longitude)=getGeocode($this->postcode);
 		}
@@ -51,9 +55,9 @@ class Offer{
        		$stmt = $this->connection->prepare($query);
        		$stmt->execute();
         } else {
-	        $query = "SELECT o.id,o.organization_id, o.name,o.type,t.name as type_name,o.details,o.quantity,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude from offers o, users u, offer_types t where o.organization_id=u.organization_id and u.id=:user_id and o.type=t.type ORDER BY o.id";
+	        $query = "SELECT o.id,o.organization_id, o.name,o.type,t.name as type_name,o.details,o.quantity,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude from offers o, offer_types t where o.organization_id=:organization_id and o.type=t.type ORDER BY o.id";
 			$stmt = $this->connection->prepare($query);
-	        $stmt->execute(['user_id'=>$_SESSION["id"]]);
+	        $stmt->execute(['organization_id'=>$_SESSION["organization_id"]]);
         }
         return $stmt;
     }
@@ -80,9 +84,9 @@ class Offer{
 	        $stmt = $this->connection->prepare($query);
 	        $stmt->execute(['id'=>$id]);
 	    } else {
-	        $query = "SELECT o.id,o.organization_id,o.name,o.type,t.name as type_name,o.details,o.quantity,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude from offers o , users u, offer_types t where o.organization_id=u.organization_id and u.id=:user_id and o.type=t.type and o.id=:id";
+	        $query = "SELECT o.id,o.organization_id,o.name,o.type,t.name as type_name,o.details,o.quantity,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude from offers o , offer_types t where o.organization_id=:organization_id and o.type=t.type and o.id=:id";
 	        $stmt = $this->connection->prepare($query);
-	        $stmt->execute(['id'=>$id,'user_id'=>$_SESSION["id"]]);
+	        $stmt->execute(['organization_id'=>$_SESSION["organization_id"]]);
 	    }
 	        return $stmt;
 	}

@@ -1,30 +1,39 @@
 <?php
 
 $connection;
-$force_login=false;
 
 function initRest(){
 
-global $connection;
-global $force_login;
-// Initialize the session
-session_start();
+	global $connection;
+	global $force_login;
+	// Initialize the session
+	session_start();
 
-include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
-$dbclass = new DBClass();
-$connection = $dbclass->getConnection();
-$email=$_SERVER['PHP_AUTH_USER'];
-$password=$_SERVER['PHP_AUTH_PW'];
+	include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+	$dbclass = new DBClass();
+	$connection = $dbclass->getConnection();
+	$email=$_SERVER['PHP_AUTH_USER'];
+	$password=$_SERVER['PHP_AUTH_PW'];
 
-if (login($connection,$email,$password)){
-    header("Content-Type: application/json; charset=UTF-8");
-	return $connection;
-} else {
-	header("location: /login/login.php");
-    exit;
+	if (login($connection,$email,$password)){
+		header("Content-Type: application/json; charset=UTF-8");
+		return $connection;
+	} else {
+		header("location: /login/login.php");
+		exit;
+	}
 }
 
+function initPublicRest(){
 
+	global $connection;
+	session_start();
+
+	include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+	$dbclass = new DBClass();
+	$connection = $dbclass->getConnection();
+		header("Content-Type: application/json; charset=UTF-8");
+		return $connection;
 }
 
 function initWeb(){
@@ -182,6 +191,9 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 	}
 }
 return true;
+}
+
+function set_current_organizaton($organization_id){
 }
 
 function logout(){

@@ -47,9 +47,9 @@ class ClientNeed{
         	$stmt->execute(['client_id'=>$client_id]);
         	return $stmt;
         } else {
-        	$query = "SELECT cn.id,cn.client_id,cn.type,cn.date_needed,cn.need_met,cn.notes from client_needs cn, users u, client_links l where cn.client_id=:client_id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=u.organization_id and u.id=:user_id ORDER BY cn.id";
+        	$query = "SELECT cn.id,cn.client_id,cn.type,cn.date_needed,cn.need_met,cn.notes from client_needs cn, client_links l where cn.client_id=:client_id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
         	$stmt = $this->connection->prepare($query);
-        	$stmt->execute(['user_id'=>$_SESSION["id"],'client_id'=>$client_id]);
+        	$stmt->execute(['organization_id'=>$_SESSION["organization_id"],'client_id'=>$client_id]);
         	return $stmt;
         }
     }
@@ -71,9 +71,9 @@ class ClientNeed{
         	$stmt->execute(['id'=>$id,'client_id'=>$client_id]);
         	return $stmt;
         } else {
-        	$query = "SELECT cn.id,cn.client_id,cn.type,cn.date_needed,cn.need_met,cn.notes from client_needs cn, users u, client_links l where cn.client_id=:client_id and cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=u.organization_id and u.id=:user_id ORDER BY cn.id";
+        	$query = "SELECT cn.id,cn.client_id,cn.type,cn.date_needed,cn.need_met,cn.notes from client_needs cn, client_links l where cn.client_id=:client_id and cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
         	$stmt = $this->connection->prepare($query);
-        	$stmt->execute(['client_id'=>$client_id,'id'=>$id,'user_id'=>$_SESSION["id"]]);
+        	$stmt->execute(['client_id'=>$client_id,'id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
         	return $stmt;
         }
 

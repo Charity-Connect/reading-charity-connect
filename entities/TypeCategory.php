@@ -13,12 +13,16 @@ class TypeCategory{
     }
 
     public function replace(){
-        $sql = "REPLACE INTO type_categories (code, name) values (:code,:name)";
-        $stmt= $this->connection->prepare($sql);
-        if( $stmt->execute(['code'=>$this->code,'name'=>$this->name])){
-            return $this->code;
+    	if(is_admin()){
+			$sql = "REPLACE INTO type_categories (code, name) values (:code,:name)";
+			$stmt= $this->connection->prepare($sql);
+			if( $stmt->execute(['code'=>$this->code,'name'=>$this->name])){
+				return $this->code;
+			} else {
+				return "";
+			}
         } else {
-            return "";
+        	return "";
         }
 
     }
@@ -45,9 +49,13 @@ class TypeCategory{
 
 
     public function delete(){
-        $sql = "DELETE FROM type_categories WHERE code=:code";
-        $stmt= $this->connection->prepare($sql);
-        return $stmt->execute(['code'=>$this->code]);
+    	if(is_admin()){
+			$sql = "DELETE FROM type_categories WHERE code=:code";
+			$stmt= $this->connection->prepare($sql);
+			return $stmt->execute(['code'=>$this->code]);
+        } else {
+        	return "";
+        }
 
     }
 }

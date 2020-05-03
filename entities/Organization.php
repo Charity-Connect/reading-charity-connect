@@ -8,25 +8,29 @@ class Organization{
     public $name;
     public $address;
     public $phone;
-    public $approver_email;
 
     public function __construct($connection){
         $this->connection = $connection;
     }
 
     public function create(){
-        $sql = "INSERT INTO organizations ( name,address,phone,approver_email) values (:name,:address,:phone,:approver_email)";
-        $stmt= $this->connection->prepare($sql);
-        if( $stmt->execute(['name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone,'approver_email'=>$this->approver_email])){
-            $this->id=$this->connection->lastInsertId();
-            return $this->id;
-        } else {
-            return -1;
-        }
+		if(is_admin()){
+			$sql = "INSERT INTO organizations ( name,address,phone,approver_email) values (:name,:address,:phone)";
+			$stmt= $this->connection->prepare($sql);
+			if( $stmt->execute(['name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone])){
+				$this->id=$this->connection->lastInsertId();
+				return $this->id;
+			} else {
+				return -1;
+			}
+
+		} else {
+			return -1;
+		}
 
     }
     public function readAll(){
-        $query = "SELECT id,name,address,phone,approver_email from organizations ORDER BY id";
+        $query = "SELECT id,name,address,phone from organizations ORDER BY id";
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -38,27 +42,35 @@ class Organization{
         $this->name=$row['name'];
         $this->address=$row['address'];
         $this->phone=$row['phone'];
-        $this->approver_email=$row['approver_email'];
    }
 
     public function readOne($id){
-	        $query = "SELECT id,name,address,phone,approver_email from organizations where id=:id";
+	        $query = "SELECT id,name,address,phone from organizations where id=:id";
 	        $stmt = $this->connection->prepare($query);
 	        $stmt->execute(['id'=>$id]);
 	        return $stmt;
-	    }
+	}
 
     public function update(){
 
-        $sql = "UPDATE organizations SET name=:name, address=:address, phone=:phone, approver_email=:approver_email WHERE id=:id";
-        $stmt= $this->connection->prepare($sql);
-        return $stmt->execute(['id'=>$this->id,'name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone,'approver_email'=>$this->approver_email]);
+    	if(is_admin() || ($this->id==$_SESSION['organization_id'] && is_org_admin())){
+
+			$sql = "UPDATE organizations SET name=:name, address=:address, phone=:phone WHERE id=:id";
+			$stmt= $this->connection->prepare($sql);
+			return $stmt->execute(['id'=>$this->id,'name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone]);
+		} else {
+			return false;
+		}
     }
 
     public function delete(){
-        $sql = "DELETE FROM organizations WHERE id=:id";
-        $stmt= $this->connection->prepare($sql);
-        return $stmt->execute(['id'=>$this->id]);
+    	if(is_admin() || ($this->id==$_SESSION['organization_id'] && is_org_admin())){
+			$sql = "DELETE FROM organizations WHERE id=:id";
+			$stmt= $this->connection->prepare($sql);
+			return $stmt->execute(['id'=>$this->id]);
+		} else {
+			return false;
+		}
 
     }
 }

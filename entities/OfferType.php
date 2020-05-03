@@ -16,12 +16,17 @@ class OfferType{
     }
 
     public function replace(){
-        $sql = "REPLACE INTO offer_types ( type,name,category,default_text,active) values (:type,:name,:category,:default_text,:active)";
-        $stmt= $this->connection->prepare($sql);
-        if( $stmt->execute(['type'=>$this->type,'name'=>$this->name,'category'=>$this->category,'default_text'=>$this->default_text,'active'=>$this->active])){
-            return $this->type;
+
+    	if(is_admin()){
+			$sql = "REPLACE INTO offer_types ( type,name,category,default_text,active) values (:type,:name,:category,:default_text,:active)";
+			$stmt= $this->connection->prepare($sql);
+			if( $stmt->execute(['type'=>$this->type,'name'=>$this->name,'category'=>$this->category,'default_text'=>$this->default_text,'active'=>$this->active])){
+				return $this->type;
+			} else {
+				return "";
+			}
         } else {
-            return "";
+        	return "";
         }
 
     }
@@ -65,9 +70,12 @@ class OfferType{
 
 
     public function delete(){
-        $sql = "DELETE FROM offer_types WHERE type=:type";
-        $stmt= $this->connection->prepare($sql);
-        return $stmt->execute(['type'=>$this->type]);
-
+    	if(is_admin()){
+			$sql = "DELETE FROM offer_types WHERE type=:type";
+			$stmt= $this->connection->prepare($sql);
+			return $stmt->execute(['type'=>$this->type]);
+		} else {
+			return false;
+		}
     }
 }

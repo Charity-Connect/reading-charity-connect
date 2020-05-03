@@ -6,7 +6,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Organization.php';
 $connection=initRest();
 
 
-    $organization = new Organization($connection);
+$organization = new Organization($connection);
 $data = json_decode(file_get_contents('php://input'), true);
 if(isset($data)) {
     // doing a create or update
@@ -18,7 +18,6 @@ if(isset($data)) {
     $organization->name = $data['name'];
     $organization->address = $data['address'];
     $organization->phone = $data['phone'];
-    $organization->approver_email = $data['approver_email'];
 
     if(isset($data['id'])){
         $organization->id = $data['id'];
@@ -38,8 +37,7 @@ if(isset($data)) {
                     "id" => $organization->id,
                     "name" => $organization->name,
                     "address" => $organization->address,
-                    "phone" => $organization->phone,
-                    "approver_email" => $organization->approver_email
+                    "phone" => $organization->phone
                     );
             echo json_encode($organization_arr);
 
@@ -80,7 +78,7 @@ if(isset($data)) {
                 "id" => $id,
                 "name" => $name,
                 "address" => $address,
-                "approver_email" => $approver_email
+                "phone" => $phone
                 );
 
                 array_push($organizations["organizations"], $organization);
