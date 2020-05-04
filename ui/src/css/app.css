@@ -45,6 +45,12 @@ oj-table td:not(.oj-table-body-message) {
     padding-bottom: 1.25rem;
 }
 
+ul.no-disc {
+    margin:0;
+    padding-left: 0;
+    list-style-type: none;
+}
+
 .text-ellipsis {
     display: block;
     white-space: nowrap;

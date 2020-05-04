@@ -5,51 +5,118 @@
  * @ignore
  */
 /*
- * Your about ViewModel code goes here
+ * Your offers ViewModel code goes here
  */
-define(['accUtils'],
- function(accUtils) {
+define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
+    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
+    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
+        function (oj, ko, $, accUtils, restClient) {
 
-    function AboutViewModel() {
-      var self = this;
-      // Below are a set of the ViewModel methods invoked by the oj-module component.
-      // Please reference the oj-module jsDoc for additional information.
+            function OffersViewModel() {
+                var self = this;
 
-      /**
-       * Optional ViewModel method invoked after the View is inserted into the
-       * document DOM.  The application can put logic that requires the DOM being
-       * attached here.
-       * This method might be called multiple times - after the View is created
-       * and inserted into the DOM and after the View is reconnected
-       * after being disconnected.
-       */
-      self.connected = function() {
-        accUtils.announce('About page loaded.');
-        document.title = "About";
-        // Implement further logic if needed
-      };
+                self.connected = function () {
+                    accUtils.announce('Offers page loaded.');
+                    document.title = "Offers";
 
-      /**
-       * Optional ViewModel method invoked after the View is disconnected from the DOM.
-       */
-      self.disconnected = function() {
-        // Implement if needed
-      };
+                    self.offersValues = ko.observableArray();
+                    self.offersDataProvider = ko.observable();
 
-      /**
-       * Optional ViewModel method invoked after transition to the new View is complete.
-       * That includes any possible animation between the old and the new View.
-       */
-      self.transitionCompleted = function() {
-        // Implement if needed
-      };
-    }
+                    self.offersTableColumns = [
+                        {headerText: 'QUANTITY', field: "quantity"},
+                        {headerText: 'TYPE NAME', field: "type_name"},
+                        {headerText: 'NAME', field: "name"},
+                        {headerText: 'DETAILS', field: "details"},
+                        {headerText: 'ORGANIZATION', field: "organization_id"},
+                        {headerText: 'POSTCODE', field: "postcode"},
+                        {headerText: 'DATE AVAILABLE', field: "date_available"},
+                        {headerText: 'DATE END', field: "date_end"}                        
+                    ];
 
-    /*
-     * Returns an instance of the ViewModel providing one instance of the ViewModel. If needed,
-     * return a constructor for the ViewModel so that the ViewModel is constructed
-     * each time the view is displayed.
-     */
-    return AboutViewModel;
-  }
+                    var getData = function () {
+                        self.offersLoaded = ko.observable();
+                        self.offersValid = ko.observable();
+
+                        self.offerRowSelected = ko.observableArray();
+                        function getOffersAjax() {
+                            //GET /rest/offers - REST
+                            self.offersLoaded(false);
+                            return $.when(restClient.doGet('http://www.rdg-connect.org/rest/offers')
+                                .then(
+                                    success = function (response) {
+                                        console.log(response.offers);
+                                        self.offersValues(response.offers);
+                                        self.offersValid(true);
+                                    },
+                                    error = function (response) {
+                                        console.log("Offers not loaded");
+                                        self.offersValid(false);
+                                }).then(function () {
+                                    var sortCriteria = {key: 'name', direction: 'ascending'};
+                                    var arrayDataSource = new oj.ArrayTableDataSource(self.offersValues(), {idAttribute: 'id'});
+                                    arrayDataSource.sort(sortCriteria);
+                                    self.offersDataProvider(new oj.PagingTableDataSource(arrayDataSource));
+                                }).then(function () {
+                                    self.offersLoaded(true);
+                                })
+                            );
+                        };
+
+                        self.addOfferButtonSelected = ko.observableArray([]);
+                        self.offerSelected = ko.observable("");
+                        self.showPanel = ko.computed(function () {
+                            if (self.addOfferButtonSelected().length) {
+                                self.offerRowSelected([]);
+                                self.offerSelected("");
+                                return true;                                                            
+                            }
+                            if (self.offerRowSelected().length) {
+                                return true;                            
+                            }
+                        }, this);
+
+                        self.handleOfferRowChanged = function (event) {
+                            if (event.detail.value[0] !== undefined) {
+                                self.addOfferButtonSelected([]);                                                                
+                                //find whether node exists based on selection
+                                function searchNodes(nameKey, myArray){
+                                    for (var i=0; i < myArray.length; i++) {
+                                        if (myArray[i].id === nameKey) {
+                                            return myArray[i];                                    
+                                        }
+                                    }
+                                };                        
+                                self.offerSelected(searchNodes(event.target.currentRow.rowKey, self.offersValues()));                         
+                                console.log(self.offerSelected());
+                            } else {
+                                self.offerSelected("");
+                            }
+                        };
+
+                        self.submitAdditionButton = function () {
+                        };
+                        self.submitEditButton = function () {
+                        };
+
+                        Promise.all([getOffersAjax()])
+                        .then(function () {
+                        })
+                        .catch(function () {
+                            //even if error remove loading bar
+                            self.offersLoaded(true);
+                        });
+                    }();
+                };
+
+                self.disconnected = function () {
+                    // Implement if needed
+                };
+
+                self.transitionCompleted = function () {
+                    // Implement if needed
+                };
+            }
+
+            return OffersViewModel;
+        }
 );
