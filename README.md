@@ -77,6 +77,7 @@ Offers can be created by users in an organization to record the things that thei
 - date_available
 - date_end
 - postcode
+- distance
 
 #### Security
 
