@@ -31,10 +31,10 @@
                         </div>                    
                         <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">                                        
-                                <oj-button id="addOfferButton" class="oj-sm-float-end"
-                                    on-oj-action='[[addOfferButton]]'>
-                                    <span>Add Offer</span>
-                                </oj-button>
+                                <oj-buttonset-many id="addOfferButton" class="oj-sm-float-end"
+                                    value="{{addOfferButtonSelected}}">
+                                    <oj-option value="addOffer">Add Offer</oj-option>
+                                </oj-buttonset-many>
                             </div>
                         </div>
                     </div>
@@ -53,18 +53,31 @@
                 </div>
             </div>
             
-            <oj-bind-if test="[[offerSelected()]]">
+            <oj-bind-if test="[[showPanel()]]">
                 <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
                         <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
-                            <h3>Edit offer</h3>
+                            <oj-bind-if test="[[addOfferButtonSelected().length]]">
+                                <h3>Add offer</h3>
+                            </oj-bind-if>
+                            <oj-bind-if test="[[offerRowSelected().length]]">
+                                <h3>Edit offer</h3>
+                            </oj-bind-if>                            
                         </div>                    
                         <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">                                        
-                                <oj-button id="submitEditButton" class="oj-sm-float-end"
-                                    on-oj-action='[[submitEditButton]]'>
-                                    <span>Submit edit</span>
-                                </oj-button>
+                                <oj-bind-if test="[[addOfferButtonSelected().length]]">
+                                    <oj-button id="submitAdditionButton" class="oj-sm-float-end"
+                                        on-oj-action='[[submitAdditionButton]]'>
+                                        <span>Submit addition</span>
+                                    </oj-button>
+                                </oj-bind-if>
+                                <oj-bind-if test="[[offerRowSelected().length]]">
+                                    <oj-button id="submitEditButton" class="oj-sm-float-end"
+                                        on-oj-action='[[submitEditButton]]'>
+                                        <span>Submit edit</span>
+                                    </oj-button>
+                                </oj-bind-if>                                 
                             </div>
                         </div>
                     </div>

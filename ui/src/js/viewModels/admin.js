@@ -75,12 +75,22 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                             );
                         };
 
-                        self.addOrganizationButton = function () {
-                        };
-
+                        self.addOrganizationButtonSelected = ko.observableArray([]);
                         self.organizationSelected = ko.observable("");
+                        self.showPanel = ko.computed(function () {
+                            if (self.addOrganizationButtonSelected().length) {
+                                self.organizationRowSelected([]);
+                                self.organizationSelected("");
+                                return true;                                                            
+                            }
+                            if (self.organizationRowSelected().length) {
+                                return true;                            
+                            }
+                        }, this);
+                        
                         self.handleOrganizationRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
+                                self.addOrganizationButtonSelected([]);                                                                
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray){
                                     for (var i=0; i < myArray.length; i++) {
@@ -96,6 +106,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                             }
                         };
 
+                        self.submitAdditionButton = function () {
+                        };
                         self.submitEditButton = function () {
                         };
 

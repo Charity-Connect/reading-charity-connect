@@ -62,12 +62,22 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                             );
                         };
 
-                        self.addOfferButton = function () {
-                        };
-
+                        self.addOfferButtonSelected = ko.observableArray([]);
                         self.offerSelected = ko.observable("");
+                        self.showPanel = ko.computed(function () {
+                            if (self.addOfferButtonSelected().length) {
+                                self.offerRowSelected([]);
+                                self.offerSelected("");
+                                return true;                                                            
+                            }
+                            if (self.offerRowSelected().length) {
+                                return true;                            
+                            }
+                        }, this);
+
                         self.handleOfferRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
+                                self.addOfferButtonSelected([]);                                                                
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray){
                                     for (var i=0; i < myArray.length; i++) {
@@ -77,12 +87,14 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                                     }
                                 };                        
                                 self.offerSelected(searchNodes(event.target.currentRow.rowKey, self.offersValues()));                         
-                                console.log(self.offerSelected()); 
+                                console.log(self.offerSelected());
                             } else {
                                 self.offerSelected("");
                             }
                         };
 
+                        self.submitAdditionButton = function () {
+                        };
                         self.submitEditButton = function () {
                         };
 
