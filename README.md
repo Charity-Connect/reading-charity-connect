@@ -77,6 +77,7 @@ Offers can be created by users in an organization to record the things that thei
 - date_available
 - date_end
 - postcode
+- distance
 
 #### Security
 
@@ -123,6 +124,28 @@ Clients can have multiple needs, and this records those needs and whether they h
 #### Security
 
 Client needs can only be created and read for clients who the user has access to  
+
+### Need Requests
+
+These are requests for meeting a need that have been received by an organization
+
+/rest/need_requests - GET to get a list of all need requests, POST to create or update  
+/rest/need_requests/{need_request id} - GET a single need request
+
+#### Attributes
+- client_need_id  
+- organization_id  
+- target_date  
+- agreed
+- completed
+- notes  
+
+
+#### Security
+
+SYstem administrators can see all need requests
+Users can only see need requests for the current organization
+
 
 ### Offer Types
 

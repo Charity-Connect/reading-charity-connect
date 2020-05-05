@@ -7,7 +7,6 @@ class User{
 
     // Connection instance
     private $connection;
-    global $site_address;
 
     // table columns
     public $id;
@@ -24,6 +23,8 @@ class User{
     }
 
     public function create(){
+        global $site_address;
+
         $sql = "INSERT INTO users ( password,display_name,email,phone,confirmation_string) values (:password,:display_name,:email,:phone,:confirmation_string)";
         $this->confirmation_string=generate_string(60);
         $stmt= $this->connection->prepare($sql);
