@@ -103,14 +103,6 @@
                                 placeholder="Input email"
                                 title="Edit email input">
                             </oj-input-text>
-                        </div>
-                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">                                            
-                            <oj-label id="editPhoneLabel">Phone:</oj-label>
-                            <oj-input-text id="inputEditPhone" labelled-by="editPhoneLabel"
-                                value="{{clientSelected().phone}}"
-                                placeholder="Input phone"
-                                title="Edit phone input">
-                            </oj-input-text>
                         </div>                         
                     </div>
                     <hr />  
@@ -124,6 +116,17 @@
                                 rows="5">                                
                             </oj-text-area>
                         </div>
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">                                            
+                            <oj-label id="editPhoneLabel">Phone:</oj-label>
+                            <oj-input-text id="inputEditPhone" labelled-by="editPhoneLabel"
+                                value="{{clientSelected().phone}}"
+                                placeholder="Input phone"
+                                title="Edit phone input">
+                            </oj-input-text>
+                        </div>                        
+                    </div>
+                    <hr />
+                    <div class="oj-flex sm-1x-row">  
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                             <oj-label id="editPostcodeLabel">Postcode:</oj-label>
                             <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"

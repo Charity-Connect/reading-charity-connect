@@ -7,10 +7,10 @@
 /*
  * Your offers ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'ojs/ojconfig', 'ojs/ojarraydataprovider',
+define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (oj, ko, $, accUtils, utils, restClient, Config, ArrayDataProvider) {
+        function (oj, ko, $, accUtils, utils, restClient, ArrayDataProvider) {
 
             function OffersViewModel() {
                 var self = this;
@@ -34,19 +34,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         {headerText: 'NAME', field: "name"},
                         {headerText: 'TYPE', field: "type_name"},
                         {headerText: 'QUANTITY', field: "quantity"},
-                        {headerText: 'DISTANCE', field: "distance"},
-                        {headerText: 'DATE AVAILABLE', field: "date_available"},
-                        {headerText: 'DATE END', field: "date_end"}                        
+                        {headerText: 'DATE AVAILABLE', field: 'offerDateAvailable', sortProperty: "offerDateAvailableRaw"},
+                        {headerText: 'DATE END', field: 'offerDateEnd', sortProperty: "offerDateEndRaw"}                        
                     ];
-
-                    var newLang = "en-GB";
-                    self.setLang = function (event) {
-                        Config.setLocale(newLang,
-                            function () {
-                                document.getElementsByTagName('html')[0].setAttribute('lang', newLang);                      
-                            }
-                        );
-                    }();
 
                     self.addOfferButtonSelected = ko.observableArray([]);
                     self.offerRowSelected = ko.observableArray();
@@ -71,9 +61,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         }
                     }, this);
 
-                    var handlers = function () {
+                    var handlerLogic = function () {
                         self.handleOfferRowChanged = function (event) {
-                            console.log("handleOfferRowChanged");
                             if (event.detail.value[0] !== undefined) {
                                 self.addOfferButtonSelected([]);                                                                
                                 //find whether node exists based on selection
@@ -87,8 +76,16 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 self.offerSelected(searchNodes(event.target.currentRow.rowKey, self.offersValues()));                         
                                 console.log(self.offerSelected());
                                 _calculateCategory(self.offerSelected().type);
-                                self.dateAvailableConvertor(new Date(self.offerSelected().date_available).toISOString());
-                                self.dateEndConvertor(new Date(self.offerSelected().date_end).toISOString());
+                                if (self.offerSelected().offerDateAvailableRaw) {
+                                    self.dateAvailableConvertor(new Date(self.offerSelected().offerDateAvailableRaw).toISOString());
+                                } else {
+                                    self.dateAvailableConvertor("");
+                                }
+                                if (self.offerSelected().offerDateEndRaw) {
+                                    self.dateEndConvertor(new Date(self.offerSelected().offerDateEndRaw).toISOString());
+                                } else {
+                                    self.dateEndConvertor("");
+                                }
                             }
                         };
                         //function for reverse search of Category based on Type loaded in
@@ -164,8 +161,38 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             return $.when(restClient.doGet('http://www.rdg-connect.org/rest/offers')
                                 .then(
                                     success = function (response) {
-                                        console.log(response.offers);
-                                        self.offersValues(response.offers);
+                                        console.log(response.offers);                                        
+                                        $.each(response.offers, function(index, item) {
+                                            console.log(this);
+                                            if (this.date_available) {
+                                                //no need to split as UTC anyway
+                                                var dateAvailableCleansed = new Date(this.date_available);
+                                                var dateAvailableCleansedLocale = dateAvailableCleansed.toLocaleDateString();
+                                            }
+                                            if (this.date_end) {
+                                                //no need to split as UTC anyway
+                                                var dateEndCleansed = new Date(this.date_end);
+                                                var dateEndCleansedLocale = dateEndCleansed.toLocaleDateString();
+                                            }
+                                            self.offersValues().push({
+                                                offerDateAvailableRaw: dateAvailableCleansed,  
+                                                offerDateAvailable: dateAvailableCleansedLocale,  
+                                                offerDateEndRaw: dateEndCleansed,
+                                                offerDateEnd: dateEndCleansedLocale,
+                                                details: this.details,
+                                                distance: this.distance,
+                                                id: this.id,
+                                                name: this.name,
+                                                organization_id: this.organization_id,
+                                                organization_name: this.organization_name,
+                                                postcode: this.postcode,                                                
+                                                quantity: this.quantity,                                                
+                                                type: this.type,
+                                                type_name: this.type_name
+                                            });
+                                        });
+                                                                                
+//                                        self.offersValues(response.offers);
                                         self.offersValid(true);
                                     },
                                     error = function (response) {
