@@ -67,17 +67,17 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 } else if (userRole === "user") {
                     self.appName("Charity Connect  - User Account");
                     self.router.configure({
-                        'offers': {label: 'Offers', isDefault: true},
-                        'clients': {label: 'Clients'},
-                        'requests': {label: 'Requests'}                        
+                        'requests': {label: 'Requests', isDefault: true},
+                        'offers': {label: 'Offers'},
+                        'clients': {label: 'Clients'}                        
                     });
                     navData = [
+                        {name: 'Requests', id: 'requests',
+                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},                        
                         {name: 'Offers', id: 'offers',
                             iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
                         {name: 'Clients', id: 'clients',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'},
-                        {name: 'Requests', id: 'requests',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'}
+                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
                     ];                     
                 };
                 Router.defaults['urlAdapter'] = new Router.urlParamAdapter();

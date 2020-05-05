@@ -67,15 +67,15 @@
                         <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">
                                 <oj-bind-if test="[[addOrganizationButtonSelected().length]]">
-                                    <oj-button id="submitAdditionButton" class="oj-sm-float-end"
-                                        on-oj-action='[[submitAdditionButton]]'>
-                                        <span>Submit addition</span>
+                                    <oj-button id="saveAdditionButton" class="oj-sm-float-end"
+                                        on-oj-action='[[saveAdditionButton]]'>
+                                        <span>Save</span>
                                     </oj-button>
                                 </oj-bind-if>
                                 <oj-bind-if test="[[organizationRowSelected().length]]">
-                                    <oj-button id="submitEditButton" class="oj-sm-float-end"
-                                        on-oj-action='[[submitEditButton]]'>
-                                        <span>Submit edit</span>
+                                    <oj-button id="saveEditButton" class="oj-sm-float-end"
+                                        on-oj-action='[[saveEditButton]]'>
+                                        <span>Save</span>
                                     </oj-button>
                                 </oj-bind-if>
                             </div>

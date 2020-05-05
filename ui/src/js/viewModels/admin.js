@@ -79,6 +79,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                         self.organizationSelected = ko.observable("");
                         self.showPanel = ko.computed(function () {
                             if (self.addOrganizationButtonSelected().length) {
+                                // big reset!                                
                                 self.organizationRowSelected([]);
                                 self.organizationSelected("");
                                 return true;                                                            
@@ -101,14 +102,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                                 };                        
                                 self.organizationSelected(searchNodes(event.target.currentRow.rowKey, self.organizationsValues()));                         
                                 console.log(self.organizationSelected());                                
-                            } else {
-                                self.organizationSelected("");
                             }
                         };
 
-                        self.submitAdditionButton = function () {
+                        self.saveAdditionButton = function () {
                         };
-                        self.submitEditButton = function () {
+                        self.saveEditButton = function () {
                         };
 
                         Promise.all([getOrganizationsAjax()])

@@ -7,10 +7,10 @@
 /*
  * Your offers ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
-    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
+define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'ojs/ojconfig', 'ojs/ojarraydataprovider',
+    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (oj, ko, $, accUtils, restClient) {
+        function (oj, ko, $, accUtils, utils, restClient, Config, ArrayDataProvider) {
 
             function OffersViewModel() {
                 var self = this;
@@ -21,17 +21,32 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
 
                     self.offersValues = ko.observableArray();
                     self.offersDataProvider = ko.observable();
+                    
+                    self.offerTypesCategoriesValues = ko.observableArray();
+                    self.offerTypesCategoriesArray = ko.observableArray([]);
+                    self.offerTypesCategoriesDataProvider = ko.observable();
+
+                    self.offerTypesValues = ko.observableArray();
+                    self.offerTypesArray = ko.observableArray([]);
+                    self.offerTypesDataProvider = ko.observable();
 
                     self.offersTableColumns = [
-                        {headerText: 'QUANTITY', field: "quantity"},
-                        {headerText: 'TYPE NAME', field: "type_name"},
                         {headerText: 'NAME', field: "name"},
-                        {headerText: 'DETAILS', field: "details"},
-                        {headerText: 'ORGANIZATION', field: "organization_id"},
-                        {headerText: 'POSTCODE', field: "postcode"},
+                        {headerText: 'TYPE', field: "type_name"},
+                        {headerText: 'QUANTITY', field: "quantity"},
+                        {headerText: 'DISTANCE', field: "distance"},
                         {headerText: 'DATE AVAILABLE', field: "date_available"},
                         {headerText: 'DATE END', field: "date_end"}                        
                     ];
+
+                    var newLang = "en-GB";
+                    self.setLang = function (event) {
+                        Config.setLocale(newLang,
+                            function () {
+                                document.getElementsByTagName('html')[0].setAttribute('lang', newLang);                      
+                            }
+                        );
+                    }();
 
                     var getData = function () {
                         self.offersLoaded = ko.observable();
@@ -61,13 +76,98 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                                 })
                             );
                         };
+                        
+                        function getOfferTypesCategoriesAjax() {
+                            //GET /rest/offer_type_categories - REST
+                            return $.when(restClient.doGet('http://www.rdg-connect.org/rest/offer_type_categories')
+                                .then(
+                                    success = function (response) {
+                                        console.log(response.offer_type_categorys);
+                                        self.offerTypesCategoriesValues(response.offer_type_categorys);
+                                    },
+                                    error = function (response) {
+                                        console.log("Offer Types Categories not loaded");
+                                }).then(function () {
+                                    //find all names
+                                    for (var i = 0; i < self.offerTypesCategoriesValues().length; i++) {
+                                        self.offerTypesCategoriesArray().push({
+                                            "value": self.offerTypesCategoriesValues()[i].code,
+                                            "label": self.offerTypesCategoriesValues()[i].name                                            
+                                        });
+                                    };
+                                    //sort nameValue alphabetically
+                                    utils.sortAlphabetically(self.offerTypesCategoriesArray(), "value");
+                                    self.offerTypesCategoriesDataProvider(new ArrayDataProvider(self.offerTypesCategoriesArray(), { keyAttributes: 'value' }));
+                                }).then(function () {
+                                })
+                            );
+                        };
+                        
+                        function getOfferTypesFromCategoryAjax(code) {
+                            //GET /rest/offer_type_categories/{code}/offer_types - REST
+                            return $.when(restClient.doGet(`/rest/offer_type_categories/${code}/offer_types`)
+                                .then(
+                                    success = function (response) {
+                                        console.log(response);
+//                                        self.offerTypesCategoriesValues(response.offer_type_categorys);
+                                    },
+                                    error = function (response) {
+                                        console.log(`Offer Types from Category "${code}" not loaded`);
+                                }).then(function () {
+//                                    //find all names
+//                                    for (var i = 0; i < self.offerTypesCategoriesValues().length; i++) {
+//                                        self.offerTypesCategoriesArray().push({
+//                                            "value": self.offerTypesCategoriesValues()[i].code,
+//                                            "label": self.offerTypesCategoriesValues()[i].name                                            
+//                                        });
+//                                    };
+//                                    //sort nameValue alphabetically
+//                                    utils.sortAlphabetically(self.offerTypesCategoriesArray(), "value");
+//                                    self.offerTypesCategoriesDataProvider(new ArrayDataProvider(self.offerTypesCategoriesArray(), { keyAttributes: 'value' }));
+                                }).then(function () {
+                                })
+                            );
+                        };                        
+                        
+                        function getOfferTypesAjax() {
+                            //GET /rest/offer_types - REST
+                            return $.when(restClient.doGet('http://www.rdg-connect.org/rest/offer_types')
+                                .then(
+                                    success = function (response) {
+                                        console.log(response.offer_types);
+                                        self.offerTypesValues(response.offer_types);
+                                    },
+                                    error = function (response) {
+                                        console.log("Offer Types not loaded");
+                                }).then(function () {
+                                    //find all names
+                                    for (var i = 0; i < self.offerTypesValues().length; i++) {
+                                        self.offerTypesArray().push({
+                                            "value": self.offerTypesValues()[i].type,
+                                            "label": self.offerTypesValues()[i].name                                            
+                                        });
+                                    };
+                                    //sort nameValue alphabetically
+                                    utils.sortAlphabetically(self.offerTypesArray(), "value");
+                                    self.offerTypesDataProvider(new ArrayDataProvider(self.offerTypesArray(), { keyAttributes: 'value' }));
+                                }).then(function () {
+                                })
+                            );
+                        };
 
                         self.addOfferButtonSelected = ko.observableArray([]);
                         self.offerSelected = ko.observable("");
+                        self.offerTypesCategorySelected = ko.observable("");
+                        self.dateAvailableConvertor = ko.observable();
+                        self.dateEndConvertor = ko.observable();
                         self.showPanel = ko.computed(function () {
                             if (self.addOfferButtonSelected().length) {
+                                // big reset!
                                 self.offerRowSelected([]);
                                 self.offerSelected("");
+                                self.offerTypesCategorySelected("");
+                                self.dateAvailableConvertor(new Date().toISOString());
+                                self.dateEndConvertor(new Date().toISOString());
                                 return true;                                                            
                             }
                             if (self.offerRowSelected().length) {
@@ -76,6 +176,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                         }, this);
 
                         self.handleOfferRowChanged = function (event) {
+                            console.log("handleOfferRowChanged");
                             if (event.detail.value[0] !== undefined) {
                                 self.addOfferButtonSelected([]);                                                                
                                 //find whether node exists based on selection
@@ -88,24 +189,59 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                                 };                        
                                 self.offerSelected(searchNodes(event.target.currentRow.rowKey, self.offersValues()));                         
                                 console.log(self.offerSelected());
-                            } else {
-                                self.offerSelected("");
+                                _calculateCategory(self.offerSelected().type);
+                                self.dateAvailableConvertor(new Date(self.offerSelected().date_available).toISOString());
+                                self.dateEndConvertor(new Date(self.offerSelected().date_end).toISOString());
+                            }
+                        };
+                        
+                        //function for reverse search of Category based on Type loaded in
+                        self.typeSelected = ko.observable("");                        
+                        _calculateCategory = function(type) {
+                            self.offerTypesCategorySelected("");
+                            //find whether node exists based on selection
+                            function searchNodes(nameKey, myArray){
+                                for (var i=0; i < myArray.length; i++) {
+                                    if (myArray[i].type === nameKey) {
+                                        return myArray[i];                                    
+                                    }
+                                }
+                            };
+                            var searchTypes = searchNodes(type, self.offerTypesValues());                            
+                            self.typeSelected(searchTypes); 
+                            
+                            //find whether node exists based on selection
+                            function searchNodes(nameKey, myArray){
+                                for (var i=0; i < myArray.length; i++) {
+                                    if (myArray[i].category === nameKey) {
+                                        return myArray[i];                                    
+                                    }
+                                }
+                            };
+                            var searchCategories = searchNodes(self.typeSelected(), self.offerTypesCategoriesValues()).code;
+                            self.offerTypesCategorySelected(searchCategories); 
+                        };
+                        
+                        self.handleOfferTypesCategoryChanged = function(event) {
+                            if (event.target.value !== "") {
+                                getOfferTypesFromCategoryAjax(event.target.value);
                             }
                         };
 
-                        self.submitAdditionButton = function () {
+                        self.saveAdditionButton = function () {
                         };
-                        self.submitEditButton = function () {
+                        self.saveEditButton = function () {
                         };
 
                         Promise.all([getOffersAjax()])
                         .then(function () {
+                            Promise.all([getOfferTypesCategoriesAjax(), getOfferTypesAjax()])
                         })
                         .catch(function () {
                             //even if error remove loading bar
                             self.offersLoaded(true);
                         });
-                    }();
+                    }();                    
                 };
 
                 self.disconnected = function () {

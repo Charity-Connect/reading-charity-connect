@@ -7,49 +7,115 @@
 /*
  * Your clients ViewModel code goes here
  */
-define(['accUtils'],
-        function (accUtils) {
+define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
+    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
+    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
+        function (oj, ko, $, accUtils, restClient) {
 
             function ClientsViewModel() {
                 var self = this;
-                // Below are a set of the ViewModel methods invoked by the oj-module component.
-                // Please reference the oj-module jsDoc for additional information.
 
-                /**
-                 * Optional ViewModel method invoked after the View is inserted into the
-                 * document DOM.  The application can put logic that requires the DOM being
-                 * attached here.
-                 * This method might be called multiple times - after the View is created
-                 * and inserted into the DOM and after the View is reconnected
-                 * after being disconnected.
-                 */
                 self.connected = function () {
                     accUtils.announce('Clients page loaded.');
                     document.title = "Clients";
-                    // Implement further logic if needed
+
+                    self.clientsValues = ko.observableArray();
+                    self.clientsDataProvider = ko.observable();
+
+                    if (oj.KnockoutTemplateUtils) {
+                        self.renderer1 = oj.KnockoutTemplateUtils.getRenderer("combineAddressPostcode_tmpl", true);
+                    }
+
+                    self.clientsTableColumns = [
+                        {headerText: 'NAME', field: "name"},
+                        {headerText: 'ADDRESS', renderer: self.renderer1, sortProperty: "address"},
+                        {headerText: 'EMAIL', field: "email"},                        
+                        {headerText: 'PHONE', field: "phone"}
+                    ];
+
+                    var getData = function () {
+                        self.clientsLoaded = ko.observable();
+                        self.clientsValid = ko.observable();
+
+                        self.clientRowSelected = ko.observableArray();
+                        function getClientsAjax() {
+                            //GET /rest/clients - REST
+                            self.clientsLoaded(false);
+                            return $.when(restClient.doGet('http://www.rdg-connect.org/rest/clients')
+                                .then(
+                                    success = function (response) {
+                                        console.log(response.clients);
+                                        self.clientsValues(response.clients);
+                                        self.clientsValid(true);
+                                    },
+                                    error = function (response) {
+                                        console.log("Clients not loaded");
+                                        self.clientsValid(false);
+                                }).then(function () {
+                                    var sortCriteria = {key: 'name', direction: 'ascending'};
+                                    var arrayDataSource = new oj.ArrayTableDataSource(self.clientsValues(), {idAttribute: 'id'});
+                                    arrayDataSource.sort(sortCriteria);
+                                    self.clientsDataProvider(new oj.PagingTableDataSource(arrayDataSource));
+                                }).then(function () {
+                                    self.clientsLoaded(true);
+                                })
+                            );
+                        };
+
+                        self.addClientButtonSelected = ko.observableArray([]);
+                        self.clientSelected = ko.observable("");
+                        self.showPanel = ko.computed(function () {
+                            if (self.addClientButtonSelected().length) {
+                                // big reset!
+                                self.clientRowSelected([]);
+                                self.clientSelected("");
+                                return true;                                                            
+                            }
+                            if (self.clientRowSelected().length) {
+                                return true;                            
+                            }
+                        }, this);
+                        
+                        self.handleClientRowChanged = function (event) {
+                            if (event.detail.value[0] !== undefined) {
+                                self.addClientButtonSelected([]);                                                                
+                                //find whether node exists based on selection
+                                function searchNodes(nameKey, myArray){
+                                    for (var i=0; i < myArray.length; i++) {
+                                        if (myArray[i].id === nameKey) {
+                                            return myArray[i];                                    
+                                        }
+                                    }
+                                };                        
+                                self.clientSelected(searchNodes(event.target.currentRow.rowKey, self.clientsValues()));                         
+                                console.log(self.clientSelected());                                
+                            }
+                        };
+
+                        self.saveAdditionButton = function () {
+                        };
+                        self.saveEditButton = function () {
+                        };
+
+                        Promise.all([getClientsAjax()])
+                        .then(function () {
+                        })
+                        .catch(function () {
+                            //even if error remove loading bar
+                            self.clientsLoaded(true);
+                        });
+                    }();
                 };
 
-                /**
-                 * Optional ViewModel method invoked after the View is disconnected from the DOM.
-                 */
                 self.disconnected = function () {
                     // Implement if needed
                 };
 
-                /**
-                 * Optional ViewModel method invoked after transition to the new View is complete.
-                 * That includes any possible animation between the old and the new View.
-                 */
                 self.transitionCompleted = function () {
                     // Implement if needed
                 };
             }
 
-            /*
-             * Returns an instance of the ViewModel providing one instance of the ViewModel. If needed,
-             * return a constructor for the ViewModel so that the ViewModel is constructed
-             * each time the view is displayed.
-             */
             return ClientsViewModel;
         }
 );
