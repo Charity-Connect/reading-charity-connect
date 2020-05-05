@@ -105,11 +105,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                             }
                         };
 
-                        self.saveAdditionButton = function () {
-                        };
-                        self.saveEditButton = function () {
-                        };
-
                         Promise.all([getOrganizationsAjax()])
                         .then(function () {
                         })
@@ -118,6 +113,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                             self.organizationsLoaded(true);
                         });
                     }();
+
+                    self.saveAdditionButton = function () {
+                    };
+                    self.saveEditButton = function () {
+                    };                
                 };
 
                 self.disconnected = function () {
