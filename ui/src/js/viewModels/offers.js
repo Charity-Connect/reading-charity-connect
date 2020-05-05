@@ -52,8 +52,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             self.offerSelected("");
                             self.offerTypeSelected("");                        
                             self.offerTypesCategorySelected("");
-                            self.dateAvailableConvertor(new Date().toISOString());
-                            self.dateEndConvertor(new Date().toISOString());
+                            self.dateAvailableConvertor("");
+                            self.dateEndConvertor("");
                             return true;                                                            
                         }
                         if (self.offerRowSelected().length) {
@@ -163,7 +163,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     success = function (response) {
                                         console.log(response.offers);                                        
                                         $.each(response.offers, function(index, item) {
-                                            console.log(this);
                                             if (this.date_available) {
                                                 //no need to split as UTC anyway
                                                 var dateAvailableCleansed = new Date(this.date_available);
@@ -192,7 +191,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                             });
                                         });
                                                                                 
-//                                        self.offersValues(response.offers);
                                         self.offersValid(true);
                                     },
                                     error = function (response) {
