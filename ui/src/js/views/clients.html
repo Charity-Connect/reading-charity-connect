@@ -39,7 +39,7 @@
                         </div>
                     </div>
                     <hr /> 
-                    <oj-table id="executionsTable" class="row-selectable" aria-label="table using array"
+                    <oj-table id="clientsTable" class="row-selectable" aria-label="table using array"
                         selection="{{clientRowSelected}}"
                         on-selection-changed="[[handleClientRowChanged]]"
                         selection-mode='{"row": "single"}'
@@ -58,94 +58,139 @@
                 </div>
             </div>
             
-            <oj-bind-if test="[[showPanel()]]">
-                <div class="oj-panel oj-panel-alt2">
-                    <div class="oj-flex sm-1x-row">
-                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
-                            <oj-bind-if test="[[addClientButtonSelected().length]]">
-                                <h3>Add client</h3>
-                            </oj-bind-if>
-                            <oj-bind-if test="[[clientRowSelected().length]]">
-                                <h3>Edit client</h3>
-                            </oj-bind-if>                            
-                        </div>                    
-                        <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
-                            <div class="oj-helper-clearfix">
-                                <oj-bind-if test="[[addClientButtonSelected().length]]">
-                                    <oj-button id="saveAdditionButton" class="oj-sm-float-end"
-                                        on-oj-action='[[saveAdditionButton]]'>
-                                        <span>Save</span>
-                                    </oj-button>
-                                </oj-bind-if>
-                                <oj-bind-if test="[[clientRowSelected().length]]">
-                                    <oj-button id="saveEditButton" class="oj-sm-float-end"
-                                        on-oj-action='[[saveEditButton]]'>
-                                        <span>Save</span>
-                                    </oj-button>
-                                </oj-bind-if>
-                            </div>
-                        </div>
-                    </div>
-                    <hr />  
-                    <div class="oj-flex sm-1x-row">                                
-                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                            <oj-label id="editNameLabel">Name:</oj-label>
-                            <oj-input-text id="inputEditName" labelled-by="editNameLabel"
-                                value="{{clientSelected().name}}"
-                                placeholder="Input name"
-                                title="Edit name input">
-                            </oj-input-text>
-                        </div>
-                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">                                            
-                            <oj-label id="editEmailLabel">Email:</oj-label>
-                            <oj-input-text id="inputEditEmail" labelled-by="editEmailLabel"
-                                value="{{clientSelected().email}}"
-                                placeholder="Input email"
-                                title="Edit email input">
-                            </oj-input-text>
-                        </div>                         
-                    </div>
-                    <hr />  
-                    <div class="oj-flex sm-1x-row">  
-                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                            <oj-label id="editAddressLabel">Address:</oj-label>
-                            <oj-text-area id="textareaEditAddress" labelled-by="editAddressLabel"
-                                value="{{clientSelected().address}}"
-                                placeholder="Input address"
-                                title="Edit address textarea"
-                                rows="5">                                
-                            </oj-text-area>
-                        </div>
-                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">                                            
-                            <oj-label id="editPhoneLabel">Phone:</oj-label>
-                            <oj-input-text id="inputEditPhone" labelled-by="editPhoneLabel"
-                                value="{{clientSelected().phone}}"
-                                placeholder="Input phone"
-                                title="Edit phone input">
-                            </oj-input-text>
-                        </div>                        
-                    </div>
-                    <hr />
-                    <div class="oj-flex sm-1x-row">  
-                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                            <oj-label id="editPostcodeLabel">Postcode:</oj-label>
-                            <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"
-                                value="{{clientSelected().postcode}}"
-                                placeholder="Input postcode"
-                                title="Edit postcode input">
-                            </oj-input-text>
-                        </div>
-                    </div>
-                    <hr />                    
-                    <oj-label id="editNotesLabel">Notes:</oj-label>
-                    <oj-text-area id="textareaEditNotes" labelled-by="editNotesLabel"
-                        class="oj-form-control-full-width"
-                        value="{{clientSelected().notes}}"
-                        placeholder="Input notes"
-                        title="Edit notes textarea"
-                        rows="5">                                
-                    </oj-text-area>                    
+            <oj-bind-if test="[[clientRowSelected().length]]">
+                <div class="spacer-sm">
+                    <oj-buttonset-one id="displayOptions"
+                        value="{{selectedRowDisplay}}">
+                        <oj-option value="clientNeeds">Client Needs</oj-option>
+                        <oj-option value="clientFormFields">Edit Client</oj-option>
+                    </oj-buttonset-one>
                 </div>
+            </oj-bind-if>             
+            
+            <oj-bind-if test="[[showPanel()]]">
+                <oj-bind-if test="[[selectedRowDisplay() === 'clientFormFields']]">                
+                    <div class="spacer-sm">
+                        <div class="oj-panel oj-panel-alt2">
+                            <div class="oj-flex sm-1x-row">
+                                <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
+                                    <oj-bind-if test="[[addClientButtonSelected().length]]">
+                                        <h3>Add client</h3>
+                                    </oj-bind-if>
+                                    <oj-bind-if test="[[clientRowSelected().length]]">
+                                        <h3>Edit client</h3>
+                                    </oj-bind-if>                            
+                                </div>                    
+                                <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+                                    <div class="oj-helper-clearfix">
+                                        <oj-bind-if test="[[addClientButtonSelected().length]]">
+                                            <oj-button id="saveAdditionButton" class="oj-sm-float-end"
+                                                on-oj-action='[[saveAdditionButton]]'>
+                                                <span>Save</span>
+                                            </oj-button>
+                                        </oj-bind-if>
+                                        <oj-bind-if test="[[clientRowSelected().length]]">
+                                            <oj-button id="saveEditButton" class="oj-sm-float-end"
+                                                on-oj-action='[[saveEditButton]]'>
+                                                <span>Save</span>
+                                            </oj-button>
+                                        </oj-bind-if>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />  
+                            <div class="oj-flex sm-1x-row">                                
+                                <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                                    <oj-label id="editNameLabel">Name:</oj-label>
+                                    <oj-input-text id="inputEditName" labelled-by="editNameLabel"
+                                        value="{{clientSelected().name}}"
+                                        placeholder="Input name"
+                                        title="Edit name input">
+                                    </oj-input-text>
+                                </div>
+                                <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">                                            
+                                    <oj-label id="editEmailLabel">Email:</oj-label>
+                                    <oj-input-text id="inputEditEmail" labelled-by="editEmailLabel"
+                                        value="{{clientSelected().email}}"
+                                        placeholder="Input email"
+                                        title="Edit email input">
+                                    </oj-input-text>
+                                </div>                         
+                            </div>
+                            <hr />  
+                            <div class="oj-flex sm-1x-row">  
+                                <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                                    <oj-label id="editAddressLabel">Address:</oj-label>
+                                    <oj-text-area id="textareaEditAddress" labelled-by="editAddressLabel"
+                                        value="{{clientSelected().address}}"
+                                        placeholder="Input address"
+                                        title="Edit address textarea"
+                                        rows="5">                                
+                                    </oj-text-area>
+                                </div>
+                                <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">                                            
+                                    <oj-label id="editPhoneLabel">Phone:</oj-label>
+                                    <oj-input-text id="inputEditPhone" labelled-by="editPhoneLabel"
+                                        value="{{clientSelected().phone}}"
+                                        placeholder="Input phone"
+                                        title="Edit phone input">
+                                    </oj-input-text>
+                                </div>                        
+                            </div>
+                            <hr />
+                            <div class="oj-flex sm-1x-row">  
+                                <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                                    <oj-label id="editPostcodeLabel">Postcode:</oj-label>
+                                    <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"
+                                        value="{{clientSelected().postcode}}"
+                                        placeholder="Input postcode"
+                                        title="Edit postcode input">
+                                    </oj-input-text>
+                                </div>
+                            </div>
+                            <hr />                    
+                            <oj-label id="editNotesLabel">Notes:</oj-label>
+                            <oj-text-area id="textareaEditNotes" labelled-by="editNotesLabel"
+                                class="oj-form-control-full-width"
+                                value="{{clientSelected().notes}}"
+                                placeholder="Input notes"
+                                title="Edit notes textarea"
+                                rows="5">                                
+                            </oj-text-area>                    
+                        </div>
+                    </div>
+                </oj-bind-if>
+                    
+                <oj-bind-if test="[[selectedRowDisplay() === 'clientNeeds']]">                
+                    <div class="spacer-sm">
+                        <div class="oj-panel oj-panel-alt1">
+                            <div class="oj-flex sm-1x-row">
+                                <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
+                                    <h3>
+                                        <span><oj-bind-text value="[[clientSelected().name + '\'s needs']]"></oj-bind-text></span>                                                                                
+                                    </h3>
+                                </div>                    
+                                <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+                                    <div class="oj-helper-clearfix">
+                                        <oj-button id="addNeedButton" class="oj-sm-float-end"
+                                            on-oj-action='[[addNeedButton]]'>
+                                            <span>Add Need</span>
+                                        </oj-button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr /> 
+                            <oj-table id="clientNeedsTable" aria-label="table using array"
+                                columns="{{clientNeedsTableColumns}}"
+                                display='grid'
+                                data="[[clientNeedsDataProvider]]">                
+                            </oj-table>                   
+                            <oj-paging-control id="clientNeedsPaging" data='[[clientNeedsDataProvider]]'
+                                page-size='5' slot='bottom'>
+                            </oj-paging-control>
+                        </div>
+                    </div>
+                </oj-bind-if>
             </oj-bind-if>
         </oj-bind-if>            
     </oj-bind-if>

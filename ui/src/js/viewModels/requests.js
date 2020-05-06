@@ -21,6 +21,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                     self.requestsValues = ko.observableArray();
                     self.requestsDataProvider = ko.observable();
+                    self.requestsTableColumns = [
+                        {headerText: 'TYPE', field: "type_name"},
+                        {headerText: 'CLIENT NAME', field: "client_name"},                        
+                        {headerText: 'TARGET DATE', field: "requestTargetDate", sortProperty: "requestTargetDateRaw"},
+                        {headerText: 'DATE NEEDED', field: "requestDateNeeded", sortProperty: "requestDateNeededRaw"}                       
+                    ];
 
                     self.offerTypesCategoriesValues = ko.observableArray();
                     self.offerTypesCategoriesArray = ko.observableArray([]);
@@ -29,13 +35,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offerTypesValues = ko.observableArray();
                     self.offerTypesArray = ko.observableArray([]);
                     self.offerTypesDataProvider = ko.observable();
-
-                    self.requestsTableColumns = [
-                        {headerText: 'TYPE', field: "type_name"},
-                        {headerText: 'CLIENT NAME', field: "client_name"},                        
-                        {headerText: 'TARGET DATE', field: "requestTargetDate", sortProperty: "requestTargetDateRaw"},
-                        {headerText: 'DATE NEEDED', field: "requestDateNeeded", sortProperty: "requestDateNeededRaw"}                       
-                    ];
 
                     self.addRequestButtonSelected = ko.observableArray([]);
                     self.requestRowSelected = ko.observableArray();
@@ -113,10 +112,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         
                         self.handleOfferTypesCategoryChanged = function(event) {
                             if (event.target.value !== "") {
-                                getOfferTypesFromCategoryAjax(event.target.value);
+                                _getOfferTypesFromCategoryAjax(event.target.value);
                             }
                         };
-                        function getOfferTypesFromCategoryAjax(code) {
+                        _getOfferTypesFromCategoryAjax = function(code) {
                             self.offerTypesArray([]);
                             //GET /rest/offer_type_categories/{code}/offer_types - REST
                             return $.when(restClient.doGet(`http://www.rdg-connect.org/rest/offer_type_categories/${code}/offer_types`)

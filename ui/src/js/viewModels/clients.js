@@ -21,7 +21,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
 
                     self.clientsValues = ko.observableArray();
                     self.clientsDataProvider = ko.observable();
-
                     self.renderer1 = oj.KnockoutTemplateUtils.getRenderer("combineAddressPostcode_tmpl", true);
                     self.clientsTableColumns = [
                         {headerText: 'NAME', field: "name"},
@@ -30,17 +29,29 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                         {headerText: 'PHONE', field: "phone"}
                     ];
 
+                    self.clientNeedsValues = ko.observableArray();
+                    self.clientNeedsDataProvider = ko.observable();
+                    self.clientNeedsTableColumns = [
+                        {headerText: 'TYPE', field: "type"},
+                        {headerText: 'NEED MET?', field: "need_met"},                        
+                        {headerText: 'DATE NEEDED', field: "date_needed"},
+                        {headerText: 'NOTES', field: "notes"}                        
+                    ];
+
+                    self.selectedRowDisplay = ko.observable("clientNeeds");
                     self.addClientButtonSelected = ko.observableArray([]);
                     self.clientRowSelected = ko.observableArray();
                     self.clientSelected = ko.observable("");
                     self.showPanel = ko.computed(function () {
                         if (self.addClientButtonSelected().length) {
+                            self.selectedRowDisplay("clientFormFields");
                             // big reset!
                             self.clientRowSelected([]);
                             self.clientSelected("");
                             return true;                                                            
                         }
                         if (self.clientRowSelected().length) {
+                            self.selectedRowDisplay("clientNeeds");
                             return true;                            
                         }
                     }, this);
@@ -58,15 +69,37 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                                     }
                                 };                        
                                 self.clientSelected(searchNodes(event.target.currentRow.rowKey, self.clientsValues()));                         
-                                console.log(self.clientSelected());                                
+                                console.log(self.clientSelected());
+                                _getClientNeedsAjax(self.clientSelected().id);
                             }
+                        };
+                        _getClientNeedsAjax = function(clientId) {
+                            //GET /rest/clients/{client id}/client_needs - REST
+                            return $.when(restClient.doGet(`http://www.rdg-connect.org/rest/clients/${clientId}/client_needs`)
+                                .then(
+                                    success = function (response) {
+                                        console.log(response.client_needs);
+                                        self.clientNeedsValues(response.client_needs);
+                                    },
+                                    error = function (response) {
+                                        console.log(`Client Needs from Client "${clientId}" not loaded`);
+                                }).then(function () {
+                                    var sortCriteria = {key: 'type', direction: 'ascending'};
+                                    var arrayDataSource = new oj.ArrayTableDataSource(self.clientNeedsValues(), {idAttribute: 'id'});
+                                    arrayDataSource.sort(sortCriteria);
+                                    self.clientNeedsDataProvider(new oj.PagingTableDataSource(arrayDataSource));
+                                }).then(function () {
+                                })
+                            );
                         };
                     }();
                     
                     self.saveAdditionButton = function () {
                     };
                     self.saveEditButton = function () {
-                    };                       
+                    };
+                    self.addNeedButton = function () {
+                    };
 
                     var getData = function () {
                         self.clientsLoaded = ko.observable();
