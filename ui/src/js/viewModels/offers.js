@@ -22,7 +22,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offersValues = ko.observableArray();
                     self.offersDataProvider = ko.observable();
                     self.offersTableColumns = [
-                        {headerText: 'NAME', field: "name"},
+                        {headerText: 'OFFER NAME', field: "name"},
                         {headerText: 'TYPE', field: "type_name"},
                         {headerText: 'QUANTITY', field: "quantity"},
                         {headerText: 'DATE AVAILABLE', field: 'offerDateAvailable', sortProperty: "offerDateAvailableRaw"},

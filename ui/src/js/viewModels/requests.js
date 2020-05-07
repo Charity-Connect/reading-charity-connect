@@ -8,7 +8,7 @@
  * Your requests ViewModel code goes here
  */
 define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'ojs/ojarraydataprovider',
-    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker',
+    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojcheckboxset', 'ojs/ojdatetimepicker',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
         function (oj, ko, $, accUtils, utils, restClient, ArrayDataProvider) {
 
@@ -23,7 +23,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.requestsDataProvider = ko.observable();
                     self.requestsTableColumns = [
                         {headerText: 'TYPE', field: "type_name"},
-                        {headerText: 'CLIENT NAME', field: "client_name"},                        
+                        {headerText: 'NAME', field: "client_name"},                        
                         {headerText: 'TARGET DATE', field: "requestTargetDate", sortProperty: "requestTargetDateRaw"},
                         {headerText: 'DATE NEEDED', field: "requestDateNeeded", sortProperty: "requestDateNeededRaw"}                       
                     ];
@@ -36,24 +36,25 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offerTypesArray = ko.observableArray([]);
                     self.offerTypesDataProvider = ko.observable();
 
-                    self.addRequestButtonSelected = ko.observableArray([]);
+//                    self.addRequestButtonSelected = ko.observableArray([]);
                     self.requestRowSelected = ko.observableArray();
                     self.requestSelected = ko.observable("");
                     self.offerTypeSelected = ko.observable("");                        
                     self.offerTypesCategorySelected = ko.observable(""); 
+                    self.checkboxFilterAgreed = ko.observableArray([]);
                     self.targetDateConvertor = ko.observable();
                     self.dateNeededConvertor = ko.observable();                    
                     self.showPanel = ko.computed(function () {
-                        if (self.addRequestButtonSelected().length) {
-                            // big reset!
-                            self.requestRowSelected([]);
-                            self.requestSelected("");
-                            self.offerTypeSelected("");                        
-                            self.offerTypesCategorySelected("");
-                            self.targetDateConvertor("");
-                            self.dateNeededConvertor("");                            
-                            return true;                                                            
-                        }
+//                        if (self.addRequestButtonSelected().length) {
+//                            // big reset!
+//                            self.requestRowSelected([]);
+//                            self.requestSelected("");
+//                            self.offerTypeSelected("");                        
+//                            self.offerTypesCategorySelected("");
+//                            self.targetDateConvertor("");
+//                            self.dateNeededConvertor("");                            
+//                            return true;                                                            
+//                        }
                         if (self.requestRowSelected().length) {
                             return true;                            
                         }
@@ -62,7 +63,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     var handlerLogic = function() {                                                
                         self.handleRequestRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
-                                self.addRequestButtonSelected([]);                                                                
+//                                self.addRequestButtonSelected([]);                                                                
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray){
                                     for (var i=0; i < myArray.length; i++) {
@@ -74,6 +75,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));                         
                                 console.log(self.requestSelected());
                                 _calculateCategory(self.requestSelected().type_name);
+                                if (self.requestSelected().agreed) {
+                                    self.checkboxFilterAgreed(self.requestSelected().agreed);
+                                }
                                 if (self.requestSelected().requestTargetDateRaw) {
                                     self.targetDateConvertor(new Date(self.requestSelected().requestTargetDateRaw).toISOString());
                                 } else {
@@ -144,7 +148,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         };                        
                     }();
                     
-                    self.saveAdditionButton = function () {
+//                    self.saveAdditionButton = function () {
+//                    };
+                    self.handleAgreedInputChanged = function () {
                     };
                     self.saveEditButton = function () {
                     };                       
@@ -182,6 +188,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 complete: this.complete,
                                                 id: this.id,
                                                 notes: this.notes,
+                                                request_details: this.request_details,
                                                 organization_id: this.organization_id,
                                                 type_name: this.type_name                                               
                                             });

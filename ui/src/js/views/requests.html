@@ -25,19 +25,19 @@
 
             <div class="spacer-sm">
                 <div class="oj-panel oj-panel-alt2"> 
-                    <div class="oj-flex sm-1x-row">
-                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
+<!--                    <div class="oj-flex sm-1x-row">-->
+<!--                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    -->
                             <h2>Requests</h2>    
-                        </div>                    
-                        <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
-                            <div class="oj-helper-clearfix">                                        
+<!--                        </div>                    -->
+<!--                        <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">-->
+<!--                            <div class="oj-helper-clearfix">                                        
                                 <oj-buttonset-many id="addRequestButton" class="oj-sm-float-end"
                                     value="{{addRequestButtonSelected}}">
                                     <oj-option value="addRequest">Add Request</oj-option>
                                 </oj-buttonset-many>                                                                
-                            </div>
-                        </div>
-                    </div>
+                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
                     <hr /> 
                     <oj-table id="executionsTable" class="row-selectable" aria-label="table using array"
                         selection="{{requestRowSelected}}"
@@ -62,21 +62,21 @@
                 <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
                         <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
-                            <oj-bind-if test="[[addRequestButtonSelected().length]]">
+<!--                            <oj-bind-if test="[[addRequestButtonSelected().length]]">
                                 <h3>Add request</h3>
-                            </oj-bind-if>
+                            </oj-bind-if>-->
                             <oj-bind-if test="[[requestRowSelected().length]]">
                                 <h3>Edit request</h3>
                             </oj-bind-if>                            
                         </div>                    
                         <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">
-                                <oj-bind-if test="[[addRequestButtonSelected().length]]">
+<!--                                <oj-bind-if test="[[addRequestButtonSelected().length]]">
                                     <oj-button id="saveAdditionButton" class="oj-sm-float-end"
                                         on-oj-action='[[saveAdditionButton]]'>
                                         <span>Save</span>
                                     </oj-button>
-                                </oj-bind-if>
+                                </oj-bind-if>-->
                                 <oj-bind-if test="[[requestRowSelected().length]]">
                                     <oj-button id="saveEditButton" class="oj-sm-float-end"
                                         on-oj-action='[[saveEditButton]]'>
@@ -89,40 +89,62 @@
                     <hr />  
                     <div class="oj-flex sm-1x-row">
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                            <oj-label id="editCategoryLabel">Category:</oj-label>
+                            <oj-label id="editCategoryLabel"><strong>Category:</strong></oj-label>
                             <oj-select-single id="selectEditCategory" labelled-by="editCategoryLabel"
                                 data="[[offerTypesCategoriesDataProvider]]"
-                                value="{{offerTypesCategorySelected}}"
+                                value="[[offerTypesCategorySelected]]"
                                 on-value-changed="[[handleOfferTypesCategoryChanged]]"                                
-                                placeholder="Select category"
-                                title="Edit category select">
+                                placeholder="Display category"
+                                title="Displays category"
+                                readonly="true">
                             </oj-select-single>
                         </div>
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                            <oj-label id="editTypeLabel">Type:</oj-label>
+                            <oj-label id="editTypeLabel"><strong>Type:</strong></oj-label>
                             <oj-select-single id="selectEditType" labelled-by="editTypeLabel"
                                 data="[[offerTypesDataProvider]]"
-                                value="{{offerTypeSelected}}"
-                                placeholder="Select type"
-                                title="Edit type select">
+                                value="[[offerTypeSelected]]"
+                                placeholder="Display type"
+                                title="Displays type"
+                                readonly="true">
                             </oj-select-single>
+                        </div>
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-checkboxset id="agreedCheckboxInput"
+                                value="{{checkboxFilterAgreed}}"
+                                on-value-changed="[[handleAgreedInputChanged]]"
+                                title="Checkbox to update help agreed">
+                                <oj-option id="agreedValue" value="agreed">
+                                    <strong>Agreed to help?</strong>
+                                </oj-option>
+                            </oj-checkboxset>
                         </div>
                     </div>
                     <hr />  
                     <div class="oj-flex sm-1x-row">  
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                            <oj-label id="editNameLabel">Name:</oj-label>
+                            <oj-label id="editNameLabel"><strong>Name:</strong></oj-label>
                             <oj-input-text id="inputEditName" labelled-by="editNameLabel"
-                                value="{{requestSelected().client_name}}"
-                                placeholder="Input name"
-                                title="Edit name input">
+                                value="[[requestSelected().client_name]]"
+                                placeholder="Display name"
+                                title="Displays name"
+                                readonly="true">
+                            </oj-input-text>
+                        </div>
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editPostcodeLabel"><strong>Postcode:</strong></oj-label>
+                            <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"
+                                value="[[requestSelected().postcode]]"
+                                placeholder="Display postcode"
+                                title="Displays postcode"
+                                readonly="true">                                
                             </oj-input-text>
                         </div>                        
                     </div>
                     <hr /> 
                     <div class="oj-flex sm-1x-row">
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                            <oj-label id="editTargetDateLabel">Target Date:</oj-label>
+                            <oj-label id="editTargetDateLabel"><strong>Target Date:</strong></oj-label>
                             <oj-input-date id="datepickerEditTargetDate" labelled-by="editTargetDateLabel"
                                 value="{{targetDateConvertor}}"
                                 placeholder="Input target date"                                
@@ -130,22 +152,33 @@
                             </oj-input-date>
                         </div>
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                            <oj-label id="editDateNeededLabel">Date Needed:</oj-label>
+                            <oj-label id="editDateNeededLabel"><strong>Date Needed:</strong></oj-label>
                             <oj-input-date id="datepickerEditDateNeeded" labelled-by="editDateNeededLabel"
-                                value="{{dateNeededConvertor}}"
-                                placeholder="Input date needed"                                
-                                title="Pick date needed">
+                                value="[[dateNeededConvertor]]"
+                                placeholder="Display date needed"                                
+                                title="Displays date needed"
+                                readonly="true">
                             </oj-input-date>                            
                         </div>                                
                     </div>
                     <hr />                     
-                    <oj-label id="editNotesLabel">Notes:</oj-label>
+                    <oj-label id="editRequestDetailsLabel"><strong>Request Details:</strong></oj-label>
+                    <oj-text-area id="textareaEditRequestDetails"
+                        labelled-by="editRequestDetailsLabel" class="oj-form-control-full-width"
+                        value="{{requestSelected().request_details}}"
+                        placeholder="Input request details"
+                        title="Edit request details textarea"
+                        rows="5">                                
+                    </oj-text-area>
+                    <hr />                     
+                    <oj-label id="editNotesLabel"><strong>Notes:</strong></oj-label>
                     <oj-text-area id="textareaEditNotes" labelled-by="editNotesLabel"
                         class="oj-form-control-full-width"
-                        value="{{requestSelected().notes}}"
-                        placeholder="Input notes"
-                        title="Edit notes textarea"
-                        rows="5">                                
+                        value="[[requestSelected().notes]]"
+                        placeholder="Display notes"
+                        title="Displays notes"
+                        rows="5"
+                        readonly="true">                                
                     </oj-text-area>                    
                 </div>
             </oj-bind-if>
