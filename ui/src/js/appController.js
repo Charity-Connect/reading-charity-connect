@@ -7,8 +7,8 @@
 /*
  * Your application specific code will go here
  */
-define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils', 'ojs/ojmodule-element', 'ojs/ojknockout'],
-        function (ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, ArrayDataProvider, KnockoutTemplateUtils) {
+define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojconfig', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils', 'ojs/ojmodule-element', 'ojs/ojknockout'],
+        function (ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, Config, ArrayDataProvider, KnockoutTemplateUtils) {
             function ControllerViewModel() {
                 var self = this;
 
@@ -24,8 +24,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         self.message(event.detail.message);
                         self.manner(event.detail.manner);
                     }, 200);
-                }
-                ;
+                };
 
                 // Media queries for repsonsive layouts
                 var smQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.SM_ONLY);
@@ -67,17 +66,17 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 } else if (userRole === "user") {
                     self.appName("Charity Connect  - User Account");
                     self.router.configure({
-                        'offers': {label: 'Offers', isDefault: true},
-                        'clients': {label: 'Clients'},
-                        'requests': {label: 'Requests'}                        
+                        'requests': {label: 'Requests', isDefault: true},
+                        'offers': {label: 'Offers'},
+                        'clients': {label: 'Clients'}                        
                     });
                     navData = [
+                        {name: 'Requests', id: 'requests',
+                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},                        
                         {name: 'Offers', id: 'offers',
                             iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
                         {name: 'Clients', id: 'clients',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'},
-                        {name: 'Requests', id: 'requests',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'}
+                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
                     ];                     
                 };
                 Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
@@ -90,6 +89,16 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         return moduleUtils.createConfig({viewPath: viewPath,
                             viewModelPath: modelPath, params: {parentRouter: self.router}});
                     });
+                    
+                    //addition to set locale
+                    var newLang = "en-GB";
+                    self.setLang = function (event) {
+                        Config.setLocale(newLang,
+                            function () {
+                                document.getElementsByTagName('html')[0].setAttribute('lang', newLang);                      
+                            }
+                        );
+                    }();                    
                 };
 
                 self.navDataProvider = new ArrayDataProvider(navData, {keyAttributes: 'id'});

@@ -28,29 +28,48 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                         {headerText: 'PHONE', field: "phone"}
                     ];
 
-//                function postLoginDetails() {
-//                    //POST /rest/login - REST
-//                    const loginParams = {
-//                        email: "oli.harris@oracle.com",
-//                        password: "Drag0nA1r!"
-//                    }; 
-//                    return $.when(restClient.doPost('http://www.rdg-connect.org/rest/login', loginParams)
-//                        .then(
-//                            success = function(response) {
-//                                console.log(response);                        
-//                            },
-//                            error = function(response) {
-//                            }                    
-//                        ).then(function() {                                                        
-//                        })       
-//                    );
-//                };
+                    self.addOrganizationButtonSelected = ko.observableArray([]);
+                    self.organizationRowSelected = ko.observableArray();
+                    self.organizationSelected = ko.observable("");
+                    self.showPanel = ko.computed(function () {
+                        if (self.addOrganizationButtonSelected().length) {
+                            // big reset!                                
+                            self.organizationRowSelected([]);
+                            self.organizationSelected("");
+                            return true;                                                            
+                        }
+                        if (self.organizationRowSelected().length) {
+                            return true;                            
+                        }
+                    }, this);
+
+                    var handlerLogic = function() {                        
+                        self.handleOrganizationRowChanged = function (event) {
+                            if (event.detail.value[0] !== undefined) {
+                                self.addOrganizationButtonSelected([]);                                                                
+                                //find whether node exists based on selection
+                                function searchNodes(nameKey, myArray){
+                                    for (var i=0; i < myArray.length; i++) {
+                                        if (myArray[i].id === nameKey) {
+                                            return myArray[i];                                    
+                                        }
+                                    }
+                                };                        
+                                self.organizationSelected(searchNodes(event.target.currentRow.rowKey, self.organizationsValues()));                         
+                                console.log(self.organizationSelected());                                
+                            }
+                        };
+                    }();
+
+                    self.saveAdditionButton = function () {
+                    };
+                    self.saveEditButton = function () {
+                    };  
 
                     var getData = function () {
                         self.organizationsLoaded = ko.observable();
                         self.organizationsValid = ko.observable();
 
-                        self.organizationRowSelected = ko.observableArray();
                         function getOrganizationsAjax() {
                             //GET /rest/organizations - REST
                             self.organizationsLoaded(false);
@@ -75,42 +94,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                             );
                         };
 
-                        self.addOrganizationButtonSelected = ko.observableArray([]);
-                        self.organizationSelected = ko.observable("");
-                        self.showPanel = ko.computed(function () {
-                            if (self.addOrganizationButtonSelected().length) {
-                                self.organizationRowSelected([]);
-                                self.organizationSelected("");
-                                return true;                                                            
-                            }
-                            if (self.organizationRowSelected().length) {
-                                return true;                            
-                            }
-                        }, this);
-                        
-                        self.handleOrganizationRowChanged = function (event) {
-                            if (event.detail.value[0] !== undefined) {
-                                self.addOrganizationButtonSelected([]);                                                                
-                                //find whether node exists based on selection
-                                function searchNodes(nameKey, myArray){
-                                    for (var i=0; i < myArray.length; i++) {
-                                        if (myArray[i].id === nameKey) {
-                                            return myArray[i];                                    
-                                        }
-                                    }
-                                };                        
-                                self.organizationSelected(searchNodes(event.target.currentRow.rowKey, self.organizationsValues()));                         
-                                console.log(self.organizationSelected());                                
-                            } else {
-                                self.organizationSelected("");
-                            }
-                        };
-
-                        self.submitAdditionButton = function () {
-                        };
-                        self.submitEditButton = function () {
-                        };
-
                         Promise.all([getOrganizationsAjax()])
                         .then(function () {
                         })
@@ -118,7 +101,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                             //even if error remove loading bar
                             self.organizationsLoaded(true);
                         });
-                    }();
+                    }();              
                 };
 
                 self.disconnected = function () {
