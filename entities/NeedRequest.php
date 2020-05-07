@@ -9,13 +9,14 @@ class NeedRequest{
     public $client_need_id;
     public $request_organization_id;
     public $client_name;
+    public $client_postcode;
     public $type_name;
     public $date_needed;
     private $confirmation_code;
     public $agreed;
     public $complete;
     public $target_date;
-    public $request_notes;
+    public $request_response_notes;
     public $need_notes;
     public $source_organization_name;
 
@@ -27,24 +28,22 @@ class NeedRequest{
 	        	,request.client_need_id
 	        	,request.organization_id as request_organization_id
 	        	,request.target_date
-	        	,request.notes request_notes
-	        	,need.notes need_notes
+	        	,request.notes request_response_notes
+	        	,client_need.notes need_notes
 	        	,client.name as client_name
+	        	,client.postcode as client_postcode
 	        	,types.name as type_name
-	        	,need.date_needed
+	        	,client_need.date_needed
 	        	,org.name source_organization_name
 	        	from need_requests request
-	        	, client_needs need
+	        	, client_needs client_need
 	        	, clients client
 	        	, offer_types types
-	        	, client_links link
 	        	, organizations org
-	        	where request.client_need_id=need.id
-	        	and need.client_id=client.id
-	        	and need.type=types.type
-	        	and org.id=link.link_id
-	        	and link.client_id=client.id
-	        	and link.link_type='ORG' ";
+	        	where request.client_need_id=client_need.id
+	        	and client_need.client_id=client.id
+	        	and client_need.type=types.type
+	        	and org.id=client_need.requesting_organization_id ";
 
 
     public function create(){
@@ -59,7 +58,7 @@ class NeedRequest{
         	,'agreed'=>isset($this->$agreed)?$this->$agreed:'N'
         	,'complete'=>isset($this->$complete)?$this->$complete:'N'
         	,'target_date'=>$this->target_date
-        	,'notes'=>$this->request_notes
+        	,'notes'=>$this->request_response_notes
         	])){
             $this->id=$this->connection->lastInsertId();
 
@@ -89,6 +88,7 @@ class NeedRequest{
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $this->client_need_id=$row['client_need_id'];
         $this->client_name=$row['client_name'];
+        $this->client_postcode=$row['client_postcode'];
         $this->type_name=$row['type_name'];
         $this->date_needed=$row['date_needed'];
         $this->request_organization_id=$row['request_organization_id'];
@@ -96,7 +96,7 @@ class NeedRequest{
         $this->agreed=$row['agreed'];
         $this->complete=$row['complete'];
         $this->target_date=$row['target_date'];
-        $this->request_notes=$row['request_notes'];
+        $this->request_response_notes=$row['request_response_notes'];
         $this->need_notes=$row['need_notes'];
    }
 
@@ -128,7 +128,7 @@ class NeedRequest{
            		,'agreed'=>$this->agreed
 				,'complete'=>$this->complete
 				,'target_date'=>$this->target_date
-				,'notes'=>$this->request_notes]);
+				,'notes'=>$this->request_response_notes]);
 			return $result;
 		} else {
 			return false;

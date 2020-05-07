@@ -20,7 +20,7 @@ if(isset($data)) {
     $need_request->agreed = isset($data['agreed'])?$data['agreed']:'N';
     $need_request->complete = isset($data['complete'])?$data['complete']:'N';
     $need_request->target_date = $data['target_date'];
-    $need_request->request_notes = $data['request_notes'];
+    $need_request->request_response_notes = $data['request_response_notes'];
 
     if(isset($data['id'])){
         $need_request->id = $data['id'];
@@ -43,7 +43,7 @@ if(isset($data)) {
                     "agreed" => $need_request->agreed,
                     "complete" => $need_request->complete,
                     "target_date" => $need_request->target_date,
-                    "request_notes" => $need_request->request_notes
+                    "request_response_notes" => $need_request->request_response_notes
                     );
             echo json_encode($need_request_arr);
 
@@ -82,13 +82,14 @@ if(isset($data)) {
                 "id" => $id,
                 "client_need_id" => $client_need_id,
                 "client_name" => $client_name,
+                "client_postcode" => $client_postcode,
                 "type_name" => $type_name,
                 "date_needed" => $date_needed,
                 "request_organization_id" => $request_organization_id,
                 "agreed" => $agreed,
                 "complete" => $complete,
                 "target_date" => $target_date,
-                "request_notes" => $request_notes,
+                "request_response_notes" => $request_response_notes,
                 "need_notes" => $need_notes,
                 "source_organization_name"=>$source_organization_name
                 );

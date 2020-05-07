@@ -84,6 +84,7 @@ if(isset($data)) {
                 $client_need  = array(
                 "id" => $id,
                 "client_id" => $client_id,
+                "requesting_organization_id" => $requesting_organization_id,
                 "type" => $type,
                 "date_needed" => $date_needed,
                 "need_met" => $need_met,

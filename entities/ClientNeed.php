@@ -12,6 +12,7 @@ class ClientNeed{
     // table columns
     public $id;
     public $client_id;
+    public $requesting_organization_id;
     public $type;
     public $date_needed;
     public $need_met;
@@ -31,9 +32,9 @@ class ClientNeed{
 
     	if($stmt->rowCount()==1){
 
-		$sql = "INSERT INTO client_needs ( client_id,type,date_needed,need_met,notes) values (:client_id,:type,:date_needed,:need_met,:notes)";
+		$sql = "INSERT INTO client_needs ( client_id,requesting_organization_id,type,date_needed,need_met,notes) values (:client_id,:type,:date_needed,:need_met,:notes)";
 		$stmt= $this->connection->prepare($sql);
-		if( $stmt->execute(['client_id'=>$this->client_id,'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'notes'=>$this->notes])){
+		if( $stmt->execute(['client_id'=>$this->client_id,'requesting_organization_id'=>$_SESSION['organization_id'],'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'notes'=>$this->notes])){
 		    $this->id=$this->connection->lastInsertId();
 
 
@@ -115,12 +116,12 @@ class ClientNeed{
     }
     public function readAll($client_id){
         if(is_admin()){
-        	$query = "SELECT cn.id,cn.client_id,cn.type, types.name type_name,cn.date_needed,cn.need_met,cn.notes from client_needs cn,offer_types types where types.type=cn.type and cn.client_id = :client_id ORDER BY cn.id";
+        	$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type, types.name type_name,cn.date_needed,cn.need_met,cn.notes from client_needs cn,offer_types types where types.type=cn.type and cn.client_id = :client_id ORDER BY cn.id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['client_id'=>$client_id]);
         	return $stmt;
         } else {
-        	$query = "SELECT cn.id,cn.client_id,cn.type, types.name type_name,cn.date_needed,cn.need_met,cn.notes from client_needs cn, client_links l,offer_types types where types.type=cn.type and cn.client_id=:client_id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
+        	$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type, types.name type_name,cn.date_needed,cn.need_met,cn.notes from client_needs cn, client_links l,offer_types types where types.type=cn.type and cn.client_id=:client_id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['organization_id'=>$_SESSION["organization_id"],'client_id'=>$client_id]);
         	return $stmt;
@@ -140,12 +141,12 @@ class ClientNeed{
 
     public function readOne($client_id,$id){
         if(is_admin()){
-        	$query = "SELECT cn.id,cn.client_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.notes from client_needs cn,offer_types types where types.type=cn.type and cn.id=:id and cn.client_id=:client_id";
+        	$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.notes from client_needs cn,offer_types types where types.type=cn.type and cn.id=:id and cn.client_id=:client_id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$id,'client_id'=>$client_id]);
         	return $stmt;
         } else {
-        	$query = "SELECT cn.id,cn.client_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.notes from client_needs cn, client_links l,offer_types types where cn.client_id=:client_id and cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
+        	$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.notes from client_needs cn, client_links l,offer_types types where cn.client_id=:client_id and cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['client_id'=>$client_id,'id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
         	return $stmt;
