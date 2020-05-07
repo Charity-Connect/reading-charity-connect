@@ -87,7 +87,8 @@ if(isset($data)) {
                 "type" => $type,
                 "date_needed" => $date_needed,
                 "need_met" => $need_met,
-                "notes" => $notes
+                "notes" => $notes,
+                "type_name" => $type_name
                 );
 
                 array_push($client_needs["client_needs"], $client_need);

@@ -16,6 +16,7 @@ class ClientNeed{
     public $date_needed;
     public $need_met;
     public $notes;
+    public $type_name;
 
     public function __construct($connection){
         $this->connection = $connection;
@@ -114,12 +115,12 @@ class ClientNeed{
     }
     public function readAll($client_id){
         if(is_admin()){
-        	$query = "SELECT id,client_id,type,date_needed,need_met,notes from client_needs where client_id = :client_id ORDER BY id";
+        	$query = "SELECT cn.id,cn.client_id,cn.type, types.name type_name,cn.date_needed,cn.need_met,cn.notes from client_needs cn,offer_types types where types.type=cn.type and cn.client_id = :client_id ORDER BY cn.id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['client_id'=>$client_id]);
         	return $stmt;
         } else {
-        	$query = "SELECT cn.id,cn.client_id,cn.type,cn.date_needed,cn.need_met,cn.notes from client_needs cn, client_links l where cn.client_id=:client_id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
+        	$query = "SELECT cn.id,cn.client_id,cn.type, types.name type_name,cn.date_needed,cn.need_met,cn.notes from client_needs cn, client_links l,offer_types types where types.type=cn.type and cn.client_id=:client_id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['organization_id'=>$_SESSION["organization_id"],'client_id'=>$client_id]);
         	return $stmt;
@@ -134,16 +135,17 @@ class ClientNeed{
         $this->date_needed=$row['date_needed'];
         $this->need_met=$row['need_met'];
         $this->notes=$row['notes'];
+        $this->type_name=$row['type_name'];
    }
 
     public function readOne($client_id,$id){
         if(is_admin()){
-        	$query = "SELECT id,client_id,type,date_needed,need_met,notes from client_needs where id=:id and client_id=:client_id";
+        	$query = "SELECT cn.id,cn.client_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.notes from client_needs cn,offer_types types where types.type=cn.type and cn.id=:id and cn.client_id=:client_id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$id,'client_id'=>$client_id]);
         	return $stmt;
         } else {
-        	$query = "SELECT cn.id,cn.client_id,cn.type,cn.date_needed,cn.need_met,cn.notes from client_needs cn, client_links l where cn.client_id=:client_id and cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
+        	$query = "SELECT cn.id,cn.client_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.notes from client_needs cn, client_links l,offer_types types where cn.client_id=:client_id and cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['client_id'=>$client_id,'id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
         	return $stmt;

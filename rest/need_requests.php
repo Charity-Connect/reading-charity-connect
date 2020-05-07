@@ -16,11 +16,11 @@ if(isset($data)) {
 
 
     $need_request->client_need_id = $data['client_need_id'];
-    $need_request->organization_id = $data['organization_id'];
+    $need_request->request_organization_id = $data['request_organization_id'];
     $need_request->agreed = isset($data['agreed'])?$data['agreed']:'N';
     $need_request->complete = isset($data['complete'])?$data['complete']:'N';
     $need_request->target_date = $data['target_date'];
-    $need_request->notes = $data['notes'];
+    $need_request->request_notes = $data['request_notes'];
 
     if(isset($data['id'])){
         $need_request->id = $data['id'];
@@ -39,11 +39,11 @@ if(isset($data)) {
             $need_request_arr  = array(
                     "id" => $need_request->id,
                     "client_need_id" => $need_request->client_need_id,
-                    "organization_id" => $need_request->organization_id,
+                    "request_organization_id" => $need_request->organization_id,
                     "agreed" => $need_request->agreed,
                     "complete" => $need_request->complete,
                     "target_date" => $need_request->target_date,
-                    "notes" => $need_request->notes
+                    "request_notes" => $need_request->request_notes
                     );
             echo json_encode($need_request_arr);
 
@@ -84,11 +84,13 @@ if(isset($data)) {
                 "client_name" => $client_name,
                 "type_name" => $type_name,
                 "date_needed" => $date_needed,
-                "organization_id" => $organization_id,
+                "request_organization_id" => $request_organization_id,
                 "agreed" => $agreed,
                 "complete" => $complete,
                 "target_date" => $target_date,
-                "notes" => $notes
+                "request_notes" => $request_notes,
+                "need_notes" => $need_notes,
+                "source_organization_name"=>$source_organization_name
                 );
 
                 array_push($need_requests["need_request"], $need_request);
