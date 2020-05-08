@@ -75,7 +75,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 };                        
                                 self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));                         
                                 console.log(self.requestSelected());
-                                _calculateCategory(self.requestSelected().type_name);
+
+                                var calculateCategory = utils.calculateCategory(self.requestSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());                                
+                                self.offerTypesCategorySelected(calculateCategory);
                                 if (self.requestSelected().agreed) {
                                     //logic for "agreed"
                                 }
@@ -90,29 +92,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     self.dateNeededConvertor("");
                                 }                                
                             }
-                        };
-                        //function for reverse search of Category based on Type loaded in
-                        _calculateCategory = function(type) {
-                            //find whether node exists based on selection
-                            function searchNodes(nameKey, myArray){
-                                for (var i=0; i < myArray.length; i++) {
-                                    if (myArray[i].type === nameKey) {
-                                        return myArray[i];                                    
-                                    }
-                                }
-                            };
-                            var searchTypes = searchNodes(type, self.offerTypesValues());                            
-
-                            //find whether node exists based on selection
-                            function searchNodes(nameKey, myArray){
-                                for (var i=0; i < myArray.length; i++) {
-                                    if (myArray[i].category === nameKey) {
-                                        return myArray[i];                                    
-                                    }
-                                }
-                            };
-                            var searchCategories = searchNodes(searchTypes, self.offerTypesCategoriesValues()).code;
-                            self.offerTypesCategorySelected(searchCategories); 
                         };
                         
                         self.handleOfferTypesCategoryChanged = function(event) {
