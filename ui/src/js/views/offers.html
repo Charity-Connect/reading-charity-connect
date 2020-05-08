@@ -55,32 +55,12 @@
             
             <oj-bind-if test="[[showPanel()]]">
                 <div class="oj-panel oj-panel-alt2">
-                    <div class="oj-flex sm-1x-row">
-                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
-                            <oj-bind-if test="[[addOfferButtonSelected().length]]">
-                                <h3>Add offer</h3>
-                            </oj-bind-if>
-                            <oj-bind-if test="[[offerRowSelected().length]]">
-                                <h3>Edit offer</h3>
-                            </oj-bind-if>                            
-                        </div>                    
-                        <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
-                            <div class="oj-helper-clearfix">                                        
-                                <oj-bind-if test="[[addOfferButtonSelected().length]]">
-                                    <oj-button id="saveAdditionButton" class="oj-sm-float-end"
-                                        on-oj-action='[[saveAdditionButton]]'>
-                                        <span>Save</span>
-                                    </oj-button>
-                                </oj-bind-if>
-                                <oj-bind-if test="[[offerRowSelected().length]]">
-                                    <oj-button id="saveEditButton" class="oj-sm-float-end"
-                                        on-oj-action='[[saveEditButton]]'>
-                                        <span>Save</span>
-                                    </oj-button>
-                                </oj-bind-if>                                 
-                            </div>
-                        </div>
-                    </div>
+                    <oj-bind-if test="[[addOfferButtonSelected().length]]">
+                        <h3>Add offer</h3>
+                    </oj-bind-if>
+                    <oj-bind-if test="[[offerRowSelected().length]]">
+                        <h3>Edit offer</h3>
+                    </oj-bind-if>                            
                     <hr />                    
                     <div class="oj-flex sm-1x-row">                                                               
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
@@ -161,14 +141,29 @@
                         </div>                                
                     </div>
                     <hr />                    
-                    <oj-label id="editNotesLabel"><strong>Notes:</strong></oj-label>
-                    <oj-text-area id="textareaEditNotes"
-                        labelled-by="editNotesLabel" class="oj-form-control-full-width"
-                        value="{{offerSelected().details}}"
-                        placeholder="Input notes"
-                        title="Edit notes textarea"
+                    <oj-label id="editOfferNotesLabel"><strong>Offer Notes:</strong></oj-label>
+                    <oj-text-area id="textareaEditOfferNotes" class="oj-form-control-full-width"
+                        labelled-by="editOfferotesLabel"
+                        value="{{offerSelected().notes}}"
+                        placeholder="Input offer notes"
+                        title="Edit offer notes textarea"
                         rows="5">                                
                     </oj-text-area>
+                    <hr />
+                    <div class="oj-helper-clearfix">                                        
+                        <oj-bind-if test="[[addOfferButtonSelected().length]]">
+                            <oj-button id="saveAdditionButton" class="oj-sm-float-end"
+                                on-oj-action='[[saveAdditionButton]]'>
+                                <span>Save</span>
+                            </oj-button>
+                        </oj-bind-if>
+                        <oj-bind-if test="[[offerRowSelected().length]]">
+                            <oj-button id="saveEditButton" class="oj-sm-float-end"
+                                on-oj-action='[[saveEditButton]]'>
+                                <span>Save</span>
+                            </oj-button>
+                        </oj-bind-if>                                 
+                    </div> 
                 </div>
             </oj-bind-if>
         </oj-bind-if>            

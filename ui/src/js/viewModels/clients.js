@@ -32,7 +32,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                     self.clientNeedsValues = ko.observableArray();
                     self.clientNeedsDataProvider = ko.observable();
                     self.clientNeedsTableColumns = [
-                        {headerText: 'TYPE', field: "type"},
+                        {headerText: 'TYPE', field: "type_name"},
                         {headerText: 'NEED MET?', field: "need_met"},                        
                         {headerText: 'DATE NEEDED', field: "date_needed"},
                         {headerText: 'NOTES', field: "notes"}                        
@@ -56,7 +56,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                         }
                     }, this);
                         
-                    var handlerLogic = function() {                                                
+                    var primaryHandlerLogic = function() {                                                
                         self.handleClientRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
                                 self.addClientButtonSelected([]);                                                                
