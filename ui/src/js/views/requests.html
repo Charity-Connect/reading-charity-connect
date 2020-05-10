@@ -61,15 +61,15 @@
             <oj-bind-if test="[[showPanel()]]">
                 <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
-                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
 <!--                            <oj-bind-if test="[[addRequestButtonSelected().length]]">
                                 <h3>Add request</h3>
                             </oj-bind-if>-->
+                        <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex-item">                    
                             <oj-bind-if test="[[requestRowSelected().length]]">
                                 <h3>Edit request</h3>
                             </oj-bind-if>                            
                         </div>                    
-                        <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+                        <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">
 <!--                                <oj-bind-if test="[[addRequestButtonSelected().length]]">
                                     <oj-button id="saveAdditionButton" class="oj-sm-float-end"
@@ -77,12 +77,12 @@
                                         <span>Save</span>
                                     </oj-button>
                                 </oj-bind-if>-->
-                                <oj-bind-if test="[[requestRowSelected().length]]">
-                                    <oj-button id="saveEditButton" class="oj-sm-float-end"
-                                        on-oj-action='[[saveEditButton]]'>
-                                        <span>Save</span>
-                                    </oj-button>
-                                </oj-bind-if>
+                                <oj-buttonset-many id="decisionOptions" class="oj-sm-float-end"
+                                    value="{{selectedDecisionDisplay}}"
+                                    on-value-changed="[[handleSelectedDecisionChanged]]">
+                                    <oj-option value="decisionAgree">Agree to Help</oj-option>
+                                    <oj-option value="decisionUnable">Unable to Help</oj-option>
+                                </oj-buttonset-many>
                             </div>
                         </div>
                     </div>
@@ -109,16 +109,6 @@
                                 readonly="true">
                             </oj-select-single>
                         </div>
-                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                            <oj-checkboxset id="agreedCheckboxInput"
-                                value="{{checkboxFilterAgreed}}"
-                                on-value-changed="[[handleAgreedInputChanged]]"
-                                title="Checkbox to update help agreed">
-                                <oj-option id="agreedValue" value="agreed">
-                                    <strong>Agreed to help?</strong>
-                                </oj-option>
-                            </oj-checkboxset>
-                        </div>
                     </div>
                     <hr />  
                     <div class="oj-flex sm-1x-row">  
@@ -134,7 +124,7 @@
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                             <oj-label id="editPostcodeLabel"><strong>Postcode:</strong></oj-label>
                             <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"
-                                value="[[requestSelected().postcode]]"
+                                value="[[requestSelected().client_postcode]]"
                                 placeholder="Display postcode"
                                 title="Displays postcode"
                                 readonly="true">                                
@@ -159,27 +149,45 @@
                                 title="Displays date needed"
                                 readonly="true">
                             </oj-input-date>                            
-                        </div>                                
+                        </div> 
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editOrganizationLabel"><strong>Organization:</strong></oj-label>
+                            <oj-input-text id="inputEditOrganization" labelled-by="editOrganizationLabel"
+                                value="[[requestSelected().source_organization_name]]"
+                                placeholder="Display organization"
+                                title="Displays organization"
+                                readonly="true">                                
+                            </oj-input-text>
+                        </div>                                                         
                     </div>
                     <hr />                     
-                    <oj-label id="editRequestDetailsLabel"><strong>Request Details:</strong></oj-label>
-                    <oj-text-area id="textareaEditRequestDetails"
-                        labelled-by="editRequestDetailsLabel" class="oj-form-control-full-width"
-                        value="{{requestSelected().request_details}}"
-                        placeholder="Input request details"
-                        title="Edit request details textarea"
+                    <oj-label id="editRequestNotesLabel"><strong>Request Notes:</strong></oj-label>
+                    <oj-text-area id="textareaEditRequestNotes" class="oj-form-control-full-width"
+                        labelled-by="editRequestNotesLabel"
+                        value="{{requestSelected().request_response_notes}}"
+                        placeholder="Input request notes"
+                        title="Edit request notes textarea"
                         rows="5">                                
                     </oj-text-area>
                     <hr />                     
-                    <oj-label id="editNotesLabel"><strong>Notes:</strong></oj-label>
-                    <oj-text-area id="textareaEditNotes" labelled-by="editNotesLabel"
-                        class="oj-form-control-full-width"
-                        value="[[requestSelected().notes]]"
-                        placeholder="Display notes"
-                        title="Displays notes"
+                    <oj-label id="editNeedNotesLabel"><strong>Need Notes:</strong></oj-label>
+                    <oj-text-area id="textareaEditNeedNotes" class="oj-form-control-full-width"
+                        labelled-by="editNeedNotesLabel"
+                        value="[[requestSelected().need_notes]]"
+                        placeholder="Display need notes"
+                        title="Displays need notes"
                         rows="5"
                         readonly="true">                                
-                    </oj-text-area>                    
+                    </oj-text-area>
+                    <hr />
+                    <div class="oj-helper-clearfix">
+                        <oj-bind-if test="[[requestRowSelected().length]]">
+                            <oj-button id="saveEditButton" class="oj-sm-float-end"
+                                on-oj-action='[[saveEditButton]]'>
+                                <span>Save</span>
+                            </oj-button>
+                        </oj-bind-if>
+                    </div>                                        
                 </div>
             </oj-bind-if>
         </oj-bind-if>            

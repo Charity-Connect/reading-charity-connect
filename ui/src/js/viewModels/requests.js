@@ -8,7 +8,7 @@
  * Your requests ViewModel code goes here
  */
 define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'ojs/ojarraydataprovider',
-    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojcheckboxset', 'ojs/ojdatetimepicker',
+    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
         function (oj, ko, $, accUtils, utils, restClient, ArrayDataProvider) {
 
@@ -25,7 +25,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         {headerText: 'TYPE', field: "type_name"},
                         {headerText: 'NAME', field: "client_name"},                        
                         {headerText: 'TARGET DATE', field: "requestTargetDate", sortProperty: "requestTargetDateRaw"},
-                        {headerText: 'DATE NEEDED', field: "requestDateNeeded", sortProperty: "requestDateNeededRaw"}                       
+                        {headerText: 'DATE NEEDED', field: "requestDateNeeded", sortProperty: "requestDateNeededRaw"},
+                        {headerText: 'ORGANIZATION', field: "source_organization_name"}
                     ];
 
                     self.offerTypesCategoriesValues = ko.observableArray();
@@ -36,12 +37,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offerTypesArray = ko.observableArray([]);
                     self.offerTypesDataProvider = ko.observable();
 
+                    self.selectedDecisionDisplay = ko.observableArray([]);
 //                    self.addRequestButtonSelected = ko.observableArray([]);
                     self.requestRowSelected = ko.observableArray();
                     self.requestSelected = ko.observable("");
                     self.offerTypeSelected = ko.observable("");                        
                     self.offerTypesCategorySelected = ko.observable(""); 
-                    self.checkboxFilterAgreed = ko.observableArray([]);
                     self.targetDateConvertor = ko.observable();
                     self.dateNeededConvertor = ko.observable();                    
                     self.showPanel = ko.computed(function () {
@@ -60,7 +61,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         }
                     }, this);
                         
-                    var handlerLogic = function() {                                                
+                    var primaryHandlerLogic = function() {                                                
                         self.handleRequestRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
 //                                self.addRequestButtonSelected([]);                                                                
@@ -76,7 +77,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 console.log(self.requestSelected());
                                 _calculateCategory(self.requestSelected().type_name);
                                 if (self.requestSelected().agreed) {
-                                    self.checkboxFilterAgreed(self.requestSelected().agreed);
+                                    //logic for "agreed"
                                 }
                                 if (self.requestSelected().requestTargetDateRaw) {
                                     self.targetDateConvertor(new Date(self.requestSelected().requestTargetDateRaw).toISOString());
@@ -150,7 +151,15 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     
 //                    self.saveAdditionButton = function () {
 //                    };
-                    self.handleAgreedInputChanged = function () {
+                    self.handleSelectedDecisionChanged = function (event) {
+                        //button toggle
+                        if (event.detail.value.length === 2) {
+                            var decisionArray = event.detail.value;
+                            decisionArray = decisionArray.filter(function(value) {
+                                return value !== event.detail.previousValue[0];
+                            });
+                            self.selectedDecisionDisplay(decisionArray);
+                        };
                     };
                     self.saveEditButton = function () {
                     };                       
@@ -185,11 +194,13 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 agreed: this.agreed,
                                                 client_name: this.client_name,
                                                 client_need_id: this.client_need_id,
+                                                client_postcode: this.client_postcode,
                                                 complete: this.complete,
                                                 id: this.id,
-                                                notes: this.notes,
-                                                request_details: this.request_details,
-                                                organization_id: this.organization_id,
+                                                need_notes: this.need_notes,
+                                                request_organization_id: this.request_organization_id,
+                                                request_response_notes: this.request_response_notes,
+                                                source_organization_name: this.source_organization_name,
                                                 type_name: this.type_name                                               
                                             });
                                         });

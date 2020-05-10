@@ -43,7 +43,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                         }
                     }, this);
 
-                    var handlerLogic = function() {                        
+                    var primaryHandlerLogic = function() {                        
                         self.handleOrganizationRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
                                 self.addOrganizationButtonSelected([]);                                                                
