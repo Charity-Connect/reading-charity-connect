@@ -121,7 +121,7 @@ class NeedRequest{
 		if($stmt->rowCount()==1){
 
 
-	        $sql = "UPDATE need_requests SET agreed=:agreed,complete=:complete WHERE id=:id";
+	        $sql = "UPDATE need_requests SET agreed=:agreed,complete=:complete,target_date=:target_date,notes=:notes WHERE id=:id";
 
 			$stmt= $this->connection->prepare($sql);
 	        $result= $stmt->execute(['id'=>$this->id
