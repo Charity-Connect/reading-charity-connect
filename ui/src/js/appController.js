@@ -39,20 +39,16 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 // User Info used in Global Navigation area
                 self.userLogin = ko.observable();
 
-				_getUserAjax = function() {
-					//GET /rest/clients/{client id}/client_needs - REST
-					return $.when(restClient.doGet('/rest/users/current')
-						.then(
-							success = function (response) {
-														self.userLogin(response.email);
-							},
-							error = function (response) {
-								console.log(`User not loaded`);
-						})
-					);
-				};
-				_getUserAjax();
-
+				$.ajax({ type: "GET",
+                    url: '/rest/users/current',
+                    dataType: 'json',
+                    success: function (response) {
+						self.userLogin(response.email);
+                    },
+                    error: function(event) {
+							window.location.href="/rest/logout?redirect=/index.html?redirect="+window.location.pathname;
+                    }
+                });
 
 				    self.menuItemAction = function( event ) {
 				        if(event.target.value==="out"){
