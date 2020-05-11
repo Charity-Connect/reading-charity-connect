@@ -44,7 +44,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             if($stmt->execute(['password'=>$param_password,'id'=>$param_id])){
                 // Password updated successfully. Destroy the session, and redirect to login page
                 session_destroy();
-                header("location: login.php");
+                header("location: /index.html");
                 exit();
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
