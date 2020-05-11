@@ -7,16 +7,13 @@ global $force_login;
 
 $force_login=true;
 
-$redirect=$_GET["redirect"];
-
-if(isset($redirect)&&$redirect!==""){
-		header("location: ".$redirect);
+if(isset($_GET["redirect"])&&$_GET["redirect"]!==""){
+		header("location: ".$_GET["redirect"]);
 		exit;
 }
-$redirect=$_POST["redirect"];
 
-if(isset($redirect)&&$redirect!==""){
-		header("location: ".$redirect);
+if(isset($_POST["redirect"])&&$_POST["redirect"]!==""){
+		header("location: ".$_POST["redirect"]);
 		exit;
 }
 
