@@ -7,8 +7,8 @@
 /*
  * Your application specific code will go here
  */
-define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojconfig', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils', 'ojs/ojmodule-element', 'ojs/ojknockout'],
-        function (ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, Config, ArrayDataProvider, KnockoutTemplateUtils) {
+define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojconfig', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils','restClient', 'ojs/ojmodule-element', 'ojs/ojknockout'],
+        function (ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, Config, ArrayDataProvider, KnockoutTemplateUtils,restClient) {
             function ControllerViewModel() {
                 var self = this;
 
@@ -32,19 +32,41 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 
                 // User role
                 const userRole = "user";
-                
+
                 // Header
                 // Application Name used in Branding Area
                 self.appName = ko.observable();
                 // User Info used in Global Navigation area
-                self.userLogin = ko.observable("oli.harris@oracle.com");                
+                self.userLogin = ko.observable();
+
+				_getUserAjax = function() {
+					//GET /rest/clients/{client id}/client_needs - REST
+					return $.when(restClient.doGet('/rest/users/current')
+						.then(
+							success = function (response) {
+														self.userLogin(response.email);
+							},
+							error = function (response) {
+								console.log(`User not loaded`);
+						})
+					);
+				};
+				_getUserAjax();
+
+
+				    self.menuItemAction = function( event ) {
+				        if(event.target.value==="out"){
+							window.location.href="/rest/logout?redirect=/index.html";
+						}
+				    };
+
 
                 // Router setup
                 self.router = Router.rootInstance;
-                
+
                 // Navigation setup
-                var navData;                
-                
+                var navData;
+
                 if (userRole === "system-admin") {
                     self.appName("Charity Connect - System Admin");
                     self.router.configure({
@@ -62,22 +84,22 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                     navData = [
                         {name: 'Organization', id: 'organization',
                             iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-home-icon-24'}
-                    ];                     
+                    ];
                 } else if (userRole === "user") {
-                    self.appName("Charity Connect  - User Account");
+                    self.appName("Reading Charity Connect");
                     self.router.configure({
                         'requests': {label: 'Requests', isDefault: true},
                         'offers': {label: 'Offers'},
-                        'clients': {label: 'Clients'}                        
+                        'clients': {label: 'Clients'}
                     });
                     navData = [
                         {name: 'Requests', id: 'requests',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},                        
+                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},
                         {name: 'Offers', id: 'offers',
                             iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
                         {name: 'Clients', id: 'clients',
                             iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
-                    ];                     
+                    ];
                 };
                 Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
 
@@ -89,16 +111,16 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         return moduleUtils.createConfig({viewPath: viewPath,
                             viewModelPath: modelPath, params: {parentRouter: self.router}});
                     });
-                    
+
                     //addition to set locale
                     var newLang = "en-GB";
                     self.setLang = function (event) {
                         Config.setLocale(newLang,
                             function () {
-                                document.getElementsByTagName('html')[0].setAttribute('lang', newLang);                      
+                                document.getElementsByTagName('html')[0].setAttribute('lang', newLang);
                             }
                         );
-                    }();                    
+                    }();
                 };
 
                 self.navDataProvider = new ArrayDataProvider(navData, {keyAttributes: 'id'});
@@ -110,11 +132,8 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                     this.linkTarget = linkTarget;
                 }
                 self.footerLinks = ko.observableArray([
-                    new footerLink('About Oracle', 'aboutOracle', 'http://www.oracle.com/us/corporate/index.html#menu-about'),
+                    new footerLink('About Reading Connect', 'aboutOracle', '/about'),
                     new footerLink('Contact Us', 'contactUs', 'http://www.oracle.com/us/corporate/contact/index.html'),
-                    new footerLink('Legal Notices', 'legalNotices', 'http://www.oracle.com/us/legal/index.html'),
-                    new footerLink('Terms Of Use', 'termsOfUse', 'http://www.oracle.com/us/legal/terms/index.html'),
-                    new footerLink('Your Privacy Rights', 'yourPrivacyRights', 'http://www.oracle.com/us/legal/privacy/index.html')
                 ]);
             }
 
