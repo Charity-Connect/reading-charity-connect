@@ -37,6 +37,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offerTypesArray = ko.observableArray([]);
                     self.offerTypesDataProvider = ko.observable();
 
+                    self.disableSelectEditType = ko.observable(true);
+
                     self.addOfferButtonSelected = ko.observableArray([]);
                     self.offerRowSelected = ko.observableArray();
                     self.offerSelected = ko.observable("");
@@ -46,6 +48,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.dateEndConvertor = ko.observable();
                     self.showPanel = ko.computed(function () {
                         if (self.addOfferButtonSelected().length) {
+                            //inital disable
+                            self.disableSelectEditType(true);                             
                             // big reset!
                             self.offerRowSelected([]);
                             self.offerSelected("");
@@ -93,6 +97,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         self.handleOfferTypesCategoryChanged = function(event) {
                             if (event.target.value !== "") {
                                 _getOfferTypesFromCategoryAjax(event.target.value);
+                                self.disableSelectEditType(false);
                             }
                         };
                         _getOfferTypesFromCategoryAjax = function(code) {
@@ -123,11 +128,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             );
                         };
                     }();
-                    
+
                     self.saveAdditionButton = function () {
-                    };
-                    self.saveEditButton = function () {
                     };                    
+                    self.saveEditButton = function () {
+                    };                                    
 
                     var getData = function () {
                         self.offersLoaded = ko.observable();

@@ -8,7 +8,7 @@
  * Your requests ViewModel code goes here
  */
 define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'ojs/ojarraydataprovider',
-    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker',
+    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
         function (oj, ko, $, accUtils, utils, restClient, ArrayDataProvider) {
 
@@ -37,34 +37,26 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offerTypesArray = ko.observableArray([]);
                     self.offerTypesDataProvider = ko.observable();
 
+                    self.decisionStatus = ko.observable(null);
+                    self.disableSaveButton = ko.observable(true);
+                    self.requestNotesUpdateVal = ko.observable("");
+
                     self.selectedDecisionDisplay = ko.observableArray([]);
-//                    self.addRequestButtonSelected = ko.observableArray([]);
                     self.requestRowSelected = ko.observableArray();
                     self.requestSelected = ko.observable("");
-                    self.offerTypeSelected = ko.observable("");                        
                     self.offerTypesCategorySelected = ko.observable(""); 
+                    self.offerTypeSelected = ko.observable("");                        
                     self.targetDateConvertor = ko.observable();
                     self.dateNeededConvertor = ko.observable();                    
                     self.showPanel = ko.computed(function () {
-//                        if (self.addRequestButtonSelected().length) {
-//                            // big reset!
-//                            self.requestRowSelected([]);
-//                            self.requestSelected("");
-//                            self.offerTypeSelected("");                        
-//                            self.offerTypesCategorySelected("");
-//                            self.targetDateConvertor("");
-//                            self.dateNeededConvertor("");                            
-//                            return true;                                                            
-//                        }
                         if (self.requestRowSelected().length) {
                             return true;                            
                         }
                     }, this);
                         
-                    var primaryHandlerLogic = function() {                                                
+                    var primaryHandlerLogic = function() {    
                         self.handleRequestRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
-//                                self.addRequestButtonSelected([]);                                                                
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray){
                                     for (var i=0; i < myArray.length; i++) {
@@ -78,9 +70,15 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                                 var calculateCategory = utils.calculateCategory(self.requestSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());                                
                                 self.offerTypesCategorySelected(calculateCategory);
-                                if (self.requestSelected().agreed) {
-                                    //logic for "agreed"
+                                
+                                if (self.requestSelected().agreed === "Y") {
+                                    self.selectedDecisionDisplay(['decisionAgree']);
+                                } else if (self.requestSelected().agreed === "N") {
+                                    self.selectedDecisionDisplay(['decisionUnable']);
+                                } else {
+                                    self.disableSaveButton(true);
                                 }
+
                                 if (self.requestSelected().requestTargetDateRaw) {
                                     self.targetDateConvertor(new Date(self.requestSelected().requestTargetDateRaw).toISOString());
                                 } else {
@@ -90,6 +88,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     self.dateNeededConvertor(new Date(self.requestSelected().requestDateNeededRaw).toISOString());
                                 } else {
                                     self.dateNeededConvertor("");
+                                }
+                                
+                                if (self.requestSelected().request_response_notes) {
+                                    self.requestNotesUpdateVal(self.requestSelected().request_response_notes);
+                                } else {
+                                    self.requestNotesUpdateVal("");
                                 }                                
                             }
                         };
@@ -128,20 +132,114 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         };                        
                     }();
                     
-//                    self.saveAdditionButton = function () {
-//                    };
-                    self.handleSelectedDecisionChanged = function (event) {
-                        //button toggle
-                        if (event.detail.value.length === 2) {
-                            var decisionArray = event.detail.value;
-                            decisionArray = decisionArray.filter(function(value) {
-                                return value !== event.detail.previousValue[0];
-                            });
-                            self.selectedDecisionDisplay(decisionArray);
+                    var agreeDialogLogic = function() {    
+                        self.targetDatePlaceholder = ko.observable("Please select a decision");
+                        self.handleSelectedDecisionChanged = function (event) {
+                            if (event.detail.updatedFrom === "internal") {
+                                //button toggle
+                                if (event.detail.value.length === 2) {
+                                    var decisionArray = event.detail.value;
+                                    decisionArray = decisionArray.filter(function(value) {
+                                        return value !== event.detail.previousValue[0];
+                                    });
+                                    self.selectedDecisionDisplay(decisionArray);
+                                };
+                                //#agreeDialog, targetDate and #saveButton behaviour                            
+                                if (self.selectedDecisionDisplay()[0] === 'decisionAgree') {
+                                    document.getElementById('agreeDialog').open();
+                                    self.targetDatePlaceholder("Please select target date");
+                                    self.decisionStatus("Y");
+                                    self.disableSaveButton(false);
+                                } else if (self.selectedDecisionDisplay()[0] === 'decisionUnable') {
+                                    self.targetDateConvertor("");
+                                    self.targetDatePlaceholder("No target date");
+                                    self.decisionStatus("N");
+                                    self.disableSaveButton(false);
+                                } else if (!self.selectedDecisionDisplay()[0]) {
+                                    self.targetDateConvertor("");
+                                    self.targetDatePlaceholder("Please select a decision");
+                                    self.requestNotesUpdateVal(self.requestSelected().request_response_notes);
+                                    self.disableSaveButton(true);
+                                };                              
+                            };
                         };
-                    };
-                    self.saveEditButton = function () {
-                    };                       
+
+                        self.requestNotesUpdateRawVal = ko.observable("");
+                        self.handleRequestNotesUpdateChanged = function(event) {
+                            //protect initial load
+                            if (event.detail.originalEvent) {
+                                self.requestNotesUpdateVal(self.requestNotesUpdateRawVal());
+                            }    
+                        };                        
+
+                        self.disableOKButton = ko.observable(true);
+                        self.handleTargetDateChanged = function (event) {
+                            if (event.target.value !== null) {
+                                self.disableOKButton(false);
+                            } else {
+                                self.disableOKButton(true);
+                            }
+                        };
+                        self.closeAgreeModalButton = function () {
+                            document.getElementById('agreeDialog').close();
+                        };
+                    }();
+
+                    var postData = function() {    
+                        self.fileContentPosted = ko.observable(true);
+                        self.postTextColor = ko.observable();
+                        self.postText = ko.observable();
+                        self.saveButton = function () {
+                            //locale "en-GB" - change UTC to YYYY-MM-DD
+                            _formatDate = function(inputDate) {
+                                if (inputDate !== null) {
+                                    return inputDate.split('T')[0];
+                                } else {
+                                    return null;
+                                }
+                            };
+
+                            var responseJson = {
+                                agreed: self.decisionStatus(),
+                                client_name: $('#inputEditName')[0].value,
+                                client_need_id: self.requestSelected().client_need_id,
+                                client_postcode: $('#inputEditPostcode')[0].value,
+                                complete: self.requestSelected().complete,
+                                date_needed: _formatDate($('#datepickerEditDateNeeded')[0].value),
+                                id: self.requestSelected().id,
+                                need_notes: $('#textareaEditNeedNotes')[0].value,
+                                request_organization_id: self.requestSelected().request_organization_id,
+                                request_response_notes: $('#textareaEditRequestNotes')[0].value,
+                                source_organization_name: $('#inputEditOrganization')[0].value,
+                                target_date: _formatDate($('#datepickerEditTargetDate')[0].value),
+                                type_name: $('#selectEditType')[0].valueItem.data.label
+                            };
+
+                            self.fileContentPosted(false);
+                            self.disableSaveButton(true);
+                            //POST /rest/need_requests - REST
+                            return $.when(restClient.doPost('http://www.rdg-connect.org/rest/need_requests', responseJson)
+                                .then(
+                                    success = function (response) {
+                                        self.postText("You have succesfully saved the request.");
+                                        self.postTextColor("green");
+                                        console.log("data posted");
+                                    },
+                                    error = function (response) {
+                                        self.postText("Error: Request not saved.");
+                                        self.postTextColor("red");
+                                        console.log("data not posted");
+                                }).then(function () {
+                                    self.fileContentPosted(true);
+                                    $("#postMessage").css('display', 'inline-block').fadeOut(2000, function(){
+                                        self.disableSaveButton(false);
+                                    });                                
+                                }).then(function () {
+                                    console.log(responseJson);
+                                })
+                            );                                
+                        };                    
+                    }();                                          
 
                     var getData = function () {
                         self.requestsLoaded = ko.observable();
