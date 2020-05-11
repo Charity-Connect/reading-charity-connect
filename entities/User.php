@@ -95,15 +95,14 @@ class User{
 	        	$stmt = $this->connection->prepare($query);
 	        	$stmt->execute(['id'=>$id]);
 	        } else if(is_org_admin()){
-	        	$organizationId=$_SESSION["organization_id"];
-	        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u, user_organizations o where u.user_id=o.user_id and o.organization_id=:organization_id and u.id=:id";
+	        echo $_SESSION["organization_id"];
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u, user_organizations o where u.id=o.user_id and o.organization_id=:organization_id and u.id=:id UNION (SELECT u.id,u.display_name,u.email,u.phone from users u where u.id=:id and u.id=:id2)";
 	        	$stmt = $this->connection->prepare($query);
-	        	$stmt->execute(['organization_id'=>$organization_id,'id'=>$id]);
+	        	$stmt->execute(['organization_id'=>$_SESSION["organization_id"],'id'=>$id,'id2'=>$_SESSION["id"]]);
 	        } else {
-				$user_id=$_SESSION["id"];
-	        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u where u.id=:id and u.id=:id2";
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u where u.id=:id";
 	        	$stmt = $this->connection->prepare($query);
-		        $stmt->execute(['id'=>$id,'id2'=>$user_id]);
+		        $stmt->execute(['id'=>$_SESSION["id"]]);
         }
 	        return $stmt;
 	    }

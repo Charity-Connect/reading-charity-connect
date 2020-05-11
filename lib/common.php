@@ -165,14 +165,15 @@ $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 }
 
 function login($connection,$email,$password){
-global $force_login;
+/*global $force_login;
 if($force_login===false){
 	$_SESSION["loggedin"] = true;
 	$_SESSION["id"] = 19;
 	$_SESSION["email"] = "oli@test.com";
 	$_SESSION["organization_id"]=1;
 	return true;
-}
+}*/
+	session_start();
 // Check if the user is logged in, if not then check for basic auth and if not, redirect them to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 	$stmt = $connection->prepare("SELECT * FROM users WHERE email = :email");
