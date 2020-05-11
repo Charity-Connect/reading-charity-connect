@@ -37,6 +37,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offerTypesArray = ko.observableArray([]);
                     self.offerTypesDataProvider = ko.observable();
 
+                    self.disableSelectEditType = ko.observable(true);
+
                     self.addOfferButtonSelected = ko.observableArray([]);
                     self.offerRowSelected = ko.observableArray();
                     self.offerSelected = ko.observable("");
@@ -46,6 +48,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.dateEndConvertor = ko.observable();
                     self.showPanel = ko.computed(function () {
                         if (self.addOfferButtonSelected().length) {
+                            //inital disable
+                            self.disableSelectEditType(true);                             
                             // big reset!
                             self.offerRowSelected([]);
                             self.offerSelected("");
@@ -74,7 +78,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 };                        
                                 self.offerSelected(searchNodes(event.target.currentRow.rowKey, self.offersValues()));                         
                                 console.log(self.offerSelected());
-                                _calculateCategory(self.offerSelected().type);
+
+                                var calculateCategory = utils.calculateCategory(self.offerSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());                                
+                                self.offerTypesCategorySelected(calculateCategory);
                                 if (self.offerSelected().offerDateAvailableRaw) {
                                     self.dateAvailableConvertor(new Date(self.offerSelected().offerDateAvailableRaw).toISOString());
                                 } else {
@@ -87,33 +93,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 }
                             }
                         };
-                        //function for reverse search of Category based on Type loaded in
-                        _calculateCategory = function(type) {
-                            //find whether node exists based on selection
-                            function searchNodes(nameKey, myArray){
-                                for (var i=0; i < myArray.length; i++) {
-                                    if (myArray[i].type === nameKey) {
-                                        return myArray[i];                                    
-                                    }
-                                }
-                            };
-                            var searchTypes = searchNodes(type, self.offerTypesValues());                            
-
-                            //find whether node exists based on selection
-                            function searchNodes(nameKey, myArray){
-                                for (var i=0; i < myArray.length; i++) {
-                                    if (myArray[i].category === nameKey) {
-                                        return myArray[i];                                    
-                                    }
-                                }
-                            };
-                            var searchCategories = searchNodes(searchTypes, self.offerTypesCategoriesValues()).code;
-                            self.offerTypesCategorySelected(searchCategories); 
-                        }; 
 
                         self.handleOfferTypesCategoryChanged = function(event) {
                             if (event.target.value !== "") {
                                 _getOfferTypesFromCategoryAjax(event.target.value);
+                                self.disableSelectEditType(false);
                             }
                         };
                         _getOfferTypesFromCategoryAjax = function(code) {
@@ -144,11 +128,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             );
                         };
                     }();
-                    
+
                     self.saveAdditionButton = function () {
-                    };
-                    self.saveEditButton = function () {
                     };                    
+                    self.saveEditButton = function () {
+                    };                                    
 
                     var getData = function () {
                         self.offersLoaded = ko.observable();

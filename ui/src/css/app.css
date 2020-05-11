@@ -90,7 +90,7 @@ ul.no-disc {
 /* -----------------------------------------------
 :: .oj-table.row-selectable
 -------------------------------------------------- */
- keep table-row highlight when user clicks header 
+/* keep table-row highlight when user clicks header */
 .oj-table.row-selectable .oj-table-column-header-cell {
     pointer-events: none;
 }

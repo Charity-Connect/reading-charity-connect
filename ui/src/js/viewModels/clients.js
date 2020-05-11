@@ -93,13 +93,13 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                             );
                         };
                     }();
-                    
-                    self.saveAdditionButton = function () {
-                    };
-                    self.saveEditButton = function () {
-                    };
+
                     self.addNeedButton = function () {
                     };
+                    self.saveAdditionButton = function () {
+                    };                    
+                    self.saveEditButton = function () {
+                    };                                    
 
                     var getData = function () {
                         self.clientsLoaded = ko.observable();
