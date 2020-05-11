@@ -12,16 +12,26 @@ function initRest(){
 	include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
 	$dbclass = new DBClass();
 	$connection = $dbclass->getConnection();
-	$email=$_SERVER['PHP_AUTH_USER'];
-	$password=$_SERVER['PHP_AUTH_PW'];
+	if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 
-	if (login($connection,$email,$password)){
-		header("Content-Type: application/json; charset=UTF-8");
-		return $connection;
-	} else {
-		header("location: /login/login.php");
-		exit;
+		if(isset($_SERVER['PHP_AUTH_USER'])){
+			$email=$_SERVER['PHP_AUTH_USER'];
+			$password=$_SERVER['PHP_AUTH_PW'];
+
+			if (login($connection,$email,$password)){
+				header("Content-Type: application/json; charset=UTF-8");
+				return $connection;
+			} else {
+				header("location: /login/login.php");
+				exit;
+			}
+		} else {
+				header("location: /login/login.php");
+				exit;
+		}
+
 	}
+	return $connection;
 }
 
 function initPublicRest(){

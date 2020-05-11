@@ -5,7 +5,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/NeedRequest.php';
 
 $connection=initRest();
 
-
     $need_request = new NeedRequest($connection);
 $data = json_decode(file_get_contents('php://input'), true);
 if(isset($data)) {
@@ -14,11 +13,10 @@ if(isset($data)) {
     header("Access-Control-Max-Age: 3600");
     header("Access-Control-Allow-Headers: Content-organization_id, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-
     $need_request->client_need_id = $data['client_need_id'];
     $need_request->request_organization_id = $data['request_organization_id'];
-    $need_request->agreed = isset($data['agreed'])?$data['agreed']:'N';
-    $need_request->complete = isset($data['complete'])?$data['complete']:'N';
+    $need_request->agreed = $data['agreed'];
+    $need_request->complete = $data['complete'];
     $need_request->target_date = $data['target_date'];
     $need_request->request_response_notes = $data['request_response_notes'];
 

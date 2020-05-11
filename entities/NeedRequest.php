@@ -29,6 +29,9 @@ class NeedRequest{
 	        	,request.organization_id as request_organization_id
 	        	,request.target_date
 	        	,request.notes request_response_notes
+	        	,request.agreed
+	        	,request.complete
+	        	,request.notes request_response_notes
 	        	,client_need.notes need_notes
 	        	,client.name as client_name
 	        	,client.postcode as client_postcode
