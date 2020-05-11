@@ -23,7 +23,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.requestsDataProvider = ko.observable();
                     self.requestsTableColumns = [
                         {headerText: 'TYPE', field: "type_name"},
-                        {headerText: 'NAME', field: "client_name"},                        
+                        {headerText: 'NAME', field: "client_name"},
                         {headerText: 'TARGET DATE', field: "requestTargetDate", sortProperty: "requestTargetDateRaw"},
                         {headerText: 'DATE NEEDED', field: "requestDateNeeded", sortProperty: "requestDateNeededRaw"},
                         {headerText: 'ORGANIZATION', field: "source_organization_name"}
@@ -44,33 +44,33 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.selectedDecisionDisplay = ko.observableArray([]);
                     self.requestRowSelected = ko.observableArray();
                     self.requestSelected = ko.observable("");
-                    self.offerTypesCategorySelected = ko.observable(""); 
-                    self.offerTypeSelected = ko.observable("");                        
+                    self.offerTypesCategorySelected = ko.observable("");
+                    self.offerTypeSelected = ko.observable("");
                     self.targetDateConvertor = ko.observable();
-                    self.dateNeededConvertor = ko.observable();                    
+                    self.dateNeededConvertor = ko.observable();
                     self.showPanel = ko.computed(function () {
                         if (self.requestRowSelected().length) {
-                            return true;                            
+                            return true;
                         }
                     }, this);
-                        
-                    var primaryHandlerLogic = function() {    
+
+                    var primaryHandlerLogic = function() {
                         self.handleRequestRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray){
                                     for (var i=0; i < myArray.length; i++) {
                                         if (myArray[i].id === nameKey) {
-                                            return myArray[i];                                    
+                                            return myArray[i];
                                         }
                                     }
-                                };                        
-                                self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));                         
+                                };
+                                self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));
                                 console.log(self.requestSelected());
 
-                                var calculateCategory = utils.calculateCategory(self.requestSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());                                
+                                var calculateCategory = utils.calculateCategory(self.requestSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());
                                 self.offerTypesCategorySelected(calculateCategory);
-                                
+
                                 if (self.requestSelected().agreed === "Y") {
                                     self.selectedDecisionDisplay(['decisionAgree']);
                                 } else if (self.requestSelected().agreed === "N") {
@@ -89,15 +89,15 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 } else {
                                     self.dateNeededConvertor("");
                                 }
-                                
+
                                 if (self.requestSelected().request_response_notes) {
                                     self.requestNotesUpdateVal(self.requestSelected().request_response_notes);
                                 } else {
                                     self.requestNotesUpdateVal("");
-                                }                                
+                                }
                             }
                         };
-                        
+
                         self.handleOfferTypesCategoryChanged = function(event) {
                             if (event.target.value !== "") {
                                 _getOfferTypesFromCategoryAjax(event.target.value);
@@ -106,10 +106,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         _getOfferTypesFromCategoryAjax = function(code) {
                             self.offerTypesArray([]);
                             //GET /rest/offer_type_categories/{code}/offer_types - REST
-                            return $.when(restClient.doGet(`http://www.rdg-connect.org/rest/offer_type_categories/${code}/offer_types`)
+                            return $.when(restClient.doGet('/rest/offer_type_categories/${code}/offer_types')
                                 .then(
                                     success = function (response) {
-                                        console.log(response.offer_types);                                        
+                                        console.log(response.offer_types);
                                         self.offerTypesValues(response.offer_types);
                                     },
                                     error = function (response) {
@@ -119,7 +119,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     for (var i = 0; i < self.offerTypesValues().length; i++) {
                                         self.offerTypesArray().push({
                                             "value": self.offerTypesValues()[i].type,
-                                            "label": self.offerTypesValues()[i].name                                            
+                                            "label": self.offerTypesValues()[i].name
                                         });
                                     };
                                     //sort nameValue alphabetically
@@ -129,10 +129,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     self.offerTypeSelected(self.offerTypesArray()[0].value);
                                 })
                             );
-                        };                        
+                        };
                     }();
-                    
-                    var agreeDialogLogic = function() {    
+
+                    var agreeDialogLogic = function() {
                         self.targetDatePlaceholder = ko.observable("Please select a decision");
                         self.handleSelectedDecisionChanged = function (event) {
                             if (event.detail.updatedFrom === "internal") {
@@ -144,7 +144,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     });
                                     self.selectedDecisionDisplay(decisionArray);
                                 };
-                                //#agreeDialog, targetDate and #saveButton behaviour                            
+                                //#agreeDialog, targetDate and #saveButton behaviour
                                 if (self.selectedDecisionDisplay()[0] === 'decisionAgree') {
                                     document.getElementById('agreeDialog').open();
                                     self.targetDatePlaceholder("Please select target date");
@@ -160,7 +160,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     self.targetDatePlaceholder("Please select a decision");
                                     self.requestNotesUpdateVal(self.requestSelected().request_response_notes);
                                     self.disableSaveButton(true);
-                                };                              
+                                };
                             };
                         };
 
@@ -169,8 +169,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             //protect initial load
                             if (event.detail.originalEvent) {
                                 self.requestNotesUpdateVal(self.requestNotesUpdateRawVal());
-                            }    
-                        };                        
+                            }
+                        };
 
                         self.disableOKButton = ko.observable(true);
                         self.handleTargetDateChanged = function (event) {
@@ -185,7 +185,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         };
                     }();
 
-                    var postData = function() {    
+                    var postData = function() {
                         self.fileContentPosted = ko.observable(true);
                         self.postTextColor = ko.observable();
                         self.postText = ko.observable();
@@ -218,7 +218,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             self.fileContentPosted(false);
                             self.disableSaveButton(true);
                             //POST /rest/need_requests - REST
-                            return $.when(restClient.doPost('http://www.rdg-connect.org/rest/need_requests', responseJson)
+                            return $.when(restClient.doPost('/rest/need_requests', responseJson)
                                 .then(
                                     success = function (response) {
                                         self.postText("You have succesfully saved the request.");
@@ -233,13 +233,13 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     self.fileContentPosted(true);
                                     $("#postMessage").css('display', 'inline-block').fadeOut(2000, function(){
                                         self.disableSaveButton(false);
-                                    });                                
+                                    });
                                 }).then(function () {
                                     console.log(responseJson);
                                 })
-                            );                                
-                        };                    
-                    }();                                          
+                            );
+                        };
+                    }();
 
                     var getData = function () {
                         self.requestsLoaded = ko.observable();
@@ -248,7 +248,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         function getRequestsAjax() {
                             //GET /rest/requests - REST
                             self.requestsLoaded(false);
-                            return $.when(restClient.doGet('http://www.rdg-connect.org/rest/need_requests')
+                            return $.when(restClient.doGet('/rest/need_requests')
                                 .then(
                                     success = function (response) {
                                         console.log(response.need_request);
@@ -264,8 +264,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 var dateNeededCleansedLocale = dateNeededCleansed.toLocaleDateString();
                                             }
                                             self.requestsValues().push({
-                                                requestTargetDateRaw: targetDateCleansed,  
-                                                requestTargetDate: targetDateCleansedLocale,  
+                                                requestTargetDateRaw: targetDateCleansed,
+                                                requestTargetDate: targetDateCleansedLocale,
                                                 requestDateNeededRaw: dateNeededCleansed,
                                                 requestDateNeeded: dateNeededCleansedLocale,
                                                 agreed: this.agreed,
@@ -278,10 +278,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 request_organization_id: this.request_organization_id,
                                                 request_response_notes: this.request_response_notes,
                                                 source_organization_name: this.source_organization_name,
-                                                type_name: this.type_name                                               
+                                                type_name: this.type_name
                                             });
                                         });
-                                        
+
                                         self.requestsValid(true);
                                     },
                                     error = function (response) {
@@ -300,7 +300,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                         function getOfferTypesCategoriesAjax() {
                             //GET /rest/offer_type_categories - REST
-                            return $.when(restClient.doGet('http://www.rdg-connect.org/rest/offer_type_categories')
+                            return $.when(restClient.doGet('/rest/offer_type_categories')
                                 .then(
                                     success = function (response) {
                                         console.log(response.offer_type_categorys);
@@ -313,7 +313,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     for (var i = 0; i < self.offerTypesCategoriesValues().length; i++) {
                                         self.offerTypesCategoriesArray().push({
                                             "value": self.offerTypesCategoriesValues()[i].code,
-                                            "label": self.offerTypesCategoriesValues()[i].name                                            
+                                            "label": self.offerTypesCategoriesValues()[i].name
                                         });
                                     };
                                     //sort nameValue alphabetically
@@ -332,7 +332,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             //even if error remove loading bar
                             self.requestsLoaded(true);
                         });
-                    }();                                     
+                    }();
                 };
 
                 self.disconnected = function () {

@@ -25,7 +25,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                     self.clientsTableColumns = [
                         {headerText: 'NAME', field: "name"},
                         {headerText: 'ADDRESS', renderer: self.renderer1, sortProperty: "address"},
-                        {headerText: 'EMAIL', field: "email"},                        
+                        {headerText: 'EMAIL', field: "email"},
                         {headerText: 'PHONE', field: "phone"}
                     ];
 
@@ -33,9 +33,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                     self.clientNeedsDataProvider = ko.observable();
                     self.clientNeedsTableColumns = [
                         {headerText: 'TYPE', field: "type_name"},
-                        {headerText: 'NEED MET?', field: "need_met"},                        
+                        {headerText: 'NEED MET?', field: "need_met"},
                         {headerText: 'DATE NEEDED', field: "date_needed"},
-                        {headerText: 'NOTES', field: "notes"}                        
+                        {headerText: 'NOTES', field: "notes"}
                     ];
 
                     self.selectedRowDisplay = ko.observable("clientNeeds");
@@ -48,34 +48,34 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                             // big reset!
                             self.clientRowSelected([]);
                             self.clientSelected("");
-                            return true;                                                            
+                            return true;
                         }
                         if (self.clientRowSelected().length) {
                             self.selectedRowDisplay("clientNeeds");
-                            return true;                            
+                            return true;
                         }
                     }, this);
-                        
-                    var primaryHandlerLogic = function() {                                                
+
+                    var primaryHandlerLogic = function() {
                         self.handleClientRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
-                                self.addClientButtonSelected([]);                                                                
+                                self.addClientButtonSelected([]);
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray){
                                     for (var i=0; i < myArray.length; i++) {
                                         if (myArray[i].id === nameKey) {
-                                            return myArray[i];                                    
+                                            return myArray[i];
                                         }
                                     }
-                                };                        
-                                self.clientSelected(searchNodes(event.target.currentRow.rowKey, self.clientsValues()));                         
+                                };
+                                self.clientSelected(searchNodes(event.target.currentRow.rowKey, self.clientsValues()));
                                 console.log(self.clientSelected());
                                 _getClientNeedsAjax(self.clientSelected().id);
                             }
                         };
                         _getClientNeedsAjax = function(clientId) {
                             //GET /rest/clients/{client id}/client_needs - REST
-                            return $.when(restClient.doGet(`http://www.rdg-connect.org/rest/clients/${clientId}/client_needs`)
+                            return $.when(restClient.doGet('/rest/clients/${clientId}/client_needs')
                                 .then(
                                     success = function (response) {
                                         console.log(response.client_needs);
@@ -97,9 +97,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                     self.addNeedButton = function () {
                     };
                     self.saveAdditionButton = function () {
-                    };                    
+                    };
                     self.saveEditButton = function () {
-                    };                                    
+                    };
 
                     var getData = function () {
                         self.clientsLoaded = ko.observable();
@@ -108,7 +108,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                         function getClientsAjax() {
                             //GET /rest/clients - REST
                             self.clientsLoaded(false);
-                            return $.when(restClient.doGet('http://www.rdg-connect.org/rest/clients')
+                            return $.when(restClient.doGet('/rest/clients')
                                 .then(
                                     success = function (response) {
                                         console.log(response.clients);
@@ -136,7 +136,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                             //even if error remove loading bar
                             self.clientsLoaded(true);
                         });
-                    }();                                     
+                    }();
                 };
 
                 self.disconnected = function () {

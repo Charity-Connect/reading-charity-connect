@@ -26,9 +26,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         {headerText: 'TYPE', field: "type_name"},
                         {headerText: 'QUANTITY', field: "quantity"},
                         {headerText: 'DATE AVAILABLE', field: 'offerDateAvailable', sortProperty: "offerDateAvailableRaw"},
-                        {headerText: 'DATE END', field: 'offerDateEnd', sortProperty: "offerDateEndRaw"}                        
-                    ];                    
-                    
+                        {headerText: 'DATE END', field: 'offerDateEnd', sortProperty: "offerDateEndRaw"}
+                    ];
+
                     self.offerTypesCategoriesValues = ko.observableArray();
                     self.offerTypesCategoriesArray = ko.observableArray([]);
                     self.offerTypesCategoriesDataProvider = ko.observable();
@@ -42,44 +42,44 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.addOfferButtonSelected = ko.observableArray([]);
                     self.offerRowSelected = ko.observableArray();
                     self.offerSelected = ko.observable("");
-                    self.offerTypeSelected = ko.observable("");                        
+                    self.offerTypeSelected = ko.observable("");
                     self.offerTypesCategorySelected = ko.observable("");
                     self.dateAvailableConvertor = ko.observable();
                     self.dateEndConvertor = ko.observable();
                     self.showPanel = ko.computed(function () {
                         if (self.addOfferButtonSelected().length) {
                             //inital disable
-                            self.disableSelectEditType(true);                             
+                            self.disableSelectEditType(true);
                             // big reset!
                             self.offerRowSelected([]);
                             self.offerSelected("");
-                            self.offerTypeSelected("");                        
+                            self.offerTypeSelected("");
                             self.offerTypesCategorySelected("");
                             self.dateAvailableConvertor("");
                             self.dateEndConvertor("");
-                            return true;                                                            
+                            return true;
                         }
                         if (self.offerRowSelected().length) {
-                            return true;                            
+                            return true;
                         }
                     }, this);
 
                     var primaryHandlerLogic = function () {
                         self.handleOfferRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
-                                self.addOfferButtonSelected([]);                                                                
+                                self.addOfferButtonSelected([]);
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray){
                                     for (var i=0; i < myArray.length; i++) {
                                         if (myArray[i].id === nameKey) {
-                                            return myArray[i];                                    
+                                            return myArray[i];
                                         }
                                     }
-                                };                        
-                                self.offerSelected(searchNodes(event.target.currentRow.rowKey, self.offersValues()));                         
+                                };
+                                self.offerSelected(searchNodes(event.target.currentRow.rowKey, self.offersValues()));
                                 console.log(self.offerSelected());
 
-                                var calculateCategory = utils.calculateCategory(self.offerSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());                                
+                                var calculateCategory = utils.calculateCategory(self.offerSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());
                                 self.offerTypesCategorySelected(calculateCategory);
                                 if (self.offerSelected().offerDateAvailableRaw) {
                                     self.dateAvailableConvertor(new Date(self.offerSelected().offerDateAvailableRaw).toISOString());
@@ -103,7 +103,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         _getOfferTypesFromCategoryAjax = function(code) {
                             self.offerTypesArray([]);
                             //GET /rest/offer_type_categories/{code}/offer_types - REST
-                            return $.when(restClient.doGet(`http://www.rdg-connect.org/rest/offer_type_categories/${code}/offer_types`)
+                            return $.when(restClient.doGet('/rest/offer_type_categories/${code}/offer_types')
                                 .then(
                                     success = function (response) {
                                         console.log(response.offer_types);
@@ -116,7 +116,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     for (var i = 0; i < self.offerTypesValues().length; i++) {
                                         self.offerTypesArray().push({
                                             "value": self.offerTypesValues()[i].type,
-                                            "label": self.offerTypesValues()[i].name                                            
+                                            "label": self.offerTypesValues()[i].name
                                         });
                                     };
                                     //sort nameValue alphabetically
@@ -130,9 +130,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     }();
 
                     self.saveAdditionButton = function () {
-                    };                    
+                    };
                     self.saveEditButton = function () {
-                    };                                    
+                    };
 
                     var getData = function () {
                         self.offersLoaded = ko.observable();
@@ -141,10 +141,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         function getOffersAjax() {
                             //GET /rest/offers - REST
                             self.offersLoaded(false);
-                            return $.when(restClient.doGet('http://www.rdg-connect.org/rest/offers')
+                            return $.when(restClient.doGet('/rest/offers')
                                 .then(
                                     success = function (response) {
-                                        console.log(response.offers);                                        
+                                        console.log(response.offers);
                                         $.each(response.offers, function(index, item) {
                                             if (this.date_available) {
                                                 //no need to split as UTC anyway
@@ -157,8 +157,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 var dateEndCleansedLocale = dateEndCleansed.toLocaleDateString();
                                             }
                                             self.offersValues().push({
-                                                offerDateAvailableRaw: dateAvailableCleansed,  
-                                                offerDateAvailable: dateAvailableCleansedLocale,  
+                                                offerDateAvailableRaw: dateAvailableCleansed,
+                                                offerDateAvailable: dateAvailableCleansedLocale,
                                                 offerDateEndRaw: dateEndCleansed,
                                                 offerDateEnd: dateEndCleansedLocale,
                                                 details: this.details,
@@ -167,13 +167,13 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 name: this.name,
                                                 organization_id: this.organization_id,
                                                 organization_name: this.organization_name,
-                                                postcode: this.postcode,                                                
-                                                quantity: this.quantity,                                                
+                                                postcode: this.postcode,
+                                                quantity: this.quantity,
                                                 type: this.type,
                                                 type_name: this.type_name
                                             });
                                         });
-                                                                                
+
                                         self.offersValid(true);
                                     },
                                     error = function (response) {
@@ -189,10 +189,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 })
                             );
                         };
-                        
+
                         function getOfferTypesCategoriesAjax() {
                             //GET /rest/offer_type_categories - REST
-                            return $.when(restClient.doGet('http://www.rdg-connect.org/rest/offer_type_categories')
+                            return $.when(restClient.doGet('/rest/offer_type_categories')
                                 .then(
                                     success = function (response) {
                                         console.log(response.offer_type_categorys);
@@ -205,7 +205,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     for (var i = 0; i < self.offerTypesCategoriesValues().length; i++) {
                                         self.offerTypesCategoriesArray().push({
                                             "value": self.offerTypesCategoriesValues()[i].code,
-                                            "label": self.offerTypesCategoriesValues()[i].name                                            
+                                            "label": self.offerTypesCategoriesValues()[i].name
                                         });
                                     };
                                     //sort nameValue alphabetically
@@ -214,8 +214,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 }).then(function () {
                                 })
                             );
-                        }; 
-                        
+                        };
+
                         Promise.all([getOffersAjax()])
                         .then(function () {
                             Promise.all([getOfferTypesCategoriesAjax()])
@@ -223,8 +223,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         .catch(function () {
                             //even if error remove loading bar
                             self.offersLoaded(true);
-                        });                                  
-                    }();               
+                        });
+                    }();
                 };
 
                 self.disconnected = function () {

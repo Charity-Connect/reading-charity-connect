@@ -33,30 +33,30 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                     self.organizationSelected = ko.observable("");
                     self.showPanel = ko.computed(function () {
                         if (self.addOrganizationButtonSelected().length) {
-                            // big reset!                                
+                            // big reset!
                             self.organizationRowSelected([]);
                             self.organizationSelected("");
-                            return true;                                                            
+                            return true;
                         }
                         if (self.organizationRowSelected().length) {
-                            return true;                            
+                            return true;
                         }
                     }, this);
 
-                    var primaryHandlerLogic = function() {                        
+                    var primaryHandlerLogic = function() {
                         self.handleOrganizationRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
-                                self.addOrganizationButtonSelected([]);                                                                
+                                self.addOrganizationButtonSelected([]);
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray){
                                     for (var i=0; i < myArray.length; i++) {
                                         if (myArray[i].id === nameKey) {
-                                            return myArray[i];                                    
+                                            return myArray[i];
                                         }
                                     }
-                                };                        
-                                self.organizationSelected(searchNodes(event.target.currentRow.rowKey, self.organizationsValues()));                         
-                                console.log(self.organizationSelected());                                
+                                };
+                                self.organizationSelected(searchNodes(event.target.currentRow.rowKey, self.organizationsValues()));
+                                console.log(self.organizationSelected());
                             }
                         };
                     }();
@@ -64,7 +64,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                     self.saveAdditionButton = function () {
                     };
                     self.saveEditButton = function () {
-                    };  
+                    };
 
                     var getData = function () {
                         self.organizationsLoaded = ko.observable();
@@ -73,7 +73,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                         function getOrganizationsAjax() {
                             //GET /rest/organizations - REST
                             self.organizationsLoaded(false);
-                            return $.when(restClient.doGet('http://www.rdg-connect.org/rest/organizations')
+                            return $.when(restClient.doGet('/rest/organizations')
                                 .then(
                                     success = function (response) {
                                         console.log(response.organizations);
@@ -101,7 +101,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                             //even if error remove loading bar
                             self.organizationsLoaded(true);
                         });
-                    }();              
+                    }();
                 };
 
                 self.disconnected = function () {
