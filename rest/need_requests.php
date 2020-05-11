@@ -59,13 +59,24 @@ if(isset($data)) {
     $view = "";
     if(isset($_GET["view"]))
 	    $view = $_GET["view"];
-
     if($view=="one") {
         $need_request->id=$_GET["id"];
         $need_request->read();
         echo json_encode($need_request);
     } else {
-        $stmt = $need_request->readAll();
+    	if($view=="unresponded"){
+        	$stmt = $need_request->readFiltered("U","");
+		} else if($view=="agreed"){
+        	$stmt = $need_request->readFiltered("Y","");
+		} else if($view=="rejected"){
+        	$stmt = $need_request->readFiltered("N","");
+		} else if($view=="completed"){
+        	$stmt = $need_request->readFiltered("Y","Y");
+		}else if($view=="in_progress"){
+        	$stmt = $need_request->readFiltered("Y","N");
+		} else {
+        	$stmt = $need_request->readAll();
+        }
         $count = $stmt->rowCount();
         if($count > 0){
 

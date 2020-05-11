@@ -32,6 +32,10 @@ RewriteRule ^login   session_login.php [L,qsa]
 RewriteRule ^logout   session_logout.php [L,qsa]
 RewriteRule ^password_reset_request   password_reset_request.php [L,qsa]
 RewriteRule ^password_reset_confirm   password_reset_confirm.php [L,qsa]
+
+RewriteCond %{QUERY_STRING} ^filter=(.+)$
+RewriteRule ^need_requests$ need_requests.php?view=%1 [L,qsa]
+
 RewriteRule ^need_requests/([0-9]+)   need_requests.php?view=one&id=$1 [L,qsa]
 RewriteRule ^need_requests   need_requests.php?view=all [L,qsa]
 

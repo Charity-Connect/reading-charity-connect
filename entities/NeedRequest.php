@@ -86,6 +86,34 @@ class NeedRequest{
         }
     }
 
+    public function readFiltered($agreed="",$completed=""){
+
+        $where_clause="";
+        if($agreed==="Y"){
+          $where_clause=$where_clause." and agreed='Y' ";
+        } else if ($agreed==="N")  {
+          $where_clause=$where_clause." and agreed='N' ";
+        }else if ($agreed==="U")  {
+          $where_clause=$where_clause." and agreed IS NULL ";
+        }
+        if($completed==="Y"){
+          $where_clause=$where_clause." and complete='Y' ";
+        } else if ($completed==="N")  {
+          $where_clause=$where_clause." and complete='N' ";
+        }
+        if(is_admin()){
+        	$query =$this->base_query.$where_clause." ORDER BY request.id";
+			$stmt = $this->connection->prepare($query);
+        	$stmt->execute();
+        	return $stmt;
+        } else {
+        	$query =$this->base_query.$where_clause." and request.organization_id=:organization_id ORDER BY request.id";
+			$stmt = $this->connection->prepare($query);
+        	$stmt->execute(['organization_id'=>$_SESSION["organization_id"]]);
+        	return $stmt;
+        }
+    }
+
     public function read(){
         $stmt=$this->readOne($this->id);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
