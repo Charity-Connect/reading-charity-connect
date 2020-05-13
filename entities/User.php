@@ -17,6 +17,7 @@ class User{
     public $confirmed;
     public $organization_id;
     private $confirmation_string;
+    private $force_read=false;
 
     public function __construct($connection){
         $this->connection = $connection;
@@ -80,6 +81,11 @@ class User{
         return $stmt;
     }
 
+	public function forceRead($id){
+		$this->force_read=true;
+		$this->id=$id;
+		$this->read();
+	}
     public function read(){
         $stmt=$this->readOne($this->id);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -90,7 +96,7 @@ class User{
     }
 
     public function readOne($id){
-        	if(is_admin()){
+        	if(is_admin()||$this->force_read==true){
 	        	$query = "SELECT u.id,u.display_name,u.email,u.phone, u.confirmation_string  from users u where u.id=:id";
 	        	$stmt = $this->connection->prepare($query);
 	        	$stmt->execute(['id'=>$id]);
@@ -104,6 +110,7 @@ class User{
 	        	$stmt = $this->connection->prepare($query);
 		        $stmt->execute(['id'=>$_SESSION["id"]]);
         }
+			$this->force_read=true;
 	        return $stmt;
 	    }
 

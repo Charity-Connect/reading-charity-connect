@@ -2,13 +2,8 @@
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
 
-global $connection;
-// Initialize the session
-session_start();
+$connection=initRest();
 
-include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
-$dbclass = new DBClass();
-$connection = $dbclass->getConnection();
 $user_organization = new UserOrganization($connection);
 
 $id=$_GET['id'];
