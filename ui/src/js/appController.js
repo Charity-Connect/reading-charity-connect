@@ -7,8 +7,9 @@
 /*
  * Your application specific code will go here
  */
-define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojconfig', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils','restClient', 'ojs/ojmodule-element', 'ojs/ojknockout'],
-        function (ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, Config, ArrayDataProvider, KnockoutTemplateUtils,restClient) {
+define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojconfig', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils', 'restClient', 'restUtils',
+    'ojs/ojmodule-element', 'ojs/ojknockout'],
+        function (ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, Config, ArrayDataProvider, KnockoutTemplateUtils, restClient, restUtils) {
             function ControllerViewModel() {
                 var self = this;
 
@@ -26,7 +27,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                     }, 200);
                 };
 
-                // Media queries for repsonsive layouts
+                // Media queries for responsive layouts
                 var smQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.SM_ONLY);
                 self.smScreen = ResponsiveKnockoutUtils.createMediaQueryObservable(smQuery);
 
@@ -39,23 +40,26 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 // User Info used in Global Navigation area
                 self.userLogin = ko.observable();
 
-				$.ajax({ type: "GET",
-                    url: '/rest/users/current',
-                    dataType: 'json',
-                    success: function (response) {
-						self.userLogin(response.email);
-                    },
-                    error: function(event) {
-							window.location.href="/rest/logout?redirect=/index.html?redirect="+window.location.pathname;
+                //log-in logic
+                getUser = function() {
+                    //GET /rest/users/current - REST
+                    return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.USERS)}/current`)
+                        .then(
+                            success = function(response) {
+                                self.userLogin(response.email);
+                            },
+                            error = function() {
+                                window.location.href = "/rest/logout?redirect=/index.html?redirect=" + window.location.pathname;
+                            }
+                        )
+                    )
+                }();
+                //log-out logic
+                self.menuItemAction = function(event) {
+                    if (event.target.value === "out") {
+                        window.location.href = "/rest/logout?redirect=/index.html";
                     }
-                });
-
-				    self.menuItemAction = function( event ) {
-				        if(event.target.value==="out"){
-							window.location.href="/rest/logout?redirect=/index.html";
-						}
-				    };
-
+                };
 
                 // Router setup
                 self.router = Router.rootInstance;
