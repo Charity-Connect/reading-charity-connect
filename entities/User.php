@@ -105,7 +105,6 @@ class User{
 	        	$stmt = $this->connection->prepare($query);
 	        	$stmt->execute(['id'=>$id]);
 	        } else if(is_org_admin()){
-	        echo $_SESSION["organization_id"];
 	        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u, user_organizations o where u.id=o.user_id and o.organization_id=:organization_id and u.id=:id UNION (SELECT u.id,u.display_name,u.email,u.phone from users u where u.id=:id and u.id=:id2)";
 	        	$stmt = $this->connection->prepare($query);
 	        	$stmt->execute(['organization_id'=>$_SESSION["organization_id"],'id'=>$id,'id2'=>$_SESSION["id"]]);
