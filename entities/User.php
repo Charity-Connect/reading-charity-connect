@@ -110,7 +110,7 @@ class User{
 	        	$stmt = $this->connection->prepare($query);
 		        $stmt->execute(['id'=>$_SESSION["id"]]);
         }
-			$this->force_read=true;
+			$this->force_read=false;
 	        return $stmt;
 	    }
 
