@@ -92,7 +92,11 @@ class User{
         $this->display_name=$row['display_name'];
         $this->email=$row['email'];
         $this->phone=$row['phone'];
-        $this->confirmation_string=$row['confirmation_string'];
+        if(isset($row['confirmation_string'])){
+        	$this->confirmation_string=$row['confirmation_string'];
+        } else {
+        	$this->confirmation_string=null;
+        }
     }
 
     public function readOne($id){
