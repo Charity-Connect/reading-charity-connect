@@ -31,6 +31,7 @@ class NeedRequest{
 	        	,request.notes request_response_notes
 	        	,request.agreed
 	        	,request.complete
+	        	,request.confirmation_code
 	        	,request.notes request_response_notes
 	        	,client_need.notes need_notes
 	        	,client.name as client_name
