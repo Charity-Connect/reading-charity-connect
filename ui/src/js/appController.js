@@ -39,6 +39,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 self.appName = ko.observable();
                 // User Info used in Global Navigation area
                 self.userLogin = ko.observable();
+                self.currentOrganization = ko.observable();
 
                 //log-in logic
                 getUser = function() {
@@ -47,6 +48,21 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         .then(
                             success = function(response) {
                                 self.userLogin(response.email);
+                                self.currentOrganization(response.organization_name);
+                                if(response.confirmed!="Y"){
+									alert("Your account is not confirmed yet. Please check your e-mail for a message."); // please add a proper way to display the message.
+								}
+								const user_confirmed_organizations=response.user_organizations.filter(user_organization => user_organization.confirmed=='Y');
+								if(user_confirmed_organizations.length==0){
+									alert("You are not a confirmed member of any organization yet."); // please add a proper way to display the message.
+								}
+
+								if(user_confirmed_organizations.length>1){
+									user_confirmed_organizations.forEach(function(org) {
+										$("#orgMenu").append("<oj-option id=\"org_"+org.organization_id+"\" value=\""+org.organization_id+"\">"+org.organization_name+"</oj-option>");
+									});
+
+								}
                             },
                             error = function() {
                                 window.location.href = "/rest/logout?redirect=/index.html?redirect=" + window.location.pathname;
@@ -54,6 +70,20 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         )
                     )
                 }();
+                //switch org logic
+                self.orgMenuItemAction = function(event) {
+
+					$.when(restClient.doGet('/rest/set_organization?id='+event.target.value)
+                        .then(
+                            success = function(response) {
+                                self.currentOrganization(response.organization_name);
+                            },
+                            error = function() {
+                                alert("err");
+                            }
+                        )
+                    );
+                };
                 //log-out logic
                 self.menuItemAction = function(event) {
                     if (event.target.value === "out") {

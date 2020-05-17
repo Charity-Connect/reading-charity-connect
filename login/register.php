@@ -78,8 +78,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $user->email=$email;
         $user->display_name=$name;
         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
-        $user->organization_id=$_POST["organization"];
-        $id=$user->create();
+        $organization_id=$_POST["organization"];
+        $id=$user->create($organization_id);
         if($id>0){
                 // Redirect to login page
                 header("location: /index.html");
