@@ -7,10 +7,10 @@
 /*
  * Your offers ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'ojs/ojarraydataprovider',
+define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (oj, ko, $, accUtils, utils, restClient, ArrayDataProvider) {
+        function (oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
 
             function OffersViewModel() {
                 var self = this;
@@ -103,7 +103,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         _getOfferTypesFromCategoryAjax = function(code) {
                             self.offerTypesArray([]);
                             //GET /rest/offer_type_categories/{code}/offer_types - REST
-                            return $.when(restClient.doGet('/rest/offer_type_categories/${code}/offer_types')
+                            return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES)}/${code}/offer_types`)
                                 .then(
                                     success = function (response) {
                                         console.log(response.offer_types);
@@ -141,7 +141,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         function getOffersAjax() {
                             //GET /rest/offers - REST
                             self.offersLoaded(false);
-                            return $.when(restClient.doGet('/rest/offers')
+                            return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.OFFERS))
                                 .then(
                                     success = function (response) {
                                         console.log(response.offers);
@@ -192,7 +192,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                         function getOfferTypesCategoriesAjax() {
                             //GET /rest/offer_type_categories - REST
-                            return $.when(restClient.doGet('/rest/offer_type_categories')
+                            return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES))
                                 .then(
                                     success = function (response) {
                                         console.log(response.offer_type_categorys);

@@ -7,10 +7,10 @@
 /*
  * Your clients ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
+define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient', 'restUtils',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (oj, ko, $, accUtils, restClient) {
+        function (oj, ko, $, accUtils, restClient, restUtils) {
 
             function ClientsViewModel() {
                 var self = this;
@@ -75,7 +75,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                         };
                         _getClientNeedsAjax = function(clientId) {
                             //GET /rest/clients/{client id}/client_needs - REST
-                            return $.when(restClient.doGet('/rest/clients/${clientId}/client_needs')
+                            return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${clientId}/client_needs`)
                                 .then(
                                     success = function (response) {
                                         console.log(response.client_needs);
@@ -108,7 +108,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
                         function getClientsAjax() {
                             //GET /rest/clients - REST
                             self.clientsLoaded(false);
-                            return $.when(restClient.doGet('/rest/clients')
+                            return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.CLIENTS))
                                 .then(
                                     success = function (response) {
                                         console.log(response.clients);

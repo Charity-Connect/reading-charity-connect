@@ -7,10 +7,10 @@
 /*
  * Your admin ViewModel code goes here
  */
-define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils',
+define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','restUtils', 'ojs/ojknockouttemplateutils',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol','ojs/ojformlayout'],
-        function (utils,oj, ko, $, accUtils, restClient,KnockoutTemplateUtils) {
+        function (utils,oj, ko, $, accUtils, restClient, restUtils,KnockoutTemplateUtils) {
 
             function AdminViewModel() {
                 var self = this;
@@ -139,7 +139,7 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                         self.getOrganizationsAjax = function() {
                             //GET /rest/organizations - REST
                             self.organizationsLoaded(false);
-                            return $.when(restClient.doGet('/rest/organizations')
+                            return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.ORGANIZATIONS))
                                 .then(
                                     success = function (response) {
                                         self.organizationsValues(response.organizations);

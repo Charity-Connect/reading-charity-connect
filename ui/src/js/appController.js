@@ -7,8 +7,9 @@
 /*
  * Your application specific code will go here
  */
-define(['utils','knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojconfig', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils','restClient', 'ojs/ojmodule-element', 'ojs/ojknockout'],
-        function (utils,ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, Config, ArrayDataProvider, KnockoutTemplateUtils,restClient) {
+define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojconfig', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils', 'restClient', 'restUtils','utils',
+    'ojs/ojmodule-element', 'ojs/ojknockout'],
+        function (ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, Config, ArrayDataProvider, KnockoutTemplateUtils, restClient, restUtils,utils) {
             function ControllerViewModel() {
                 var self = this;
 
@@ -28,40 +29,71 @@ define(['utils','knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils
                     }, 200);
                 };
 
-                // Media queries for repsonsive layouts
+                // Media queries for responsive layouts
                 var smQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.SM_ONLY);
                 self.smScreen = ResponsiveKnockoutUtils.createMediaQueryObservable(smQuery);
 
-                // User role
-                const userRole = "user";
 
                 // Header
                 // Application Name used in Branding Area
                 self.appName = ko.observable();
                 // User Info used in Global Navigation area
                 self.userLogin = ko.observable();
+                self.currentOrganization = ko.observable();
 
-				$.ajax({ type: "GET",
-                    url: '/rest/users/current',
-                    dataType: 'json',
-                    success: function (response) {
-						self.userLogin(response.email);
-						utils.appConstants.users.displayName = response.display_name;
-						utils.appConstants.users.email = response.email;
-						utils.appConstants.users.organizationId = response.organization_id;
-						utils.appConstants.users.confirmed = response.confirmed;
-                    },
-                    error: function(event) {
-							window.location.href="/rest/logout?redirect=/index.html?redirect="+window.location.pathname;
+                //log-in logic
+                getUser = function() {
+                    //GET /rest/users/current - REST
+                    return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.USERS)}/current`)
+                        .then(
+                            success = function(response) {
+                                self.userLogin(response.email);
+                                utils.appConstants.users.displayName = response.display_name;
+                                utils.appConstants.users.email = response.email;
+                                utils.appConstants.users.organizationId = response.organization_id;
+                                utils.appConstants.users.confirmed = response.confirmed;
+                                self.currentOrganization(response.organization_name);
+                                if(response.confirmed!="Y"){
+									alert("Your account is not confirmed yet. Please check your e-mail for a message."); // please add a proper way to display the message.
+								}
+								const user_confirmed_organizations=response.user_organizations.filter(user_organization => user_organization.confirmed=='Y');
+								if(user_confirmed_organizations.length==0){
+									alert("You are not a confirmed member of any organization yet."); // please add a proper way to display the message.
+								}
+
+								if(user_confirmed_organizations.length>1){
+									user_confirmed_organizations.forEach(function(org) {
+										$("#orgMenu").append("<oj-option id=\"org_"+org.organization_id+"\" value=\""+org.organization_id+"\">"+org.organization_name+"</oj-option>");
+									});
+
+								}
+                            },
+                            error = function() {
+                                window.location.href = "/rest/logout?redirect=/index.html?redirect=" + window.location.pathname;
+                            }
+                        )
+                    )
+                }();
+                //switch org logic
+                self.orgMenuItemAction = function(event) {
+
+					$.when(restClient.doGet('/rest/set_organization?id='+event.target.value)
+                        .then(
+                            success = function(response) {
+                                self.currentOrganization(response.organization_name);
+                            },
+                            error = function() {
+                                alert("err");
+                            }
+                        )
+                    );
+                };
+                //log-out logic
+                self.menuItemAction = function(event) {
+                    if (event.target.value === "out") {
+                        window.location.href = "/rest/logout?redirect=/index.html";
                     }
-                });
-
-				    self.menuItemAction = function( event ) {
-				        if(event.target.value==="out"){
-							window.location.href="/rest/logout?redirect=/index.html";
-						}
-				    };
-
+                };
 
                 // Router setup
                 self.router = Router.rootInstance;
