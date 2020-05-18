@@ -35,9 +35,13 @@
                         display='grid'
                         data="[[requestsDataProvider]]">                
                     </oj-table>
-                    <script type="text/html" id="combineAddressPostcode_tmpl">
+                    <script type="text/html" id="decisionMade_tmpl">
                         <td>
-                            <span><oj-bind-text value="[[$context.row.address + ', ' + $context.row.postcode]]"></oj-bind-text></span>                                        
+                            <strong>
+                                <span :style.color="[[$context.row.styleState]]">
+                                    <oj-bind-text value="[[$context.row.requestSelectedDecision]]"></oj-bind-text>
+                                </span>
+                            </strong>
                         </td>
                     </script>                    
                     <oj-paging-control id="requestsPaging" data='[[requestsDataProvider]]'
@@ -65,7 +69,7 @@
                                         title="Pick target date">
                                     </oj-input-date>
                                     <hr />
-                                    <oj-label id="editRequestNotesLabel"><strong>Request Notes:</strong></oj-label>
+                                    <oj-label id="editRequestNotesLabel"><strong>Notes:</strong></oj-label>
                                     <oj-text-area id="textareaEditRequestNotesInput" class="oj-form-control-full-width"
                                         labelled-by="editRequestNotesLabel"
                                         value="{{requestNotesUpdateVal}}"
@@ -78,6 +82,10 @@
 
                                 </div>
                                 <div slot="footer">
+                                    <oj-button id="cancelButton"
+                                        on-oj-action="[[closeAgreeModalButton]]">
+                                        <span>Cancel</span>
+                                    </oj-button>
                                     <oj-button id="okButton"
                                         on-oj-action="[[closeAgreeModalButton]]"
                                         disabled="[[disableOKButton]]">
@@ -176,17 +184,7 @@
                         </div>                                                         
                     </div>
                     <hr />                     
-                    <oj-label id="editRequestNotesLabel"><strong>Request Notes:</strong></oj-label>
-                    <oj-text-area id="textareaEditRequestNotes" class="oj-form-control-full-width"
-                        labelled-by="editRequestNotesLabel"
-                        value="[[requestNotesUpdateVal]]"
-                        placeholder="Display request notes"
-                        title="Displays request notes"
-                        readonly="true"
-                        rows="5">                                
-                    </oj-text-area>
-                    <hr />                     
-                    <oj-label id="editNeedNotesLabel"><strong>Need Notes:</strong></oj-label>
+                    <oj-label id="editNeedNotesLabel"><strong>Comments from Requestor:</strong></oj-label>
                     <oj-text-area id="textareaEditNeedNotes" class="oj-form-control-full-width"
                         labelled-by="editNeedNotesLabel"
                         value="[[requestSelected().need_notes]]"
@@ -196,6 +194,16 @@
                         rows="5">                                
                     </oj-text-area>
                     <hr />
+                    <oj-label id="editRequestNotesLabel"><strong>Notes:</strong></oj-label>
+                    <oj-text-area id="textareaEditRequestNotes" class="oj-form-control-full-width"
+                        labelled-by="editRequestNotesLabel"
+                        value="[[requestNotesUpdateVal]]"
+                        placeholder="Display request notes"
+                        title="Displays request notes"
+                        readonly="[[selectedDecisionDisplay()[0] === 'decisionAgree' ? false : true]]"
+                        rows="5">                                
+                    </oj-text-area>
+                    <hr />                     
                     <div class="oj-flex-bar sm-1x-row">
                         <div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <oj-bind-if test="[[fileContentPosted() !== true]]">
