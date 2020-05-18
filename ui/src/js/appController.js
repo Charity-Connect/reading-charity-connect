@@ -7,8 +7,8 @@
 /*
  * Your application specific code will go here
  */
-define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojconfig', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils','restClient', 'ojs/ojmodule-element', 'ojs/ojknockout'],
-        function (ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, Config, ArrayDataProvider, KnockoutTemplateUtils,restClient) {
+define(['utils','knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojconfig', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils','restClient', 'ojs/ojmodule-element', 'ojs/ojknockout'],
+        function (utils,ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, Config, ArrayDataProvider, KnockoutTemplateUtils,restClient) {
             function ControllerViewModel() {
                 var self = this;
 
@@ -17,6 +17,8 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 // Handle announcements sent when pages change, for Accessibility.
                 self.manner = ko.observable('polite');
                 self.message = ko.observable();
+                // User role
+                self.userRole = ko.observable("user");
                 document.getElementById('globalBody').addEventListener('announce', announcementHandler, false);
 
                 function announcementHandler(event) {
@@ -44,6 +46,10 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                     dataType: 'json',
                     success: function (response) {
 						self.userLogin(response.email);
+						utils.appConstants.users.displayName = response.display_name;
+						utils.appConstants.users.email = response.email;
+						utils.appConstants.users.organizationId = response.organization_id;
+						utils.appConstants.users.confirmed = response.confirmed;
                     },
                     error: function(event) {
 							window.location.href="/rest/logout?redirect=/index.html?redirect="+window.location.pathname;
@@ -59,45 +65,73 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 
                 // Router setup
                 self.router = Router.rootInstance;
+                Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
 
                 // Navigation setup
                 var navData;
 
-                if (userRole === "system-admin") {
-                    self.appName("Charity Connect - System Admin");
-                    self.router.configure({
-                        'admin': {label: 'Admin', isDefault: true}
+                $.each([
+                        {type: "system-admin",url: '/rest/admin_check'},
+                        {type: "organization-admin",url: '/rest/org_admin_check'}],
+                    function (k, v) {
+                        $.ajax({
+                            'url': v.url,
+                            'success': function (data) {
+                                if (v.type === "system-admin" && data == "true")
+                                {
+                                    self.userRole("system-admin");
+                                }
+                                else if (v.type === "organization-admin" && data == "true")
+                                {
+                                    self.userRole("organization-admin");
+                                }
+                                if (self.userRole() === "system-admin") {
+                                    self.appName("Charity Connect - System Admin");
+                                    self.router.configure({
+                                        'systemAdminOrganizations': {label: 'systemAdminOrganizations', isDefault: true},
+                                        'systemAdminNeedTypes': {label: 'systemAdminNeedTypes'}
+                                    });
+                                    navData = [
+                                        {name: 'Organizations', id: 'systemAdminOrganizations',
+                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-person-icon-24'},
+                                        {name: 'Need Types', id: 'systemAdminNeedTypes',
+                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-person-icon-24'}
+                                    ];
+                                } else if (self.userRole() === "organization-admin") {
+                                    self.appName("Charity Connect - Organization Admin");
+                                    self.router.configure({
+                                        'organizations': {label: 'Organizations', isDefault: true}
+                                    });
+                                    navData = [
+                                        {name: 'Organizations', id: 'organizations',
+                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-home-icon-24'}
+                                    ];
+                                } else if (self.userRole() === "user") {
+                                    self.appName("Reading Charity Connect");
+                                    self.router.configure({
+                                        'requests': {label: 'Requests', isDefault: true},
+                                        'offers': {label: 'Offers'},
+                                        'clients': {label: 'Clients'}
+                                    });
+                                    navData = [
+                                        {name: 'Requests', id: 'requests',
+                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},
+                                        {name: 'Offers', id: 'offers',
+                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
+                                        {name: 'Clients', id: 'clients',
+                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
+                                    ];
+                                };
+
+                                self.navDataProvider = new ArrayDataProvider(navData, {keyAttributes: 'id'});
+                                return true;
+                            },
+                            'error': function (jqxhr, errorText, error) {
+                                self.userRole("user");
+                            }
+                        });
                     });
-                    navData = [
-                        {name: 'Admin', id: 'admin',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-person-icon-24'}
-                    ];
-                } else if (userRole === "organization-admin") {
-                    self.appName("Charity Connect - Organization Admin");
-                    self.router.configure({
-                        'organization': {label: 'Organization', isDefault: true}
-                    });
-                    navData = [
-                        {name: 'Organization', id: 'organization',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-home-icon-24'}
-                    ];
-                } else if (userRole === "user") {
-                    self.appName("Reading Charity Connect");
-                    self.router.configure({
-                        'requests': {label: 'Requests', isDefault: true},
-                        'offers': {label: 'Offers'},
-                        'clients': {label: 'Clients'}
-                    });
-                    navData = [
-                        {name: 'Requests', id: 'requests',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},
-                        {name: 'Offers', id: 'offers',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
-                        {name: 'Clients', id: 'clients',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
-                    ];
-                };
-                Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
+
 
                 self.loadModule = function () {
                     self.moduleConfig = ko.pureComputed(function () {
@@ -119,7 +153,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                     }();
                 };
 
-                self.navDataProvider = new ArrayDataProvider(navData, {keyAttributes: 'id'});
+
 
                 // Footer
                 function footerLink(name, id, linkTarget) {

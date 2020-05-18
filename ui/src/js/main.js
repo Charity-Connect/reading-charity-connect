@@ -66,9 +66,14 @@ require(['ojs/ojbootstrap', 'knockout', 'appController', 'ojs/ojlogger', 'ojs/oj
         function init() {
             Router.sync().then(
               function () {
-                app.loadModule();
-                // Bind your ViewModel for the content of the whole page body.
-                ko.applyBindings(app, document.getElementById('globalBody'));
+                  $.when(
+                      app.loadModule()
+                  ).done(function(){
+                        // Bind your ViewModel for the content of the whole page body.
+                      ko.applyBindings(app, document.getElementById('globalBody'));
+                  });
+
+
               },
               function (error) {
                 Logger.error('Error in root start: ' + error.message);
