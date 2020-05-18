@@ -112,12 +112,6 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                                 if (v.type === "system-admin" && data == "true")
                                 {
                                     self.userRole("system-admin");
-                                }
-                                else if (v.type === "organization-admin" && data == "true")
-                                {
-                                    self.userRole("organization-admin");
-                                }
-                                if (self.userRole() === "system-admin") {
                                     self.appName("Charity Connect - System Admin");
                                     self.router.configure({
                                         'systemAdminOrganizations': {label: 'systemAdminOrganizations', isDefault: true},
@@ -129,7 +123,10 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                                         {name: 'Need Types', id: 'systemAdminNeedTypes',
                                             iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-person-icon-24'}
                                     ];
-                                } else if (self.userRole() === "organization-admin") {
+                                }
+                                else if (v.type === "organization-admin" && data == "true")
+                                {
+                                    self.userRole("organization-admin");
                                     self.appName("Charity Connect - Organization Admin");
                                     self.router.configure({
                                         'organizations': {label: 'Organizations', isDefault: true}
@@ -138,7 +135,9 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                                         {name: 'Organizations', id: 'organizations',
                                             iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-home-icon-24'}
                                     ];
-                                } else if (self.userRole() === "user") {
+                                }
+
+                                if (self.userRole() === "user") {
                                     self.appName("Reading Charity Connect");
                                     self.router.configure({
                                         'requests': {label: 'Requests', isDefault: true},
