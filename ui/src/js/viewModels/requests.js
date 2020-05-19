@@ -19,8 +19,16 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     accUtils.announce('Requests page loaded.');
                     document.title = "Requests";
 
-                    self.requestsValues = ko.observableArray();
+                    self.selectedDecisionFilterDisplay = ko.observable('decisionFilterAll');
                     self.requestsDataProvider = ko.observable();
+                    self.updateRequestsDataProvider = function(requestsValues) {
+                        var sortCriteria = {key: 'type_name', direction: 'ascending'};
+                        var arrayDataSource = new oj.ArrayTableDataSource(requestsValues, {idAttribute: 'id'});
+                        arrayDataSource.sort(sortCriteria);
+                        self.requestsDataProvider(new oj.PagingTableDataSource(arrayDataSource));                     
+                    };
+
+                    self.requestsValues = ko.observableArray();
                     self.renderer1 = oj.KnockoutTemplateUtils.getRenderer("decisionMade_tmpl", true);
                     self.requestsTableColumns = [
                         {headerText: 'TYPE', field: "type_name"},
@@ -41,8 +49,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                     self.decisionStatus = ko.observable(null);
                     self.disableSaveButton = ko.observable(true);
-                    self.requestNotesUpdateVal = ko.observable("");
-
+                    self.requestNotesUpdateVal = ko.observable("");                    
+                    
                     self.selectedDecisionDisplay = ko.observableArray([]);
                     self.requestRowSelected = ko.observableArray();
                     self.requestSelected = ko.observable("");
@@ -57,6 +65,34 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     }, this);
 
                     var primaryHandlerLogic = function() {
+                        self.handleSelectedDecisionFilterChanged = function () {
+                            var activeFilters = {};
+                            //filter decisionFilters search                        
+                            activeFilters.decisionFilter = self.selectedDecisionFilterDisplay();
+                            console.log(activeFilters);
+
+                            var requestArray = self.requestsValues().filter(function(item) {
+//                                    console.log(item);
+                                if (activeFilters["decisionFilter"] === "decisionFilterAll") {
+                                    return true;
+                                } else if (activeFilters["decisionFilter"] === "decisionFilterCompleted") {
+                                    if (item["complete"] === "Y") {
+                                        return true;
+                                    }
+                                } else {
+                                    var cleanRequestSelectedDecisionItem = "decisionFilter" + item["requestSelectedDecision"];                                    
+                                    //pick up detected active filters - 1x array toString (decisionFilters)
+                                    if (cleanRequestSelectedDecisionItem.indexOf(activeFilters["decisionFilter"]) >= 0) {
+                                        return true;
+                                    }
+                                }
+                            });
+                            console.log(requestArray);
+
+                            //update requestsDataProvider                      
+                            self.updateRequestsDataProvider(requestArray);
+                        };
+                        
                         self.handleRequestRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
                                 //find whether node exists based on selection
@@ -73,9 +109,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 var calculateCategory = utils.calculateCategory(self.requestSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());
                                 self.offerTypesCategorySelected(calculateCategory);
 
-                                if (self.requestSelected().requestSelectedDecision === "Agreed to Help") {
+                                if (self.requestSelected().requestSelectedDecision === "Accepted") {
                                     self.selectedDecisionDisplay(['decisionAgree']);
-                                } else if (self.requestSelected().requestSelectedDecision === "Unable to Help") {
+                                } else if (self.requestSelected().requestSelectedDecision === "Rejected") {
                                     self.selectedDecisionDisplay(['decisionUnable']);
                                 } else {
                                     self.selectedDecisionDisplay([]);
@@ -280,12 +316,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                             var decisionString = "";
                                             var styleState = "";
                                             if (this.agreed === "Y") {
-                                                decisionString = "Agreed to Help";
+                                                decisionString = "Accepted";
                                                 styleState = "#18BE94"; //green
                                             } else if (this.agreed === "N") {
-                                                decisionString = "Unable to Help";                                                
+                                                decisionString = "Rejected";                                                
                                             } else {
-                                                decisionString = "Pending Response";                                                                                                
+                                                decisionString = "Unreviewed";                                                                                                
                                                 styleState = "#309fdb"; //blue                                                                          
                                             };
                                             self.requestsValues().push({
@@ -314,10 +350,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                         console.log("Requests not loaded");
                                         self.requestsValid(false);
                                 }).then(function () {
-                                    var sortCriteria = {key: 'type_name', direction: 'ascending'};
-                                    var arrayDataSource = new oj.ArrayTableDataSource(self.requestsValues(), {idAttribute: 'id'});
-                                    arrayDataSource.sort(sortCriteria);
-                                    self.requestsDataProvider(new oj.PagingTableDataSource(arrayDataSource));
+                                    self.updateRequestsDataProvider(self.requestsValues());
                                 }).then(function () {
                                     self.requestsLoaded(true);
                                 })
