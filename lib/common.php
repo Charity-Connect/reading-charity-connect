@@ -251,7 +251,7 @@ function password_reset_request($email){
 	$stmt = $connection->prepare("UPDATE users set password_confirmation_string = :confirmation_string WHERE email = :email");
     $success= $stmt->execute(["confirmation_string"=>$reset_string,"email"=>$email]);
 
-    if($success==true){
+    if($success==true && $stmt->rowCount()>0){
     	sendHtmlMail($email,get_string("password_reset_subject"),get_string("password_reset_body",array("%LINK%"=>$site_address."/reset_confirm.html?email=".urlencode($email)."&key=".urlencode($reset_string))));
     	return true;
     } else {
