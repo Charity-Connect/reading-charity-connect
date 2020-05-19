@@ -39,20 +39,24 @@
                         </div>
                     </div>
                     <hr /> 
-                    <oj-table id="executionsTable" class="row-selectable" aria-label="table using array"
+                    <oj-table id="orgTable" class="row-selectable" aria-label="table using array"
                         selection="{{organizationRowSelected}}"
                         on-selection-changed="[[handleOrganizationRowChanged]]"
                         selection-mode='{"row": "single"}'
                         columns="{{organizationsTableColumns}}"
                         display='grid'
-                        data="[[organizationsDataProvider]]">                
+                        data="[[organizationsDataProvider]]"
+                        style="width: 100%; height:100%;'">
                     </oj-table>
+
                     <oj-paging-control id="organizationsPaging" data='[[organizationsDataProvider]]'
                         page-size='5' slot='bottom'>
                     </oj-paging-control>
+
+
                 </div>
             </div>
-            
+
             <oj-bind-if test="[[showPanel()]]">
                 <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
@@ -66,46 +70,71 @@
                         </div>                    
                         <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">
-                                <oj-bind-if test="[[addOrganizationButtonSelected().length]]">
-                                    <oj-button id="saveAdditionButton" class="oj-sm-float-end"
-                                        on-oj-action='[[saveAdditionButton]]'>
+                                <oj-button id="saveButton" class="oj-sm-float-end"
+                                        on-oj-action='[[saveButton]]'>
                                         <span>Save</span>
-                                    </oj-button>
-                                </oj-bind-if>
-                                <oj-bind-if test="[[organizationRowSelected().length]]">
-                                    <oj-button id="saveEditButton" class="oj-sm-float-end"
-                                        on-oj-action='[[saveEditButton]]'>
-                                        <span>Save</span>
-                                    </oj-button>
-                                </oj-bind-if>
-                            </div>
+                                 </oj-button>
+
                         </div>
                     </div>
-                    <hr />  
-                    <div class="oj-flex sm-1x-row">                                
-                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                            <oj-label id="editNameLabel">Name:</oj-label>
-                            <oj-input-text id="inputEditName" labelled-by="editNameLabel"
-                                value="{{organizationSelected().name}}"
-                                placeholder="Input name"
-                                title="Edit name input">
+                    <hr />
+                    <oj-form-layout label-edge="start" style="width: 100%;">
+                        <div class="oj-form oj-sm-odd-cols-1 oj-md-labels-inline oj-padding">
+
+                            <oj-input-text style="display: none;" id="orgId"
+                                           value="{{orgDetailid}}">
                             </oj-input-text>
+                            <div class="oj-flex oj-padding" >
+                                <div class="oj-flex-item oj-padding-end">
+                                    <oj-label id="editNameLabel">Name:</oj-label>
+                                </div>
+                                <div class="oj-flex-item">
+                                    <oj-input-text id="inputEditName" labelled-by="editNameLabel"
+                                        value="{{orgDetailname}}"
+                                        placeholder="Input name"
+                                        title="Edit name input">
+                                    </oj-input-text>
+                                </div>
+                            </div>
+                            <div class="oj-flex oj-padding" >
+                                <div class="oj-flex-item oj-padding-end">
+                                    <oj-label id="editAddressLabel">Address:</oj-label>
+                                </div>
+                                <div class="oj-flex-item">
+                                    <oj-input-text class="org-address-width" id="inputEditAddress" labelled-by="editAddressLabel"
+                                        value="{{orgDetailaddress}}"
+                                        placeholder="Input address"
+                                        title="Edit address input">
+                                    </oj-input-text>
+                                </div>
+                            </div>
+                            <div class="oj-flex oj-padding" >
+                                <div class="oj-flex-item oj-padding-end">
+                                    <oj-label id="editPhoneLabel">Phone:</oj-label>
+                                </div>
+                                <div class="oj-flex-item">
+                                    <oj-input-text id="inputEditPhone" labelled-by="editPhoneLabel"
+                                        value="{{orgDetailphone}}"
+                                        placeholder="Input phone"
+                                        title="Edit phone input">
+                                    </oj-input-text>
+                                </div>
+                            </div>
                         </div>
-                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                            <oj-label id="editAddressLabel">Address:</oj-label>
-                            <oj-input-text id="inputEditAddress" labelled-by="editAddressLabel"
-                                value="{{organizationSelected().address}}"
-                                placeholder="Input address"
-                                title="Edit address input">
-                            </oj-input-text>
-                        </div>
-                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">                                            
-                            <oj-label id="editPhoneLabel">Phone:</oj-label>
-                            <oj-input-text id="inputEditPhone" labelled-by="editPhoneLabel"
-                                value="{{organizationSelected().phone}}"
-                                placeholder="Input phone"
-                                title="Edit phone input">
-                            </oj-input-text>
+                    </oj-form-layout>
+
+
+
+                    <div class="oj-flex-bar sm-1x-row">
+                        <div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
+                            <oj-bind-if test="[[fileContentPosted() !== true]]">
+                                <span class="oj-helper-text-align-right">Posting...</span>
+                                <oj-progress id="progressBar" value="-1"></oj-progress>
+                            </oj-bind-if>
+                            <oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="saveEditButton"
+                                      :style.color="[[postTextColor]]">
+                                <oj-bind-text value='[[postText]]'></oj-bind-text>
+                            </oj-label>
                         </div>
                     </div>
                 </div>

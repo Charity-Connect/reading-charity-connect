@@ -7,9 +7,9 @@
 /*
  * Your application specific code will go here
  */
-define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojconfig', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils', 'restClient', 'restUtils',
+define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojconfig', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils', 'restClient', 'restUtils','utils',
     'ojs/ojmodule-element', 'ojs/ojknockout'],
-        function (ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, Config, ArrayDataProvider, KnockoutTemplateUtils, restClient, restUtils) {
+        function (ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, Config, ArrayDataProvider, KnockoutTemplateUtils, restClient, restUtils,utils) {
             function ControllerViewModel() {
                 var self = this;
 
@@ -18,6 +18,8 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 // Handle announcements sent when pages change, for Accessibility.
                 self.manner = ko.observable('polite');
                 self.message = ko.observable();
+                // User role
+                self.userRole = ko.observable("user");
                 document.getElementById('globalBody').addEventListener('announce', announcementHandler, false);
 
                 function announcementHandler(event) {
@@ -31,8 +33,6 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 var smQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.SM_ONLY);
                 self.smScreen = ResponsiveKnockoutUtils.createMediaQueryObservable(smQuery);
 
-                // User role
-                const userRole = "user";
 
                 // Header
                 // Application Name used in Branding Area
@@ -48,6 +48,10 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         .then(
                             success = function(response) {
                                 self.userLogin(response.email);
+                                utils.appConstants.users.displayName = response.display_name;
+                                utils.appConstants.users.email = response.email;
+                                utils.appConstants.users.organizationId = response.organization_id;
+                                utils.appConstants.users.confirmed = response.confirmed;
                                 self.currentOrganization(response.organization_name);
                                 if(response.confirmed!="Y"){
 									alert("Your account is not confirmed yet. Please check your email for a message."); // please add a proper way to display the message.
@@ -96,42 +100,25 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 
                 // Navigation setup
                 var navData;
+                var routerConfig = {};
 
-                if (userRole === "system-admin") {
-                    self.appName("Charity Connect - System Admin");
-                    self.router.configure({
-                        'admin': {label: 'Admin', isDefault: true}
-                    });
-                    navData = [
-                        {name: 'Admin', id: 'admin',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-person-icon-24'}
-                    ];
-                } else if (userRole === "organization-admin") {
-                    self.appName("Charity Connect - Organization Admin");
-                    self.router.configure({
-                        'organization': {label: 'Organization', isDefault: true}
-                    });
-                    navData = [
-                        {name: 'Organization', id: 'organization',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-home-icon-24'}
-                    ];
-                } else if (userRole === "user") {
-                    self.appName("Reading Charity Connect");
-                    self.router.configure({
-                        'requests': {label: 'Requests', isDefault: true},
-                        'offers': {label: 'Offers'},
-                        'clients': {label: 'Clients'}
-                    });
-                    navData = [
-                        {name: 'Requests', id: 'requests',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},
-                        {name: 'Offers', id: 'offers',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
-                        {name: 'Clients', id: 'clients',
-                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
-                    ];
-                };
+                self.appName("Reading Charity Connect");
+                self.router.configure({
+                    'requests': {label: 'Requests', isDefault: true},
+                    'offers': {label: 'Offers'},
+                    'clients': {label: 'Clients'}
+                });
+                navData = [
+                    {name: 'Requests', id: 'requests',
+                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},
+                    {name: 'Offers', id: 'offers',
+                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
+                    {name: 'Clients', id: 'clients',
+                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
+                ];
+
                 Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
+
 
                 self.loadModule = function () {
                     self.moduleConfig = ko.pureComputed(function () {

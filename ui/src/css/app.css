@@ -6,6 +6,8 @@
         This is where any of your application specific styles should be included
 */
 
+@import url("organization.css");
+
 /* -----------------------------------------------
 :: OJ Structure
 -------------------------------------------------- */

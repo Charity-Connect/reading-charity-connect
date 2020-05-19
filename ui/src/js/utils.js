@@ -5,6 +5,15 @@
 define(['ojs/ojcore', 'knockout'],
     function (oj, ko) {
         var self = this;
+        var appConstants = {
+            users: {
+                displayName: "",
+                email: "",
+                phone: "",
+                confirmed: "",
+                organizationId: ""
+            }
+        }
 
         sortAlphabetically = function (valueArray, property) {
             valueArray.sort(function(a, b){
@@ -49,6 +58,7 @@ define(['ojs/ojcore', 'knockout'],
         };
 
         return {
+            appConstants:appConstants,
             sortAlphabetically: sortAlphabetically,
             showErrorMessage: showErrorMessage,
             calculateCategory: calculateCategory
