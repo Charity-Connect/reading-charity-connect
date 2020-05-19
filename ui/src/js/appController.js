@@ -97,71 +97,69 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 
                 // Router setup
                 self.router = Router.rootInstance;
-                Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
 
                 // Navigation setup
                 var navData;
+                var routerConfig = {};
+
+
+                navData = [
+                    {name: 'Requests', id: 'requests',
+                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},
+                    {name: 'Offers', id: 'offers',
+                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
+                    {name: 'Clients', id: 'clients',
+                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
+                ];
+
+                routerConfig = {
+                    'requests': {label: 'Requests', isDefault: true},
+                    'offers': {label: 'Offers'},
+                    'clients': {label: 'Clients'}
+                };
+
+                Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
+
 
                 $.each([
                         {type: "system-admin",url: '/rest/admin_check'},
                         {type: "organization-admin",url: '/rest/org_admin_check'}],
-                    function (k, v) {
-                        $.ajax({
-                            'url': v.url,
-                            'success': function (data) {
-                                if (v.type === "system-admin" && data == "true")
-                                {
-                                    self.userRole("system-admin");
-                                    self.appName("Charity Connect - System Admin");
-                                    self.router.configure({
-                                        'systemAdminOrganizations': {label: 'systemAdminOrganizations', isDefault: true},
-                                        'systemAdminNeedTypes': {label: 'systemAdminNeedTypes'}
-                                    });
-                                    navData = [
-                                        {name: 'Organizations', id: 'systemAdminOrganizations',
-                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-person-icon-24'},
-                                        {name: 'Need Types', id: 'systemAdminNeedTypes',
-                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-person-icon-24'}
-                                    ];
-                                }
-                                else if (v.type === "organization-admin" && data == "true")
-                                {
-                                    self.userRole("organization-admin");
-                                    self.appName("Charity Connect - Organization Admin");
-                                    self.router.configure({
-                                        'organizations': {label: 'Organizations', isDefault: true}
-                                    });
-                                    navData = [
-                                        {name: 'Organizations', id: 'organizations',
-                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-home-icon-24'}
-                                    ];
-                                }
-
-                                if (self.userRole() === "user") {
-                                    self.appName("Reading Charity Connect");
-                                    self.router.configure({
-                                        'requests': {label: 'Requests', isDefault: true},
-                                        'offers': {label: 'Offers'},
-                                        'clients': {label: 'Clients'}
-                                    });
-                                    navData = [
-                                        {name: 'Requests', id: 'requests',
-                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},
-                                        {name: 'Offers', id: 'offers',
-                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
-                                        {name: 'Clients', id: 'clients',
-                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
-                                    ];
-                                };
-
-                                self.navDataProvider = new ArrayDataProvider(navData, {keyAttributes: 'id'});
-                                return true;
+                        function (k, v) {
+                        $.when(restClient.doGet(v.url)
+                            .then(
+                                success = function(response) {
+                                    if (v.type === "system-admin" && response == "true")
+                                    {
+                                        self.appName("Charity Connect - System Admin");
+                                        routerConfig.systemAdminOrganizations =  {label: 'systemAdminOrganizations'};
+                                        routerConfig.systemAdminNeedTypes = {label: 'systemAdminNeedTypes'};
+                                        navData.push(
+                                            {name: 'Organizations', id: 'systemAdminOrganizations',
+                                                iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-person-icon-24'}
+                                        );
+                                        navData.push(
+                                            {name: 'Need Types', id: 'systemAdminNeedTypes',
+                                                iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-person-icon-24'}
+                                        );
+                                    }
+                                    else if (v.type === "organization-admin" && response == "true")
+                                    {
+                                        self.appName("Charity Connect - Organization Admin");
+                                        routerConfig.organization = {label: 'Organization'};
+                                        navData.push(
+                                            {name: 'Organization', id: 'organization',iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-home-icon-24'}
+                                        );
+                                    }
+                                    self.router.configure(routerConfig);
+                                    return true;
                             },
-                            'error': function (jqxhr, errorText, error) {
+                            error = function() {
                                 self.userRole("user");
                             }
-                        });
-                    });
+                       )
+                    );
+                 });
+
 
 
                 self.loadModule = function () {
@@ -184,7 +182,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                     }();
                 };
 
-
+                self.navDataProvider = new ArrayDataProvider(navData, {keyAttributes: 'id'});
 
                 // Footer
                 function footerLink(name, id, linkTarget) {
