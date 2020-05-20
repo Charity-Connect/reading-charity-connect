@@ -7,10 +7,10 @@
 /*
  * Your requests ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
-    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
+define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils',
+    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlistview', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
+        function (oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider, ResponsiveUtils, ResponsiveKnockoutUtils) {
 
             function RequestsViewModel() {
                 var self = this;
@@ -19,13 +19,17 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     accUtils.announce('Requests page loaded.');
                     document.title = "Requests";
 
+                    // observable for medium screens (above 768px)
+                    var mdQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.MD_UP);
+                    self.mediumDisplay = ResponsiveKnockoutUtils.createMediaQueryObservable(mdQuery);
+
                     self.selectedDecisionFilterDisplay = ko.observable('decisionFilterAll');
                     self.requestsDataProvider = ko.observable();
                     self.updateRequestsDataProvider = function(requestsValues) {
                         var sortCriteria = {key: 'type_name', direction: 'ascending'};
                         var arrayDataSource = new oj.ArrayTableDataSource(requestsValues, {idAttribute: 'id'});
-                        arrayDataSource.sort(sortCriteria);
-                        self.requestsDataProvider(new oj.PagingTableDataSource(arrayDataSource));                     
+                        arrayDataSource.sort(sortCriteria);                            
+                        self.requestsDataProvider(new oj.PagingTableDataSource(arrayDataSource));
                     };
 
                     self.requestsValues = ko.observableArray();
@@ -103,7 +107,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                         }
                                     }
                                 };
-                                self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));
+                                if (event.target.id === "requestsListview") {
+                                    self.requestSelected(searchNodes(event.target.currentItem, self.requestsValues()));                                    
+                                } else if (event.target.id === "requestsTable") {
+                                    self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));                                    
+                                }
                                 console.log(self.requestSelected());
 
                                 var calculateCategory = utils.calculateCategory(self.requestSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());

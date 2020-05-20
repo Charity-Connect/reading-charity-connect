@@ -26,10 +26,10 @@
             <div class="spacer-sm">
                 <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
-                        <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex-item">                    
+                        <div class="oj-sm-padding-1x-horizontal oj-flex-item">                    
                             <h2>Requests</h2>
                         </div>                    
-                        <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+                        <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">
                                 <oj-buttonset-one id="decisionFilters" class="oj-sm-float-end"
                                     value="{{selectedDecisionFilterDisplay}}"
@@ -43,37 +43,77 @@
                             </div>
                         </div>
                     </div>                    
-                    <hr /> 
-                    <oj-table id="executionsTable" class="row-selectable" aria-label="table using array"
-                        selection="{{requestRowSelected}}"
-                        on-selection-changed="[[handleRequestRowChanged]]"
-                        selection-mode='{"row": "single"}'
-                        columns="{{requestsTableColumns}}"
-                        display='grid'
-                        data="[[requestsDataProvider]]">                
-                    </oj-table>
-                    <script type="text/html" id="decisionMade_tmpl">
-                        <td>
-                            <strong>
-                                <span :style.color="[[$context.row.styleState]]">
-                                    <oj-bind-text value="[[$context.row.requestSelectedDecision]]"></oj-bind-text>
-                                </span>
-                            </strong>
-                        </td>
-                    </script>                    
+                    <oj-bind-if test="[[mediumDisplay() !== true]]">
+                        <oj-list-view id="requestsListview" aria-label="listview using array"
+                            selection="{{requestRowSelected}}"
+                            on-selection-changed="[[handleRequestRowChanged]]"                                      
+                            selection-mode="single"                            
+                            data="[[requestsDataProvider]]">
+                            <template slot="itemTemplate">
+                                <div>
+                                    <oj-label id="typeLabel" class="oj-label-inline"><strong>Type:</strong></oj-label>
+                                    <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.type_name]]"></oj-bind-text></span>
+                                </div>
+                                <div>
+                                    <oj-label id="nameLabel" class="oj-label-inline"><strong>Name:</strong></oj-label>
+                                    <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.client_name]]"></oj-bind-text></span>
+                                </div>
+                                <div>
+                                    <oj-label id="targetDateLabel" class="oj-label-inline"><strong>Target Date:</strong></oj-label>
+                                    <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.requestTargetDate]]"></oj-bind-text></span>
+                                </div>
+                                <div>
+                                    <oj-label id="dateNeededLabel" class="oj-label-inline"><strong>Date Needed:</strong></oj-label>
+                                    <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.requestDateNeeded]]"></oj-bind-text></span>
+                                </div>
+                                <div>
+                                    <oj-label id="organizationLabel" class="oj-label-inline"><strong>Organization:</strong></oj-label>
+                                    <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.source_organization_name]]"></oj-bind-text></span>
+                                </div>
+                                <div>
+                                    <oj-label id="decisionMadeLabel" class="oj-label-inline"><strong>Decision Made:</strong></oj-label>
+                                    <strong>
+                                        <span class="oj-form-non-control-inline" :style.color="[[$current.data.styleState]]">
+                                            <oj-bind-text value="[[$current.data.requestSelectedDecision]]"></oj-bind-text>
+                                        </span>
+                                    </strong>
+                                </div>
+                            </template>
+                        </oj-list-view>                        
+                    </oj-bind-if>
+                    <oj-bind-if test="[[mediumDisplay() === true]]">                    
+                        <hr />
+                        <oj-table id="requestsTable" class="row-selectable" aria-label="table using array"
+                            selection="{{requestRowSelected}}"
+                            on-selection-changed="[[handleRequestRowChanged]]"
+                            selection-mode='{"row": "single"}'
+                            columns="{{requestsTableColumns}}"
+                            display='grid'
+                            data="[[requestsDataProvider]]">                
+                        </oj-table>
+                        <script type="text/html" id="decisionMade_tmpl">
+                            <td>
+                                <strong>
+                                    <span :style.color="[[$context.row.styleState]]">
+                                        <oj-bind-text value="[[$context.row.requestSelectedDecision]]"></oj-bind-text>
+                                    </span>
+                                </strong>
+                            </td>
+                        </script>                    
+                    </oj-bind-if>
                     <oj-paging-control id="requestsPaging" data='[[requestsDataProvider]]'
                         page-size='5' slot='bottom'>
-                    </oj-paging-control>
+                    </oj-paging-control>                    
                 </div>
             </div>
             
             <oj-bind-if test="[[showPanel()]]">
                 <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
-                        <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex-item">                    
+                        <div class="oj-sm-padding-1x-horizontal oj-flex-item">                    
                             <h3>View request</h3>
                         </div>                    
-                        <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+                        <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <oj-dialog style="display:none" id="agreeDialog" dialog-title="Agree to Help" cancel-behavior="none">
                                 <div slot="body">
                                     <oj-label id="editTargetDateLabel"><strong>Target Date:</strong></oj-label>
