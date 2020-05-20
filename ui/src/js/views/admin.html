@@ -1,0 +1,31 @@
+<!--
+ Copyright (c) 2014, 2019, Oracle and/or its affiliates.
+ The Universal Permissive License (UPL), Version 1.0
+ -->
+<div class="oj-margin-top oj-flex-item" >
+    <div id="tabbarcontainer">
+        <oj-tab-bar
+                edge="top"
+                selection="{{selectedItem}}"
+                on-current-item-changed="{{tabChanged}}"
+                class="oj-sm-condense oj-md-justify-content-center oj-lg-justify-content-flex-end" >
+            <ul>
+                <li id="systemAdminOrganizations">
+                    <a href="#">
+                      Organizations
+                    </a>
+                </li>
+                <li id="systemAdminNeedTypes">
+                    <a href="#">
+                      Need Types
+                    </a>
+                </li>
+
+
+            </ul>
+        </oj-tab-bar>
+        <div>
+            <oj-module config='[[sysModuleConfig]]' >
+            </oj-module>
+        </div>
+</div>
