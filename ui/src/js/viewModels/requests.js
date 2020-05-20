@@ -270,8 +270,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     success = function (response) {
                                         self.postText("You have succesfully saved the request.");
                                         self.postTextColor("green");
-                                        self.getRequestsAjax();
                                         console.log("data posted");
+                                        
+                                        //update requestsTable
+                                        self.selectedDecisionFilterDisplay('decisionFilterAll');                                        
+                                        self.getRequestsAjax();
                                     },
                                     error = function (response) {
                                         self.postText("Error: Request not saved.");
