@@ -47,7 +47,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 //log-in logic
                 getUser = function() {
                     //GET /rest/users/current - REST
-                    return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.USERS)}/current`)
+                    return $.when(restClient.doGetJson(`${restUtils.constructUrl(restUtils.EntityUrl.USERS)}/current`)
                         .then(
                             success = function(response) {
                                 self.userLogin(response.email);
@@ -57,7 +57,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                                 utils.appConstants.users.confirmed = response.confirmed;
                                 self.currentOrganization(response.organization_name);
                                 if(response.confirmed!="Y"){
-									alert("Your account is not confirmed yet. Please check your e-mail for a message."); // please add a proper way to display the message.
+									alert("Your account is not confirmed yet. Please check your email for a message."); // please add a proper way to display the message.
 								}
 								const user_confirmed_organizations=response.user_organizations.filter(user_organization => user_organization.confirmed=='Y');
 								if(user_confirmed_organizations.length==0){

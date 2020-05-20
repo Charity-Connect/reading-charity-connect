@@ -40,7 +40,7 @@ define(['jquery', 'utils'],
          */
         doGet = function(url) {
             return new Promise(function(resolve, reject) {
-                $.ajax({ type: "GET",                 
+                $.ajax({ type: "GET",
                     url: url,
                     success: function (response) {
                         resolve(response);
@@ -54,9 +54,27 @@ define(['jquery', 'utils'],
             });
         };
 
+        doGetJson = function(url) {
+            return new Promise(function(resolve, reject) {
+                $.ajax({ type: "GET",
+                    url: url,
+					dataType: "json",
+                    success: function (response) {
+                        resolve(response);
+                    },
+                    error: function(event) {
+                        console.error("Error occured in REST client, when sending GET to url: " + url);
+                      //  utils.showErrorMessage("REST get failed", url);
+                        reject(event);
+                    }
+                });
+            });
+        };
+
         return {
             doPost: doPost,
-            doGet: doGet
+            doGet: doGet,
+            doGetJson: doGetJson
         };
 
     });

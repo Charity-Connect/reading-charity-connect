@@ -24,8 +24,25 @@
             </div>
 
             <div class="spacer-sm">
-                <div class="oj-panel oj-panel-alt2"> 
-                        <h2>Requests</h2>    
+                <div class="oj-panel oj-panel-alt2">
+                    <div class="oj-flex sm-1x-row">
+                        <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex-item">                    
+                            <h2>Requests</h2>
+                        </div>                    
+                        <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+                            <div class="oj-helper-clearfix">
+                                <oj-buttonset-one id="decisionFilters" class="oj-sm-float-end"
+                                    value="{{selectedDecisionFilterDisplay}}"
+                                    on-value-changed="[[handleSelectedDecisionFilterChanged]]">
+                                    <oj-option value="decisionFilterAll">All</oj-option>
+                                    <oj-option value="decisionFilterUnreviewed">Unreviewed</oj-option>
+                                    <oj-option value="decisionFilterAccepted">Accepted</oj-option>
+                                    <oj-option value="decisionFilterRejected">Rejected</oj-option>
+                                    <oj-option value="decisionFilterCompleted">Completed</oj-option>
+                                </oj-buttonset-one>
+                            </div>
+                        </div>
+                    </div>                    
                     <hr /> 
                     <oj-table id="executionsTable" class="row-selectable" aria-label="table using array"
                         selection="{{requestRowSelected}}"
