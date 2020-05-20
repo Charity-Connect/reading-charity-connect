@@ -6,6 +6,7 @@ define(['ojs/ojcore', 'knockout'],
     function (oj, ko) {
         var self = this;
         var appConstants = {
+            sysModuleConfig: {},
             users: {
                 displayName: "",
                 email: "",
