@@ -81,6 +81,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                                 var calculateCategory = utils.calculateCategory(self.offerSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());
                                 self.offerTypesCategorySelected(calculateCategory);
+                                
                                 if (self.offerSelected().offerDateAvailableRaw) {
                                     self.dateAvailableConvertor(new Date(self.offerSelected().offerDateAvailableRaw).toISOString());
                                 } else {
@@ -129,16 +130,67 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         };
                     }();
 
-                    self.saveAdditionButton = function () {
-                    };
-                    self.saveEditButton = function () {
-                    };
+                    var postData = function() {
+                        self.fileContentPosted = ko.observable(true);
+                        self.postText = ko.observable();
+                        self.postTextColor = ko.observable();
+                        self.disableSaveButton = ko.observable(false);
+                        self.saveButton = function () {
+                            //locale "en-GB" - change UTC to YYYY-MM-DD
+                            _formatDate = function(inputDate) {
+                                if (inputDate !== null) {
+                                    return inputDate.split('T')[0];
+                                } else {
+                                    return null;
+                                }
+                            };
+
+                            var responseJson = {
+				date_available: _formatDate($('#datepickerEditDateAvailable')[0].value),
+                                date_end: _formatDate($('#datepickerEditDateEnd')[0].value),
+                                details: $('#textareaEditOfferNotes')[0].value,
+                                distance: $('#inputEditDistance')[0].value,
+                                name: $('#inputEditName')[0].value,
+                                postcode: $('#inputEditPostcode')[0].value,
+                                quantity: $('#inputEditQuantity')[0].value,
+                                type: $('#selectEditType')[0].valueItem.data.value
+                            };
+
+                            self.fileContentPosted(false);
+                            self.disableSaveButton(true);
+                            //POST /rest/offers - REST
+                            return $.when(restClient.doPost(restUtils.constructUrl(restUtils.EntityUrl.OFFERS), responseJson)
+                                .then(
+                                    success = function (response) {
+                                        self.postText("You have succesfully saved the offer.");
+                                        self.postTextColor("green");
+                                        console.log("data posted");
+                                        
+                                        //update offersTable
+                                        self.getOffersAjax();
+                                    },
+                                    error = function (response) {
+                                        self.postText("Error: Offer not saved.");
+                                        self.postTextColor("red");
+                                        console.log("data not posted");
+                                }).then(function () {
+                                    self.fileContentPosted(true);
+                                    $("#postMessage").css('display', 'inline-block').fadeOut(2000, function(){
+                                        self.disableSaveButton(false);
+                                    });
+                                }).then(function () {
+                                    console.log(responseJson);
+                                })
+                            );
+                        };
+                    }();
 
                     var getData = function () {
-                        self.offersLoaded = ko.observable();
-                        self.offersValid = ko.observable();
+                        self.getOffersAjax = function() {                        
+                            self.offersLoaded = ko.observable();
+                            self.offersValid = ko.observable();
 
-                        function getOffersAjax() {
+                            self.offersValues([]);
                             //GET /rest/offers - REST
                             self.offersLoaded(false);
                             return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.OFFERS))
@@ -216,7 +268,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             );
                         };
 
-                        Promise.all([getOffersAjax()])
+                        Promise.all([self.getOffersAjax()])
                         .then(function () {
                             Promise.all([getOfferTypesCategoriesAjax()])
                         })
