@@ -146,8 +146,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             };
 
                             var responseJson = {
-				date_available: _formatDate($('#datepickerEditDateAvailable')[0].value),
-                                date_end: _formatDate($('#datepickerEditDateEnd')[0].value),
+                                date_available: $('#datepickerEditDateAvailable')[0].value ? _formatDate($('#datepickerEditDateAvailable')[0].value) : "",
+                                date_end: $('#datepickerEditDateEnd')[0].value ? _formatDate($('#datepickerEditDateEnd')[0].value) : "",
                                 details: $('#textareaEditOfferNotes')[0].value,
                                 distance: $('#inputEditDistance')[0].value,
                                 name: $('#inputEditName')[0].value,
