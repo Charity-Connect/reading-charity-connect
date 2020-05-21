@@ -24,9 +24,7 @@ class Offer{
 
     public function create(){
 
-    	if(!is_admin()){
-    		$this->id=$_SESSION('organization_id');
-    	}
+    	$this->organization_id=$_SESSION["organization_id"];
 		if(isset($this->postcode)&&$this->postcode!=""){
 			list($latitude,$longitude)=getGeocode($this->postcode);
 		}
