@@ -146,8 +146,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             };
 
                             var responseJson = {
-                                date_available: $('#datepickerEditDateAvailable')[0].value ? _formatDate($('#datepickerEditDateAvailable')[0].value) : "",
-                                date_end: $('#datepickerEditDateEnd')[0].value ? _formatDate($('#datepickerEditDateEnd')[0].value) : "",
+                                date_available: _formatDate($('#datepickerEditDateAvailable')[0].value),
+                                date_end: _formatDate($('#datepickerEditDateEnd')[0].value),
                                 details: $('#textareaEditOfferNotes')[0].value,
                                 distance: $('#inputEditDistance')[0].value,
                                 name: $('#inputEditName')[0].value,
@@ -198,15 +198,27 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     success = function (response) {
                                         console.log(response.offers);
                                         $.each(response.offers, function(index, item) {
+                                            var dateAvailableCleansed;
+                                            var dateAvailableCleansedLocale;
                                             if (this.date_available) {
                                                 //no need to split as UTC anyway
-                                                var dateAvailableCleansed = new Date(this.date_available);
-                                                var dateAvailableCleansedLocale = dateAvailableCleansed.toLocaleDateString();
+                                                dateAvailableCleansed = new Date(this.date_available);
+                                                dateAvailableCleansedLocale = dateAvailableCleansed.toLocaleDateString();
+                                            } else {
+                                                //if new entry and nothing selected
+                                                dateAvailableCleansed = "";
+                                                dateAvailableCleansedLocale = "";
                                             }
+                                            var dateEndCleansed;
+                                            var dateEndCleansedLocale;
                                             if (this.date_end) {
                                                 //no need to split as UTC anyway
-                                                var dateEndCleansed = new Date(this.date_end);
-                                                var dateEndCleansedLocale = dateEndCleansed.toLocaleDateString();
+                                                dateEndCleansed = new Date(this.date_end);
+                                                dateEndCleansedLocale = dateEndCleansed.toLocaleDateString();
+                                            } else {
+                                                //if new entry and nothing selected
+                                                dateEndCleansed = "";
+                                                dateEndCleansedLocale = "";                                                
                                             }
                                             self.offersValues().push({
                                                 offerDateAvailableRaw: dateAvailableCleansed,

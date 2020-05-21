@@ -313,15 +313,19 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     success = function (response) {
                                         console.log(response.need_request);
                                         $.each(response.need_request, function(index, item) {
+                                            var targetDateCleansed;
+                                            var targetDateCleansedLocale;
                                             if (this.target_date) {
                                                 //no need to split as UTC anyway
-                                                var targetDateCleansed = new Date(this.target_date);
-                                                var targetDateCleansedLocale = targetDateCleansed.toLocaleDateString();
+                                                targetDateCleansed = new Date(this.target_date);
+                                                targetDateCleansedLocale = targetDateCleansed.toLocaleDateString();
                                             }
+                                            var dateNeededCleansed;
+                                            var dateNeededCleansedLocale;
                                             if (this.date_needed) {
                                                 //no need to split as UTC anyway
-                                                var dateNeededCleansed = new Date(this.date_needed);
-                                                var dateNeededCleansedLocale = dateNeededCleansed.toLocaleDateString();
+                                                dateNeededCleansed = new Date(this.date_needed);
+                                                dateNeededCleansedLocale = dateNeededCleansed.toLocaleDateString();
                                             }
                                             
                                             var decisionString = "";
