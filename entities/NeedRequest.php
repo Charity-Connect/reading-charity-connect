@@ -56,11 +56,17 @@ class NeedRequest{
 
         $sql = "INSERT INTO need_requests ( client_need_id,organization_id,confirmation_code,agreed,complete,target_date,notes) values (:client_need_id,:organization_id,:confirmation_code,:agreed,:complete,:target_date,:notes)";
         $stmt= $this->connection->prepare($sql);
+        if(!isset($this->agreed)){
+        	$this->agreed='N';
+        }
+        if(!isset($this->complete)){
+        	$this->complete='N';
+        }
         if( $stmt->execute(['client_need_id'=>$this->client_need_id
         	,'organization_id'=>$this->request_organization_id
         	,'confirmation_code'=>$this->confirmation_code
-        	,'agreed'=>isset($this->$agreed)?$this->$agreed:'N'
-        	,'complete'=>isset($this->$complete)?$this->$complete:'N'
+        	,'agreed'=>$this->agreed
+        	,'complete'=>$this->complete
         	,'target_date'=>$this->target_date
         	,'notes'=>$this->request_response_notes
         	])){
@@ -71,6 +77,10 @@ class NeedRequest{
             return -1;
         }
 
+    }
+
+    public function getConfirmationCode(){
+    	return $this->confirmation_code;
     }
     public function readAll(){
 
