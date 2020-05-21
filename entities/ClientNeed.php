@@ -1,6 +1,8 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Client.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/NeedRequest.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+
 class ClientNeed{
 
     // Connection instance
@@ -82,7 +84,7 @@ class ClientNeed{
 
 				$need_request=new NeedRequest($this->connection);
 				$need_request->client_need_id=$this->id;
-				$need_request->organization_id=$organization;
+				$need_request->request_organization_id=$organization;
 				$need_request->create();
 
 				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
