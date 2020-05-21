@@ -96,8 +96,7 @@
         <div role="navigation" class="oj-web-applayout-max-width oj-web-applayout-navbar">
             <oj-navigation-list id="navList" data="[[navDataProvider]]"
                               :class="[[{'oj-md-condense oj-md-justify-content-flex-end': !smScreen()}]]"
-                              display="[[smScreen() ? 'icons' : 'all']]"
-                              edge="top"
+                              display="[[smScreen() ? 'icons' : 'all']]" edge="top" on-selection-changed="[[navChange]]"
                               item.renderer="[[KnockoutTemplateUtils.getRenderer('navTemplate', true)]]"
                               selection="{{router.stateId}}">
             </oj-navigation-list>
@@ -113,7 +112,8 @@
             position.at.horizontal="end"
             position.of="window">
         </oj-messages>
-      <oj-module role="main" class="oj-web-applayout-max-width oj-web-applayout-content" config="[[moduleConfig]]">
+
+      <oj-module role="main" class="oj-web-applayout-max-width oj-web-applayout-content" config="{{moduleConfig}}">
       </oj-module>
       <footer class="oj-web-applayout-footer" role="contentinfo">
         <div class="oj-web-applayout-footer-item oj-web-applayout-max-width">

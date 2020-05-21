@@ -14,7 +14,10 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 var self = this;
 
                 self.KnockoutTemplateUtils = KnockoutTemplateUtils;
-
+                self.moduleConfig = ko.observable();
+                self.sysModuleConfig = ko.observable();
+                self.navData;
+                self.routerConfig = {};
                 // Handle announcements sent when pages change, for Accessibility.
                 self.manner = ko.observable('polite');
                 self.message = ko.observable();
@@ -98,17 +101,16 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 // Router setup
                 self.router = Router.rootInstance;
 
-                // Navigation setup
-                var navData;
-                var routerConfig = {};
-
                 self.appName("Reading Charity Connect");
-                self.router.configure({
+
+                self.routerConfig = {
                     'requests': {label: 'Requests', isDefault: true},
                     'offers': {label: 'Offers'},
                     'clients': {label: 'Clients'}
-                });
-                navData = [
+                };
+                self.router.configure(self.routerConfig);
+
+                self.navData = [
                     {name: 'Requests', id: 'requests',
                         iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},
                     {name: 'Offers', id: 'offers',
@@ -119,15 +121,50 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 
                 Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
 
+                self.navChange = function (event) {
+                    var name = event.detail.value;
+                    var viewPath = 'views/' + name + '.html';
+                    var modelPath = 'viewModels/' + name;
+                    self.moduleConfig(moduleUtils.createConfig({viewPath: viewPath,
+                        viewModelPath: modelPath, params: {parentRouter: self.router}})
+                    );
+                    self.router.go(name);
+
+                }
+
+                self.getAdminUserDetails = function () {
+                    return $.ajax({
+                            type: 'GET',
+                            contentType: 'application/json',
+                            url: '/rest/admin_check',
+                            success: function (response) {
+                                if (response == "true") {
+                                    utils.appConstants.sysModuleConfig = {viewPath: 'views/systemAdminOrganizations.html',
+                                        viewModelPath: 'viewModels/systemAdminOrganizations' , params: {parentRouter: self.router}}
+                                    ;
+                                    self.appName("Charity Connect - System Admin");
+
+                                    self.routerConfig.admin = {label: 'Admin'};
+                                    self.router.configure(self.routerConfig);
+
+                                    self.navData.push(
+                                        {name: 'Admin', id: 'admin',
+                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-library-icon-24'}
+                                    );
+                                }
+                            }
+                        });
+
+                }
+
 
                 self.loadModule = function () {
-                    self.moduleConfig = ko.pureComputed(function () {
-                        var name = self.router.moduleConfig.name();
-                        var viewPath = 'views/' + name + '.html';
-                        var modelPath = 'viewModels/' + name;
-                        return moduleUtils.createConfig({viewPath: viewPath,
-                            viewModelPath: modelPath, params: {parentRouter: self.router}});
-                    });
+                    var name = self.router.moduleConfig.name();
+                    var viewPath = 'views/' + name + '.html';
+                    var modelPath = 'viewModels/' + name;
+                    self.moduleConfig(moduleUtils.createConfig({viewPath: viewPath, viewModelPath: modelPath, params: {parentRouter: self.router}})
+                    );
+                    self.router.go(name);
 
                     //addition to set locale
                     var newLang = "en-GB";
@@ -140,7 +177,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                     }();
                 };
 
-                self.navDataProvider = new ArrayDataProvider(navData, {keyAttributes: 'id'});
+                self.navDataProvider = new ArrayDataProvider(self.navData, {keyAttributes: 'id'});
 
                 // Footer
                 function footerLink(name, id, linkTarget) {

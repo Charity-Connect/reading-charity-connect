@@ -7,10 +7,10 @@
 /*
  * Your requests ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
-    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
+define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils',
+    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlistview', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
+        function (oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider, ResponsiveUtils, ResponsiveKnockoutUtils) {
 
             function RequestsViewModel() {
                 var self = this;
@@ -19,8 +19,20 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     accUtils.announce('Requests page loaded.');
                     document.title = "Requests";
 
-                    self.requestsValues = ko.observableArray();
+                    // observable for medium screens (above 768px)
+                    var mdQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.MD_UP);
+                    self.mediumDisplay = ResponsiveKnockoutUtils.createMediaQueryObservable(mdQuery);
+
+                    self.selectedDecisionFilterDisplay = ko.observable('decisionFilterAll');
                     self.requestsDataProvider = ko.observable();
+                    self.updateRequestsDataProvider = function(requestsValues) {
+                        var sortCriteria = {key: 'type_name', direction: 'ascending'};
+                        var arrayDataSource = new oj.ArrayTableDataSource(requestsValues, {idAttribute: 'id'});
+                        arrayDataSource.sort(sortCriteria);                            
+                        self.requestsDataProvider(new oj.PagingTableDataSource(arrayDataSource));
+                    };
+
+                    self.requestsValues = ko.observableArray();
                     self.renderer1 = oj.KnockoutTemplateUtils.getRenderer("decisionMade_tmpl", true);
                     self.requestsTableColumns = [
                         {headerText: 'TYPE', field: "type_name"},
@@ -41,8 +53,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                     self.decisionStatus = ko.observable(null);
                     self.disableSaveButton = ko.observable(true);
-                    self.requestNotesUpdateVal = ko.observable("");
-
+                    self.requestNotesUpdateVal = ko.observable("");                    
+                    
                     self.selectedDecisionDisplay = ko.observableArray([]);
                     self.requestRowSelected = ko.observableArray();
                     self.requestSelected = ko.observable("");
@@ -57,6 +69,34 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     }, this);
 
                     var primaryHandlerLogic = function() {
+                        self.handleSelectedDecisionFilterChanged = function () {
+                            var activeFilters = {};
+                            //filter decisionFilters search                        
+                            activeFilters.decisionFilter = self.selectedDecisionFilterDisplay();
+                            console.log(activeFilters);
+
+                            var requestArray = self.requestsValues().filter(function(item) {
+//                                    console.log(item);
+                                if (activeFilters["decisionFilter"] === "decisionFilterAll") {
+                                    return true;
+                                } else if (activeFilters["decisionFilter"] === "decisionFilterCompleted") {
+                                    if (item["complete"] === "Y") {
+                                        return true;
+                                    }
+                                } else {
+                                    var cleanRequestSelectedDecisionItem = "decisionFilter" + item["requestSelectedDecision"];                                    
+                                    //pick up detected active filters - 1x array toString (decisionFilters)
+                                    if (cleanRequestSelectedDecisionItem.indexOf(activeFilters["decisionFilter"]) >= 0) {
+                                        return true;
+                                    }
+                                }
+                            });
+                            console.log(requestArray);
+
+                            //update requestsDataProvider                      
+                            self.updateRequestsDataProvider(requestArray);
+                        };
+                        
                         self.handleRequestRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
                                 //find whether node exists based on selection
@@ -67,15 +107,19 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                         }
                                     }
                                 };
-                                self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));
+                                if (event.target.id === "requestsListview") {
+                                    self.requestSelected(searchNodes(event.target.currentItem, self.requestsValues()));                                    
+                                } else if (event.target.id === "requestsTable") {
+                                    self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));                                    
+                                }
                                 console.log(self.requestSelected());
 
                                 var calculateCategory = utils.calculateCategory(self.requestSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());
                                 self.offerTypesCategorySelected(calculateCategory);
 
-                                if (self.requestSelected().requestSelectedDecision === "Agreed to Help") {
+                                if (self.requestSelected().requestSelectedDecision === "Accepted") {
                                     self.selectedDecisionDisplay(['decisionAgree']);
-                                } else if (self.requestSelected().requestSelectedDecision === "Unable to Help") {
+                                } else if (self.requestSelected().requestSelectedDecision === "Rejected") {
                                     self.selectedDecisionDisplay(['decisionUnable']);
                                 } else {
                                     self.selectedDecisionDisplay([]);
@@ -198,8 +242,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                     var postData = function() {
                         self.fileContentPosted = ko.observable(true);
-                        self.postTextColor = ko.observable();
                         self.postText = ko.observable();
+                        self.postTextColor = ko.observable();
                         self.saveButton = function () {
                             //locale "en-GB" - change UTC to YYYY-MM-DD
                             _formatDate = function(inputDate) {
@@ -229,13 +273,16 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             self.fileContentPosted(false);
                             self.disableSaveButton(true);
                             //POST /rest/need_requests - REST
-                            return $.when(restClient.doPost('/rest/need_requests', responseJson)
+                            return $.when(restClient.doPost(restUtils.constructUrl(restUtils.EntityUrl.NEED_REQUESTS), responseJson)
                                 .then(
                                     success = function (response) {
                                         self.postText("You have succesfully saved the request.");
                                         self.postTextColor("green");
-                                        self.getRequestsAjax();
                                         console.log("data posted");
+                                        
+                                        //update requestsTable
+                                        self.selectedDecisionFilterDisplay('decisionFilterAll');                                        
+                                        self.getRequestsAjax();
                                     },
                                     error = function (response) {
                                         self.postText("Error: Request not saved.");
@@ -280,12 +327,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                             var decisionString = "";
                                             var styleState = "";
                                             if (this.agreed === "Y") {
-                                                decisionString = "Agreed to Help";
+                                                decisionString = "Accepted";
                                                 styleState = "#18BE94"; //green
                                             } else if (this.agreed === "N") {
-                                                decisionString = "Unable to Help";                                                
+                                                decisionString = "Rejected";                                                
                                             } else {
-                                                decisionString = "Pending Response";                                                                                                
+                                                decisionString = "Unreviewed";                                                                                                
                                                 styleState = "#309fdb"; //blue                                                                          
                                             };
                                             self.requestsValues().push({
@@ -314,10 +361,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                         console.log("Requests not loaded");
                                         self.requestsValid(false);
                                 }).then(function () {
-                                    var sortCriteria = {key: 'type_name', direction: 'ascending'};
-                                    var arrayDataSource = new oj.ArrayTableDataSource(self.requestsValues(), {idAttribute: 'id'});
-                                    arrayDataSource.sort(sortCriteria);
-                                    self.requestsDataProvider(new oj.PagingTableDataSource(arrayDataSource));
+                                    self.updateRequestsDataProvider(self.requestsValues());
                                 }).then(function () {
                                     self.requestsLoaded(true);
                                 })
