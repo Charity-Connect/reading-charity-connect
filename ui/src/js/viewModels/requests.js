@@ -256,18 +256,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                             var responseJson = {
                                 agreed: self.decisionStatus(),
-                                client_name: $('#inputEditName')[0].value,
-                                client_need_id: self.requestSelected().client_need_id,
-                                client_postcode: $('#inputEditPostcode')[0].value,
                                 complete: self.requestSelected().complete,
-                                date_needed: _formatDate($('#datepickerEditDateNeeded')[0].value),
                                 id: self.requestSelected().id,
-                                need_notes: $('#textareaEditNeedNotes')[0].value,
-                                request_organization_id: self.requestSelected().request_organization_id,
                                 request_response_notes: $('#textareaEditRequestNotes')[0].value,
-                                source_organization_name: $('#inputEditOrganization')[0].value,
-                                target_date: _formatDate($('#datepickerEditTargetDate')[0].value),
-                                type_name: $('#selectEditType')[0].valueItem.data.label
+                                target_date: _formatDate($('#datepickerEditTargetDate')[0].value)
                             };
 
                             self.fileContentPosted(false);
