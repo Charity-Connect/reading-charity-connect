@@ -242,8 +242,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                     var postData = function() {
                         self.fileContentPosted = ko.observable(true);
-                        self.postTextColor = ko.observable();
                         self.postText = ko.observable();
+                        self.postTextColor = ko.observable();
                         self.saveButton = function () {
                             //locale "en-GB" - change UTC to YYYY-MM-DD
                             _formatDate = function(inputDate) {
@@ -273,7 +273,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             self.fileContentPosted(false);
                             self.disableSaveButton(true);
                             //POST /rest/need_requests - REST
-                            return $.when(restClient.doPost('/rest/need_requests', responseJson)
+                            return $.when(restClient.doPost(restUtils.constructUrl(restUtils.EntityUrl.NEED_REQUESTS), responseJson)
                                 .then(
                                     success = function (response) {
                                         self.postText("You have succesfully saved the request.");
