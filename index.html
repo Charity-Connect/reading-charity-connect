@@ -14,9 +14,20 @@
 
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
-		if(urlParams.has('redirect')){
-			$("#redirect").val(urlParams.get('redirect'))
+		var redirect="/ui/index.html";
+		if (location.hostname === "localhost"){
+			redirect="/ui/web/index.html";
 		}
+		if(urlParams.has('redirect')){
+			redirect=urlParams.get('redirect');
+		}
+		$("#redirect").val(redirect);
+
+		$.get("/rest/login_check", function( data ) {
+		  if(data==="true"){
+			window.location.href = redirect;
+		  }
+		});
 
 	});
 </script>
@@ -37,6 +48,8 @@
                 <label>Password</label>
                 <input type="password" name="password" class="form-control">
                 <span class="help-block"></span>
+                <span class="help-block" style="float: right;"><a href="/reset_password.html">Forgotten Password?</a></span>
+                <br/>
             </div>
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Login">

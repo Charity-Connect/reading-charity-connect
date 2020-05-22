@@ -92,6 +92,7 @@ if(isset($data)) {
                 "client_need_id" => $client_need_id,
                 "client_name" => $client_name,
                 "client_postcode" => $client_postcode,
+                "type" => $type,
                 "type_name" => $type_name,
                 "date_needed" => $date_needed,
                 "request_organization_id" => $request_organization_id,

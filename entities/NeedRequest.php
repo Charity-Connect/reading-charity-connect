@@ -10,6 +10,7 @@ class NeedRequest{
     public $request_organization_id;
     public $client_name;
     public $client_postcode;
+    public $type;
     public $type_name;
     public $date_needed;
     private $confirmation_code;
@@ -36,6 +37,7 @@ class NeedRequest{
 	        	,client_need.notes need_notes
 	        	,client.name as client_name
 	        	,client.postcode as client_postcode
+	        	,types.type
 	        	,types.name as type_name
 	        	,client_need.date_needed
 	        	,org.name source_organization_name
@@ -131,6 +133,7 @@ class NeedRequest{
         $this->client_need_id=$row['client_need_id'];
         $this->client_name=$row['client_name'];
         $this->client_postcode=$row['client_postcode'];
+        $this->type=$row['type'];
         $this->type_name=$row['type_name'];
         $this->date_needed=$row['date_needed'];
         $this->request_organization_id=$row['request_organization_id'];
