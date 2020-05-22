@@ -101,7 +101,7 @@
                             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                                 <oj-label id="editAddressLabel"><strong>Address:</strong></oj-label>
                                 <oj-text-area id="textareaEditAddress" labelled-by="editAddressLabel"
-                                    value="{{clientSelected().address}}"
+                                    value="{{clientRowSelected().length ? clientSelected().address : ''}}"
                                     placeholder="Input address"
                                     title="Edit address textarea"
                                     rows="5">                                
@@ -128,12 +128,12 @@
                             </div>
                         </div>
                         <hr />
-                        <oj-label id="editNeedNotesLabel"><strong>Comments from Requestor:</strong></oj-label>
-                        <oj-text-area id="textareaEditNeedNotes" class="oj-form-control-full-width"
-                            labelled-by="editNeedNotesLabel"
-                            value="{{clientSelected().notes}}"
-                            placeholder="Input need notes"
-                            title="Edit need notes textarea"
+                        <oj-label id="editClientNotesLabel"><strong>Comments from Requestor:</strong></oj-label>
+                        <oj-text-area id="textareaEditClientNotes" class="oj-form-control-full-width"
+                            labelled-by="editClientNotesLabel"
+                            value="{{clientRowSelected().length ? clientSelected().notes : ''}}"
+                            placeholder="Input client notes"
+                            title="Edit client notes textarea"
                             rows="5">                                
                         </oj-text-area>
                         <hr />

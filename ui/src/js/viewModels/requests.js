@@ -114,8 +114,20 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 }
                                 console.log(self.requestSelected());
 
-                                var calculateCategory = utils.calculateCategory(self.requestSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());
-                                self.offerTypesCategorySelected(calculateCategory);
+                                _getOfferCategoryFromTypeAjax = function(code) {
+                                    //GET /rest/offer_types/{code} - REST
+                                    return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${code}`)
+                                        .then(
+                                            success = function (response) {
+                                                console.log(response.category);                                                
+                                                self.offerTypesCategorySelected(response.category);                                                
+                                            },
+                                            error = function (response) {
+                                                console.log(`Category from Offer Types "${code}" not loaded`);
+                                        })
+                                    );
+                                };
+                                _getOfferCategoryFromTypeAjax(self.requestSelected().type);
 
                                 if (self.requestSelected().requestSelectedDecision === "Accepted") {
                                     self.selectedDecisionDisplay(['decisionAgree']);
@@ -347,6 +359,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 request_organization_id: this.request_organization_id,
                                                 request_response_notes: this.request_response_notes,
                                                 source_organization_name: this.source_organization_name,
+                                                type: this.type,
                                                 type_name: this.type_name
                                             });
                                         });
