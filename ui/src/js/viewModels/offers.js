@@ -79,8 +79,20 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 self.offerSelected(searchNodes(event.target.currentRow.rowKey, self.offersValues()));
                                 console.log(self.offerSelected());
 
-                                var calculateCategory = utils.calculateCategory(self.offerSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());
-                                self.offerTypesCategorySelected(calculateCategory);
+                                _getOfferCategoryFromTypeAjax = function(code) {
+                                    //GET /rest/offer_types/{code} - REST
+                                    return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${code}`)
+                                        .then(
+                                            success = function (response) {
+                                                console.log(response.category);                                                
+                                                self.offerTypesCategorySelected(response.category);                                                
+                                            },
+                                            error = function (response) {
+                                                console.log(`Category from Offer Types "${code}" not loaded`);
+                                        })
+                                    );
+                                };
+                                _getOfferCategoryFromTypeAjax(self.offerSelected().type);
                                 
                                 if (self.offerSelected().offerDateAvailableRaw) {
                                     self.dateAvailableConvertor(new Date(self.offerSelected().offerDateAvailableRaw).toISOString());

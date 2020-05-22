@@ -34,7 +34,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient', 'restUtils
                     self.clientNeedsTableColumns = [
                         {headerText: 'TYPE', field: "type_name"},
                         {headerText: 'NEED MET?', field: "need_met"},
-                        {headerText: 'DATE NEEDED', field: "date_needed"},
+                        {headerText: 'DATE NEEDED', field: 'clientDateNeeded', sortProperty: "clientDateNeededRaw"},
                         {headerText: 'NOTES', field: "notes"}
                     ];
 
@@ -74,17 +74,42 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient', 'restUtils
                             }
                         };
                         _getClientNeedsAjax = function(clientId) {
+                            self.clientNeedsValues([]);
                             //GET /rest/clients/{client id}/client_needs - REST
                             return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${clientId}/client_needs`)
                                 .then(
                                     success = function (response) {
                                         console.log(response.client_needs);
-                                        self.clientNeedsValues(response.client_needs);
+                                        $.each(response.client_needs, function(index, item) {
+                                            var dateNeededCleansed;
+                                            var dateNeededCleansedLocale;
+                                            if (this.date_needed) {
+                                                //no need to split as UTC anyway
+                                                dateNeededCleansed = new Date(this.date_needed);
+                                                dateNeededCleansedLocale = dateNeededCleansed.toLocaleDateString();
+                                            } else {
+                                                //if new entry and nothing selected
+                                                dateNeededCleansed = "";
+                                                dateNeededCleansedLocale = "";
+                                            }
+                                            self.clientNeedsValues().push({
+                                                clientDateNeededRaw: dateNeededCleansed,
+                                                clientDateNeeded: dateNeededCleansedLocale,
+                                                details: this.details,
+                                                client_id: this.client_id,
+                                                id: this.id,
+                                                need_met: this.need_met,
+                                                notes: this.notes,
+                                                requesting_organization_id: this.requesting_organization_id,
+                                                type: this.type,
+                                                type_name: this.type_name                                                
+                                            });
+                                        });                                        
                                     },
                                     error = function (response) {
                                         console.log(`Client Needs from Client "${clientId}" not loaded`);
                                 }).then(function () {
-                                    var sortCriteria = {key: 'type', direction: 'ascending'};
+                                    var sortCriteria = {key: 'type_name', direction: 'ascending'};
                                     var arrayDataSource = new oj.ArrayTableDataSource(self.clientNeedsValues(), {idAttribute: 'id'});
                                     arrayDataSource.sort(sortCriteria);
                                     self.clientNeedsDataProvider(new oj.PagingTableDataSource(arrayDataSource));
@@ -102,10 +127,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient', 'restUtils
                     };
 
                     var getData = function () {
-                        self.clientsLoaded = ko.observable();
-                        self.clientsValid = ko.observable();
+                        self.getClientsAjax = function() {                        
+                            self.clientsLoaded = ko.observable();
+                            self.clientsValid = ko.observable();
 
-                        function getClientsAjax() {
+                            self.clientsValues([]);
                             //GET /rest/clients - REST
                             self.clientsLoaded(false);
                             return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.CLIENTS))
@@ -129,7 +155,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient', 'restUtils
                             );
                         };
 
-                        Promise.all([getClientsAjax()])
+                        Promise.all([self.getClientsAjax()])
                         .then(function () {
                         })
                         .catch(function () {
