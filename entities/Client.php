@@ -44,7 +44,7 @@ class Client{
 
             $sql = "INSERT INTO client_links ( client_id,link_id,link_type) values (:client_id,:organization_id,'ORG')";
 			$stmt= $this->connection->prepare($sql);
-			$stmt->execute(['client_id'=>$this->id,'organization_id'=>$user->organization_id]);
+			$stmt->execute(['client_id'=>$this->id,'organization_id'=>$_SESSION["organization_id"]]);
 
             return $this->id;
         } else {
