@@ -115,9 +115,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 notes: this.notes,
                                                 requesting_organization_id: this.requesting_organization_id,
                                                 type: this.type,
-                                                type_name: this.type_name                                                
+                                                type_name: this.type_name
                                             });
-                                        });                                        
+                                        });
                                     },
                                     error = function (response) {
                                         console.log(`Client Needs from Client "${clientId}" not loaded`);
@@ -164,15 +164,35 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     self.offerTypeSelected(self.offerTypesArray()[0].value);
                                 })
                             );
-                        };                    
+                        };
                     }();
+
+                        self.handleOfferTypesChanged = function(event) {
+                            if (event.target.value !== "") {
+                                _getOfferNotesFromTypeAjax(event.target.value);
+                            }
+                        };
+
+					_getOfferNotesFromTypeAjax = function(code) {
+						return $.when(restClient.doGet(`/rest/offer_types/${code}`))
+							.then(
+								success = function (response) {
+									console.log(response.offer_types);
+									self.needNotesUpdateVal(response.default_text);
+								},
+								error = function (response) {
+									console.log(`Offer Types  "${code}" not loaded`);
+							}
+						);
+					};
+
 
                     var addNeedDialogLogic = function() {
                         self.addNeedButton = function () {
                             document.getElementById('addNeedDialog').open();
-                        };                        
-                        
-                        self.dateNeededConvertor = ko.observable();                        
+                        };
+
+                        self.dateNeededConvertor = ko.observable();
                         self.needNotesUpdateVal = ko.observable("");
                         self.closeAddNeedModalButton = function (event) {
                             //inital disable
@@ -206,19 +226,19 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             if (event.target.id === "saveButton") {
                                 postAddress = restUtils.constructUrl(restUtils.EntityUrl.CLIENTS);
                                 responseJson = {
-                                    id: self.clientRowSelected().length ? self.clientSelected().id : null,                                
+                                    id: self.clientRowSelected().length ? self.clientSelected().id : null,
                                     name: $('#inputEditName')[0].value,
                                     address: $('#textareaEditAddress')[0].value,
                                     postcode: $('#inputEditPostcode')[0].value,
                                     phone: $('#inputEditPhone')[0].value,
                                     email: $('#inputEditEmail')[0].value,
-                                    notes: $('#textareaEditClientNotes')[0].value                             
+                                    notes: $('#textareaEditClientNotes')[0].value
                                 };
                             } else if (event.target.id === "editNeedSaveButton")  {
                                 postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENT_NEEDS)}/${self.clientSelected().id}/client_needs`;
                                 responseJson = {
                                     type: $('#selectEditNeedType')[0].valueItem.data.value,
-                                    date_needed: _formatDate($('#datepickerEditNeedDateNeeded')[0].value),                                    
+                                    date_needed: _formatDate($('#datepickerEditNeedDateNeeded')[0].value),
                                     notes: $('#textareaEditNeedNotes')[0].value
                                 };
                             };
@@ -233,12 +253,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                         self.postTextColor("green");
                                         if (event.target.id === "saveButton") {
                                             self.postText("You have succesfully saved the client.");
-                                            console.log("client data posted");                                        
+                                            console.log("client data posted");
                                             //update clientsTable
                                             self.getClientsAjax();
                                         } else if (event.target.id === "editNeedSaveButton")  {
                                             self.postText("You have succesfully saved the need.");
-                                            console.log("need data posted");                                               
+                                            console.log("need data posted");
                                             //update clientNeedsTable
                                             self.getClientNeedsAjax(self.clientSelected().id);
                                         };
@@ -250,8 +270,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                             console.log("client data not posted");
                                         } else if (event.target.id === "editNeedSaveButton")  {
                                             self.postText("Error: Need not saved.");
-                                            console.log("need data not posted");                                            
-                                        };                                            
+                                            console.log("need data not posted");
+                                        };
                                 }).then(function () {
                                     self.fileContentPosted(true);
                                     $(".postMessage").css('display', 'inline-block').fadeOut(2000, function(){
@@ -259,7 +279,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     });
                                 }).then(function () {
                                     if (event.target.id === "editNeedSaveButton")  {
-                                        self.closeAddNeedModalButton();                                            
+                                        self.closeAddNeedModalButton();
                                     };
                                     console.log(responseJson);
                                 })
@@ -268,7 +288,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     }();
 
                     var getData = function () {
-                        self.getClientsAjax = function() {                        
+                        self.getClientsAjax = function() {
                             self.clientsLoaded = ko.observable();
                             self.clientsValid = ko.observable();
 
