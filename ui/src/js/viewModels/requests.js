@@ -115,6 +115,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 console.log(self.requestSelected());
 
                                 _getOfferCategoryFromTypeAjax = function(code) {
+                                    self.offerTypesCategorySelected("");
                                     //GET /rest/offer_types/{code} - REST
                                     return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${code}`)
                                         .then(
@@ -185,7 +186,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     utils.sortAlphabetically(self.offerTypesArray(), "value");
                                     self.offerTypesDataProvider(new ArrayDataProvider(self.offerTypesArray(), { keyAttributes: 'value' }));
                                 }).then(function () {
-                                    self.offerTypeSelected(self.offerTypesArray()[0].value);
+                                    if (self.requestRowSelected().length) {
+                                        self.offerTypeSelected(self.requestSelected().type);                                        
+                                    } else {
+                                        self.offerTypeSelected(self.offerTypesArray()[0].value);
+                                    }
                                 })
                             );
                         };

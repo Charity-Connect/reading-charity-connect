@@ -80,12 +80,13 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 console.log(self.offerSelected());
 
                                 _getOfferCategoryFromTypeAjax = function(code) {
+                                    self.offerTypesCategorySelected("");
                                     //GET /rest/offer_types/{code} - REST
                                     return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${code}`)
                                         .then(
                                             success = function (response) {
                                                 console.log(response.category);                                                
-                                                self.offerTypesCategorySelected(response.category);                                                
+                                                self.offerTypesCategorySelected(response.category);
                                             },
                                             error = function (response) {
                                                 console.log(`Category from Offer Types "${code}" not loaded`);
@@ -136,7 +137,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     utils.sortAlphabetically(self.offerTypesArray(), "value");
                                     self.offerTypesDataProvider(new ArrayDataProvider(self.offerTypesArray(), { keyAttributes: 'value' }));
                                 }).then(function () {
-                                    self.offerTypeSelected(self.offerTypesArray()[0].value);
+                                    if (self.offerRowSelected().length) {
+                                        self.offerTypeSelected(self.offerSelected().type);                                        
+                                    } else {
+                                        self.offerTypeSelected(self.offerTypesArray()[0].value);
+                                    }
                                 })
                             );
                         };
