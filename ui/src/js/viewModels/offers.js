@@ -158,6 +158,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             };
 
                             var responseJson = {
+                                id: self.offerRowSelected().length ? self.offerSelected().id : null,
                                 date_available: _formatDate($('#datepickerEditDateAvailable')[0].value),
                                 date_end: _formatDate($('#datepickerEditDateEnd')[0].value),
                                 details: $('#textareaEditOfferNotes')[0].value,
