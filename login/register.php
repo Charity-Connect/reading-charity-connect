@@ -101,16 +101,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
         body{ font: 14px sans-serif; }
-        .wrapper{ width: 350px; padding: 20px; }
+        .wrapper{ padding: 20px; text-align: center; }
+        .loginFields{ max-width: 350px; margin: auto;}
+        label{ text-align: left;}
     </style>
 </head>
 <body>
-            <h2 class="oj-sm-only-hide oj-web-applayout-header-title" title="Application Name"><img src="/images/handshake.png" alt="logo"/>
-Reading Charity Connect - Sign Up</h2>
 
     <div class="wrapper">
+            <h2 class="oj-sm-only-hide oj-web-applayout-header-title" title="Application Name"><img src="/images/handshake.png" alt="logo"/>
+Reading Charity Connect - Sign Up</h2>
         <p>Please fill this form to create an account.</p>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="loginFields">
             <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
                 <label>Name</label>
                 <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
@@ -143,8 +145,8 @@ Reading Charity Connect - Sign Up</h2>
                 </select>
             </div>
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Submit">
-                <input type="reset" class="btn btn-default" value="Reset">
+                <input type="submit" class="btn btn-primary" value="Submit" style="width:45%">
+                <input type="reset" class="btn btn-default" value="Reset" style="width:45%">
             </div>
             <p>Already have an account? <a href="/index.html">Login here</a>.</p>
         </form>
