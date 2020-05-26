@@ -14,8 +14,6 @@ jobs:
       STAGE_FTP_SERVER: ftp://rdg-connect.org/
       STAGE_FTP_USERNAME: gituser-test@rdg-connect.org
       STAGE_FTP_PASSWORD: ${{ secrets.FTP_TEST_SECRET }}
-    run: |
-      echo $STAGE_FTP_SERVER $STAGE_FTP_USERNAME $STAGE_FTP_PASSWORD
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
