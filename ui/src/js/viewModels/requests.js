@@ -8,7 +8,7 @@
  * Your requests ViewModel code goes here
  */
 define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils',
-    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlistview', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
+    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojselectcombobox', 'ojs/ojlistview', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
         function (oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider, ResponsiveUtils, ResponsiveKnockoutUtils) {
 
@@ -60,8 +60,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.requestSelected = ko.observable("");
                     self.offerTypesCategorySelected = ko.observable("");
                     self.offerTypeSelected = ko.observable("");
-                    self.targetDateConvertor = ko.observable();
-                    self.dateNeededConvertor = ko.observable();
+                    self.targetDateConvertor = ko.observable("");
+                    self.dateNeededConvertor = ko.observable("");
                     self.showPanel = ko.computed(function () {
                         if (self.requestRowSelected().length) {
                             return true;

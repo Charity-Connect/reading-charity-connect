@@ -30,8 +30,22 @@
                             <h2>Requests</h2>
                         </div>                    
                         <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
-                            <div class="oj-helper-clearfix">
-                                <oj-buttonset-one id="decisionFilters" class="oj-sm-float-end"
+                            <oj-bind-if test="[[mediumDisplay() !== true]]">
+                                <div class="oj-flex-bar">
+                                    <oj-label id="decisionFiltersLabel" class="oj-label-inline"><strong>Filter:</strong></oj-label>                                   
+                                    <oj-select-one id="selectDecisionFilters" labelled-by="decisionFiltersLabel"
+                                        value="{{selectedDecisionFilterDisplay}}"
+                                        on-value-changed="[[handleSelectedDecisionFilterChanged]]">
+                                        <oj-option value="decisionFilterAll">All</oj-option>
+                                        <oj-option value="decisionFilterUnreviewed">Unreviewed</oj-option>
+                                        <oj-option value="decisionFilterAccepted">Accepted</oj-option>
+                                        <oj-option value="decisionFilterRejected">Rejected</oj-option>
+                                        <oj-option value="decisionFilterCompleted">Completed</oj-option>
+                                    </oj-select-one>
+                                </div>
+                            </oj-bind-if>
+                            <oj-bind-if test="[[mediumDisplay() === true]]">
+                                <oj-buttonset-one id="buttonsetDecisionFilters"
                                     value="{{selectedDecisionFilterDisplay}}"
                                     on-value-changed="[[handleSelectedDecisionFilterChanged]]">
                                     <oj-option value="decisionFilterAll">All</oj-option>
@@ -40,37 +54,37 @@
                                     <oj-option value="decisionFilterRejected">Rejected</oj-option>
                                     <oj-option value="decisionFilterCompleted">Completed</oj-option>
                                 </oj-buttonset-one>
-                            </div>
+                            </oj-bind-if>                                
                         </div>
                     </div>                    
                     <oj-bind-if test="[[mediumDisplay() !== true]]">
-                        <oj-list-view id="requestsListview" aria-label="listview using array"
+                        <oj-list-view id="requestsListview" class="row-selectable" aria-label="listview using array"
                             selection="{{requestRowSelected}}"
                             on-selection-changed="[[handleRequestRowChanged]]"                                      
                             selection-mode="single"                            
                             data="[[requestsDataProvider]]">
                             <template slot="itemTemplate">
-                                <div>
+                                <div class="oj-flex-bar">
                                     <oj-label id="typeLabel" class="oj-label-inline"><strong>Type:</strong></oj-label>
                                     <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.type_name]]"></oj-bind-text></span>
                                 </div>
-                                <div>
+                                <div class="oj-flex-bar">
                                     <oj-label id="nameLabel" class="oj-label-inline"><strong>Name:</strong></oj-label>
                                     <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.client_name]]"></oj-bind-text></span>
                                 </div>
-                                <div>
+                                <div class="oj-flex-bar">
                                     <oj-label id="targetDateLabel" class="oj-label-inline"><strong>Target Date:</strong></oj-label>
                                     <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.requestTargetDate]]"></oj-bind-text></span>
                                 </div>
-                                <div>
+                                <div class="oj-flex-bar">
                                     <oj-label id="dateNeededLabel" class="oj-label-inline"><strong>Date Needed:</strong></oj-label>
                                     <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.requestDateNeeded]]"></oj-bind-text></span>
                                 </div>
-                                <div>
+                                <div class="oj-flex-bar">
                                     <oj-label id="organizationLabel" class="oj-label-inline"><strong>Organization:</strong></oj-label>
                                     <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.source_organization_name]]"></oj-bind-text></span>
                                 </div>
-                                <div>
+                                <div class="oj-flex-bar">
                                     <oj-label id="decisionMadeLabel" class="oj-label-inline"><strong>Decision Made:</strong></oj-label>
                                     <strong>
                                         <span class="oj-form-non-control-inline" :style.color="[[$current.data.styleState]]">

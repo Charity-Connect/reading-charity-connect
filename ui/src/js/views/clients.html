@@ -167,7 +167,7 @@
                                 </h3>
                             </div>
                             <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
-                                <oj-dialog style="display:none" id="addNeedDialog" dialog-title="Add Need" cancel-behavior="none">
+                                <oj-dialog style="display:none" id="addNeedDialog" class="oj-sm-12 oj-md-8" dialog-title="Add Need" cancel-behavior="none">
                                     <div slot="body">
                                         <oj-label id="editNeedCategoryLabel"><strong>Category:</strong></oj-label>
                                         <oj-select-single id="selectEditNeedCategory" labelled-by="editNeedCategoryLabel"
@@ -182,7 +182,7 @@
                                         <oj-select-single id="selectEditNeedType" labelled-by="editNeedTypeLabel"
                                             data="[[offerTypesDataProvider]]"
                                             value="{{offerTypeSelected}}"
-                                            on-value-changed="[[handleOfferTypesChanged]]"
+                                            on-value-changed="[[handleOfferTypeChanged]]"
                                             placeholder="Select need type"
                                             title="Edit need type select"
                                             disabled="[[disableSelectEditType]]">
@@ -203,7 +203,7 @@
                                             value="{{needNotesUpdateVal}}"
                                             placeholder="Input need notes"
                                             title="Edit need notes textarea"
-                                            rows="5">
+                                            rows="10">
                                         </oj-text-area>
                                     </div>
                                     <div slot="footer">

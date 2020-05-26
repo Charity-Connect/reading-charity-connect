@@ -135,7 +135,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             if (event.target.value !== "") {
                                 _getOfferTypesFromCategoryAjax(event.target.value);
                                 self.disableSelectEditType(false);
-                                self.disableNeedSaveButton(false);
                             }
                         };
                         _getOfferTypesFromCategoryAjax = function(code) {
@@ -167,33 +166,34 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         };
                     }();
 
-                        self.handleOfferTypesChanged = function(event) {
-                            if (event.target.value !== "") {
-                                _getOfferNotesFromTypeAjax(event.target.value);
-                            }
-                        };
-
-					_getOfferNotesFromTypeAjax = function(code) {
-						return $.when(restClient.doGet(`/rest/offer_types/${code}`))
-							.then(
-								success = function (response) {
-									console.log(response.offer_types);
-									self.needNotesUpdateVal(response.default_text);
-								},
-								error = function (response) {
-									console.log(`Offer Types  "${code}" not loaded`);
-							}
-						);
-					};
-
-
                     var addNeedDialogLogic = function() {
+                        self.dateNeededConvertor = ko.observable("");
+                        self.needNotesUpdateVal = ko.observable("");
+                        
                         self.addNeedButton = function () {
                             document.getElementById('addNeedDialog').open();
                         };
 
-                        self.dateNeededConvertor = ko.observable();
-                        self.needNotesUpdateVal = ko.observable("");
+                        self.handleOfferTypeChanged = function (event) {
+                            if (event.target.value !== "") {
+                                _getOfferNotesFromTypeAjax(event.target.value);
+                               self.disableNeedSaveButton(false);
+                            }
+                        };
+                        _getOfferNotesFromTypeAjax = function (code) {
+                                return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${code}`)
+                                .then(
+                                    success = function (response) {
+                                        console.log(response.default_text);
+                                        self.needNotesUpdateVal(response.default_text);
+                                    },
+                                    error = function (response) {
+                                        console.log(`Offer Notes from Type "${code}" not loaded`);
+                                    }
+                                )
+                            );
+                        };                        
+                        
                         self.closeAddNeedModalButton = function (event) {
                             //inital disable
                             self.disableSelectEditType(true);
@@ -235,7 +235,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     notes: $('#textareaEditClientNotes')[0].value
                                 };
                             } else if (event.target.id === "editNeedSaveButton")  {
-                                postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENT_NEEDS)}/${self.clientSelected().id}/client_needs`;
+                                postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${self.clientSelected().id}/client_needs`;
                                 responseJson = {
                                     type: $('#selectEditNeedType')[0].valueItem.data.value,
                                     date_needed: _formatDate($('#datepickerEditNeedDateNeeded')[0].value),
