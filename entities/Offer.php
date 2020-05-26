@@ -11,6 +11,7 @@ class Offer{
     public $type_name;
     public $details;
     public $quantity;
+    public $quantity_taken;
     public $date_available;
     public $date_end;
     public $postcode;
@@ -52,11 +53,11 @@ class Offer{
     }
     public function readAll(){
         if(is_admin()){
-            $query = "SELECT o.id,o.organization_id, org.name as organization_name, o.name,o.type,t.name as type_name,o.details,o.quantity,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude, o.distance from offers o , offer_types t, organizations org where o.type=t.type and o.organization_id=org.id ORDER BY o.id";
+            $query = "SELECT o.id,o.organization_id, org.name as organization_name, o.name,o.type,t.name as type_name,o.details,o.quantity,o.quantity_taken,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude, o.distance from offers o , offer_types t, organizations org where o.type=t.type and o.organization_id=org.id ORDER BY o.id";
        		$stmt = $this->connection->prepare($query);
        		$stmt->execute();
         } else {
-	        $query = "SELECT o.id,o.organization_id, org.name as organization_name, o.name,o.type,t.name as type_name,o.details,o.quantity,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude, o.distance from offers o, offer_types t, organizations org where o.organization_id=:organization_id and o.organization_id=org.id and o.type=t.type ORDER BY o.id";
+	        $query = "SELECT o.id,o.organization_id, org.name as organization_name, o.name,o.type,t.name as type_name,o.details,o.quantity,o.quantity_taken,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude, o.distance from offers o, offer_types t, organizations org where o.organization_id=:organization_id and o.organization_id=org.id and o.type=t.type ORDER BY o.id";
 			$stmt = $this->connection->prepare($query);
 	        $stmt->execute(['organization_id'=>$_SESSION["organization_id"]]);
         }
@@ -73,6 +74,7 @@ class Offer{
         $this->type_name=$row['type_name'];
         $this->details=$row['details'];
         $this->quantity=$row['quantity'];
+        $this->quantity_taken=$row['quantity_taken'];
         $this->date_available=$row['date_available'];
         $this->date_end=$row['date_end'];
         $this->postcode=$row['postcode'];
@@ -83,11 +85,11 @@ class Offer{
 
     public function readOne($id){
         if(is_admin()){
-	        $query = "SELECT o.id,o.organization_id, org.name as organization_name,o.name,o.type,t.name as type_name, o.details,o.quantity,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude,o.distance from offers o, offer_types t, organizations org where o.type=t.type and o.organization_id=org.id and o.id=:id";
+	        $query = "SELECT o.id,o.organization_id, org.name as organization_name,o.name,o.type,t.name as type_name, o.details,o.quantity, o.quantity_taken,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude,o.distance from offers o, offer_types t, organizations org where o.type=t.type and o.organization_id=org.id and o.id=:id";
 			$stmt = $this->connection->prepare($query);
 	        $stmt->execute(['id'=>$id]);
 	    } else {
-	        $query = "SELECT o.id,o.organization_id, org.name as organization_name,o.name,o.type,t.name as type_name,o.details,o.quantity,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude,o.distance from offers o , offer_types t, organizations org where o.organization_id=:organization_id and o.organization_id=org.id and o.type=t.type and o.id=:id";
+	        $query = "SELECT o.id,o.organization_id, org.name as organization_name,o.name,o.type,t.name as type_name,o.details,o.quantity, o.quantity_taken,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude,o.distance from offers o , offer_types t, organizations org where o.organization_id=:organization_id and o.organization_id=org.id and o.type=t.type and o.id=:id";
 	        $stmt = $this->connection->prepare($query);
 	        $stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
 	    }
