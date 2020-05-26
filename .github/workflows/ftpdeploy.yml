@@ -25,6 +25,6 @@ jobs:
           echo $STAGE_FTP_SERVER $STAGE_FTP_USERNAME $STAGE_FTP_PASSWORD
       - name: Deploy
         run: |
-          apt-get update
-          apt-get install lftp
+          sudo apt-get update
+          sudo apt-get install lftp
           lftp $INPUT_STAGE_FTP_SERVER -u $INPUT_STAGE_FTP_USERNAME,$INPUT_STAGE_FTP_PASSWORD -e "set ftp:ssl-force false; set ssl:verify-certificate false; mirror --reverse --continue --dereference -x ^\.git/$ $INPUT_LOCALDIR $INPUT_REMOTEDIR; quit"
