@@ -24,7 +24,7 @@ class User{
         $this->connection = $connection;
     }
 
-    public function create($organization_id){
+    public function create(){
         global $site_address;
 
         $sql = "INSERT INTO users ( password,display_name,email,phone,confirmation_string) values (:password,:display_name,:email,:phone,:confirmation_string)";
@@ -37,21 +37,20 @@ class User{
         ,'confirmation_string'=>$this->confirmation_string
         ])){
             $this->id=$this->connection->lastInsertId();
-            if(isset($organization_id)){
-                $organization_user = new UserOrganization($this->connection);
-                $organization_user->user_id=$this->id;
-                $organization_user->organization_id=$organization_id;
-                $organization_user->admin='N';
-                $organization_user->user_approver='N';
-                $organization_user->need_approver='N';
-                if(isset($_SESSION['id'])){
-	                $organization_user->confirmed='Y';
-                } else {
-	                $organization_user->confirmed='N';
-                }
-                $organization_user->create();
+			$organization_user = new UserOrganization($this->connection);
+			$organization_user->user_id=$this->id;
+			$organization_user->organization_id=$_SESSION['organization_id'];
+			$organization_user->admin='N';
+			$organization_user->user_approver='N';
+			$organization_user->need_approver='N';
+			if(isset($_SESSION['id'])){
+				$organization_user->confirmed='Y';
+			} else {
+				$organization_user->confirmed='N';
+			}
+			$organization_user->create();
 
-            }
+
 
             $messageString=get_string("new_user_confirmation",array("%NAME%"=>$this->display_name,"%LINK%"=>$site_address."/rest/confirm_user.php?id=".$this->id."&key=".$this->confirmation_string));
 			sendHtmlMail($this->email,get_string("new_user_subject"),$messageString);

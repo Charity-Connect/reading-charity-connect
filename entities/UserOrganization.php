@@ -23,7 +23,7 @@ class UserOrganization{
         $stmt= $this->connection->prepare($sql);
         $this->confirmation_string=generate_string(60);
 
-        if( $stmt->execute(['user_id'=>$this->user_id,'organization_id'=>$this->organization_id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'confirmed'=>$this->confirmed,'confirmation_string'=>$this->confirmation_string])){
+        if( $stmt->execute(['user_id'=>$this->user_id,'organization_id'=>$_SESSION['organization_id'],'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'confirmed'=>$this->confirmed,'confirmation_string'=>$this->confirmation_string])){
             $this->id=$this->connection->lastInsertId();
             if($this->confirmed=='N'){
             	$user= new User($this->connection);

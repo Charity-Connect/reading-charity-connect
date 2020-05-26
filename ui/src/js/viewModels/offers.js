@@ -22,11 +22,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offersValues = ko.observableArray();
                     self.offersDataProvider = ko.observable();
                     self.offersTableColumns = [
-                        {headerText: 'OFFER NAME', field: "name"},
+                        {headerText: 'NAME', field: "name"},
                         {headerText: 'TYPE', field: "type_name"},
-                        {headerText: 'QUANTITY', field: "quantity"},
-                        {headerText: 'DATE AVAILABLE', field: 'offerDateAvailable', sortProperty: "offerDateAvailableRaw"},
-                        {headerText: 'DATE END', field: 'offerDateEnd', sortProperty: "offerDateEndRaw"}
+                        {headerText: 'QUANTITY AVAILABLE', field: "quantity"},
+                        {headerText: 'DATE FROM', field: 'offerDateAvailable', sortProperty: "offerDateAvailableRaw"},
+                        {headerText: 'DATE TO', field: 'offerDateEnd', sortProperty: "offerDateEndRaw"}
                     ];
 
                     self.offerTypesCategoriesValues = ko.observableArray();
@@ -85,7 +85,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${code}`)
                                         .then(
                                             success = function (response) {
-                                                console.log(response.category);                                                
+                                                console.log(response.category);
                                                 self.offerTypesCategorySelected(response.category);
                                             },
                                             error = function (response) {
@@ -94,7 +94,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     );
                                 };
                                 _getOfferCategoryFromTypeAjax(self.offerSelected().type);
-                                
+
                                 if (self.offerSelected().offerDateAvailableRaw) {
                                     self.dateAvailableConvertor(new Date(self.offerSelected().offerDateAvailableRaw).toISOString());
                                 } else {
@@ -138,7 +138,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     self.offerTypesDataProvider(new ArrayDataProvider(self.offerTypesArray(), { keyAttributes: 'value' }));
                                 }).then(function () {
                                     if (self.offerRowSelected().length) {
-                                        self.offerTypeSelected(self.offerSelected().type);                                        
+                                        self.offerTypeSelected(self.offerSelected().type);
                                     } else {
                                         self.offerTypeSelected(self.offerTypesArray()[0].value);
                                     }
@@ -183,7 +183,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                         self.postText("You have succesfully saved the offer.");
                                         self.postTextColor("green");
                                         console.log("data posted");
-                                        
+
                                         //update offersTable
                                         self.getOffersAjax();
                                     },
@@ -204,7 +204,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     }();
 
                     var getData = function () {
-                        self.getOffersAjax = function() {                        
+                        self.getOffersAjax = function() {
                             self.offersLoaded = ko.observable();
                             self.offersValid = ko.observable();
 
@@ -236,7 +236,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                             } else {
                                                 //if new entry and nothing selected
                                                 dateEndCleansed = "";
-                                                dateEndCleansedLocale = "";                                                
+                                                dateEndCleansedLocale = "";
                                             }
                                             self.offersValues().push({
                                                 offerDateAvailableRaw: dateAvailableCleansed,
@@ -250,7 +250,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 organization_id: this.organization_id,
                                                 organization_name: this.organization_name,
                                                 postcode: this.postcode,
-                                                quantity: this.quantity,
+                                                quantity: this.quantity_available+"/"+this.quantity,
                                                 type: this.type,
                                                 type_name: this.type_name
                                             });
