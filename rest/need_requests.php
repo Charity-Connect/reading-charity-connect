@@ -5,7 +5,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/NeedRequest.php';
 
 $connection=initRest();
 
-
     $need_request = new NeedRequest($connection);
 $data = json_decode(file_get_contents('php://input'), true);
 if(isset($data)) {
@@ -14,13 +13,10 @@ if(isset($data)) {
     header("Access-Control-Max-Age: 3600");
     header("Access-Control-Allow-Headers: Content-organization_id, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-
-    $need_request->client_need_id = $data['client_need_id'];
-    $need_request->organization_id = $data['organization_id'];
-    $need_request->agreed = isset($data['agreed'])?$data['agreed']:'N';
-    $need_request->complete = isset($data['complete'])?$data['complete']:'N';
+    $need_request->agreed = $data['agreed'];
+    $need_request->complete = $data['complete'];
     $need_request->target_date = $data['target_date'];
-    $need_request->notes = $data['notes'];
+    $need_request->request_response_notes = $data['request_response_notes'];
 
     if(isset($data['id'])){
         $need_request->id = $data['id'];
@@ -34,16 +30,18 @@ if(isset($data)) {
         }
 
     } else {
+	    $need_request->client_need_id = $data['client_need_id'];
+	    $need_request->request_organization_id = $data['request_organization_id'];
 		$id=$need_request->create();
         if($id>0){
             $need_request_arr  = array(
                     "id" => $need_request->id,
                     "client_need_id" => $need_request->client_need_id,
-                    "organization_id" => $need_request->organization_id,
+                    "request_organization_id" => $need_request->organization_id,
                     "agreed" => $need_request->agreed,
                     "complete" => $need_request->complete,
                     "target_date" => $need_request->target_date,
-                    "notes" => $need_request->notes
+                    "request_response_notes" => $need_request->request_response_notes
                     );
             echo json_encode($need_request_arr);
 
@@ -61,13 +59,24 @@ if(isset($data)) {
     $view = "";
     if(isset($_GET["view"]))
 	    $view = $_GET["view"];
-
     if($view=="one") {
         $need_request->id=$_GET["id"];
         $need_request->read();
         echo json_encode($need_request);
     } else {
-        $stmt = $need_request->readAll();
+    	if($view=="unresponded"){
+        	$stmt = $need_request->readFiltered("U","");
+		} else if($view=="agreed"){
+        	$stmt = $need_request->readFiltered("Y","");
+		} else if($view=="rejected"){
+        	$stmt = $need_request->readFiltered("N","");
+		} else if($view=="completed"){
+        	$stmt = $need_request->readFiltered("Y","Y");
+		}else if($view=="in_progress"){
+        	$stmt = $need_request->readFiltered("Y","N");
+		} else {
+        	$stmt = $need_request->readAll();
+        }
         $count = $stmt->rowCount();
         if($count > 0){
 
@@ -82,13 +91,17 @@ if(isset($data)) {
                 "id" => $id,
                 "client_need_id" => $client_need_id,
                 "client_name" => $client_name,
+                "client_postcode" => $client_postcode,
+                "type" => $type,
                 "type_name" => $type_name,
                 "date_needed" => $date_needed,
-                "organization_id" => $organization_id,
+                "request_organization_id" => $request_organization_id,
                 "agreed" => $agreed,
                 "complete" => $complete,
                 "target_date" => $target_date,
-                "notes" => $notes
+                "request_response_notes" => $request_response_notes,
+                "need_notes" => $need_notes,
+                "source_organization_name"=>$source_organization_name
                 );
 
                 array_push($need_requests["need_request"], $need_request);

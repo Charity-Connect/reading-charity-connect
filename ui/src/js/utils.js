@@ -2,9 +2,19 @@
  * Copyright (c) 2014, 2016, Oracle and/or its affiliates.
  * The Universal Permissive License (UPL), Version 1.0
  */
-define(['knockout', 'ojs/ojcore'],
-    function (ko, oj) {
+define(['ojs/ojcore', 'knockout'],
+    function (oj, ko) {
         var self = this;
+        var appConstants = {
+            sysModuleConfig: {},
+            users: {
+                displayName: "",
+                email: "",
+                phone: "",
+                confirmed: "",
+                organizationId: ""
+            }
+        }
 
         sortAlphabetically = function (valueArray, property) {
             valueArray.sort(function(a, b){
@@ -21,9 +31,10 @@ define(['knockout', 'ojs/ojcore'],
                 detail: detail,
                 autoTimeout: 10000
             }]);
-        };    
+        };
 
         return {
+            appConstants: appConstants,
             sortAlphabetically: sortAlphabetically,
             showErrorMessage: showErrorMessage
         };

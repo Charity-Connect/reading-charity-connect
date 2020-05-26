@@ -8,7 +8,7 @@ $connection = $dbclass->getConnection();
 
 $email=$_POST["email"];
 if(password_reset_request($email)){
- 	echo "Password reset e-mail sent.";
+ 	echo "Password reset e-mail sent. <a href=\"/index.html\">Login</a>";
 } else {
-	echo "We could not find an account with that e-mail address";
+	echo "We could not find an account with that e-mail address. <a href=\"javascript:history.back()\">Back</a>";
 }

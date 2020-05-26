@@ -13,8 +13,8 @@ RewriteRule ^organizations/([0-9]+)   organizations.php?view=one&id=$1 [L,qsa]
 RewriteRule ^organizations   organizations.php [L,qsa]
 RewriteRule ^offers/([0-9]+)   offers.php?view=one&id=$1 [L,qsa]
 RewriteRule ^offers   offers.php [L,qsa]
-RewriteRule ^clients/([0-9]+)/client_needs   client_needs.php?view=all&client_id=$1 [L,qsa]
 RewriteRule ^clients/([0-9]+)/client_needs/([0-9]+)   client_needs.php?view=one&client_id=$1&id=$2 [L,qsa]
+RewriteRule ^clients/([0-9]+)/client_needs   client_needs.php?view=all&client_id=$1 [L,qsa]
 RewriteRule ^clients/([0-9]+)   clients.php?view=one&id=$1 [L,qsa]
 RewriteRule ^clients   clients.php [L,qsa]
 RewriteRule ^offer_type_categories/(.*)/offer_types   offer_types.php?view=active_category&category=$1 [L,qsa]
@@ -32,6 +32,11 @@ RewriteRule ^login   session_login.php [L,qsa]
 RewriteRule ^logout   session_logout.php [L,qsa]
 RewriteRule ^password_reset_request   password_reset_request.php [L,qsa]
 RewriteRule ^password_reset_confirm   password_reset_confirm.php [L,qsa]
+RewriteRule ^set_organization   set_organization.php [L,qsa]
+
+RewriteCond %{QUERY_STRING} ^filter=(.+)$
+RewriteRule ^need_requests$ need_requests.php?view=%1 [L,qsa]
+
 RewriteRule ^need_requests/([0-9]+)   need_requests.php?view=one&id=$1 [L,qsa]
 RewriteRule ^need_requests   need_requests.php?view=all [L,qsa]
 

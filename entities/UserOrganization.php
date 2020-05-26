@@ -11,7 +11,7 @@ class UserOrganization{
     public $admin;
     public $user_approver;
     public $need_approver;
-    public $confirmed;
+    public $confirmed='N';
     private $confirmation_string;
 
     public function __construct($connection){
@@ -19,21 +19,21 @@ class UserOrganization{
     }
 
     public function create(){
-    	$this->confirmed='N';
         $sql = "INSERT INTO user_organizations ( user_id,organization_id,admin,user_approver,need_approver,confirmed,confirmation_string) values (:user_id,:organization_id,:admin,:user_approver,:need_approver,:confirmed,:confirmation_string)";
         $stmt= $this->connection->prepare($sql);
         $this->confirmation_string=generate_string(60);
 
         if( $stmt->execute(['user_id'=>$this->user_id,'organization_id'=>$this->organization_id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'confirmed'=>$this->confirmed,'confirmation_string'=>$this->confirmation_string])){
             $this->id=$this->connection->lastInsertId();
-            $user= new User($this->connection);
-            $user->id=$this->user_id;
-			$user->read();
+            if($this->confirmed=='N'){
+            	$user= new User($this->connection);
+				$user->forceRead($this->user_id);
 
-            $messageString=get_string("new_org_user_confirmation",array("%NAME%"=>$user->display_name,"%EMAIL%"=>$user->email,"%LINK%"=>"http://www.rdg-connect.org/rest/confirm_user_organization.php?id=".$this->id."&key=".$this->confirmation_string));
-            $stmt=$this->readAllUserApprovers($this->organization_id);
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-            	sendHtmlMail($row['email'],get_string("new_org_user_subject"),$messageString);
+            	$messageString=get_string("new_org_user_confirmation",array("%NAME%"=>$user->display_name,"%EMAIL%"=>$user->email,"%LINK%"=>$site_address."/rest/confirm_user_organization.php?id=".$this->id."&key=".$this->confirmation_string));
+            	$stmt=$this->readAllUserApprovers($this->organization_id);
+            	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+            		sendHtmlMail($row['email'],get_string("new_org_user_subject"),$messageString);
+            	}
             }
 
             return $this->id;
@@ -44,7 +44,7 @@ class UserOrganization{
     }
     public function readAll(){
         if(is_admin()){
-			$query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,confirmed from user_organizations ORDER BY id";
+			$query = "SELECT uo.id,uo.user_id,uo.organization_id,uo.admin,uo.user_approver,uo.need_approver,uo.confirmed, org.name as organization_name from user_organizations uo, organization org where uo.organization_id=org.id ORDER BY uo.id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute();
 	    } else if(is_org_admin()){
@@ -62,14 +62,14 @@ class UserOrganization{
     }
 
     public function readAllOrganization($organization_id){
-        $query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,confirmed from user_organizations where organization_id=:organization_id ORDER BY id";
+        $query = "SELECT uo.id,uo.user_id,uo.organization_id,uo.admin,uo.user_approver,uo.need_approver,uo.confirmed from user_organizations uo where organization_id=:organization_id ORDER BY uo.id";
         $stmt = $this->connection->prepare($query);
         $stmt->execute(['organization_id'=>$organization_id]);
         return $stmt;
     }
 
     public function readAllUser($user_id){
-        $query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,confirmed from user_organizations where user_id=:id ORDER BY id";
+        $query = "SELECT uo.id,uo.user_id,uo.organization_id,uo.admin,uo.user_approver,uo.need_approver,uo.confirmed, org.name as organization_name from user_organizations uo, organizations org where org.id=uo.organization_id and user_id=:id ORDER BY uo.id";
         $stmt = $this->connection->prepare($query);
         $stmt->execute(['id'=>$user_id]);
         return $stmt;

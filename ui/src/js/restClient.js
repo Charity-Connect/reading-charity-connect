@@ -3,26 +3,27 @@ define(['jquery', 'utils'],
         var self = this;
 
         /**
-         * Method provides asynchronous HTTP POST request to given URL with given object as a body.
+         * Method provides asynchronous HTTP POST request to given URL with given object.
          * ContentType is 'application/json'.
          * parameters:
          *      - url - absolute URL
-         *      - entityRepresentation - object which will be stringified and pasted as a body of the request
+         *      - dataObject - object which will be stringified
          * returns:
          *      a Promise which is resolved with newly created entityId if request was successfull,
          *          rejected with error event if request failed.
          */
-        doPost = function(url, entity) {
+        doPost = function(url, dataObject) {
             return new Promise(function (resolve, reject) {
                 $.ajax({ type: "POST",
-                    contentType: "application/x-www-form-urlencoded",
+                    contentType: "application/json",
                     url: url,
-                    data : entity,
+                    data : JSON.stringify(dataObject),
                     success: function (data, status, xhr) {
                         resolve(xhr.responseText);
                     },
                     error: function (event) {
                         console.error("Error occured in REST client, when sending POST to url: " + url);
+                        utils.showErrorMessage("REST post failed", url);
                         reject(event);
                     }
                 });
@@ -39,14 +40,31 @@ define(['jquery', 'utils'],
          */
         doGet = function(url) {
             return new Promise(function(resolve, reject) {
-                $.ajax({ type: "GET",                 
+                $.ajax({ type: "GET",
                     url: url,
                     success: function (response) {
                         resolve(response);
                     },
                     error: function(event) {
                         console.error("Error occured in REST client, when sending GET to url: " + url);
-                        utils.showErrorMessage("REST read failed", url);
+                        utils.showErrorMessage("REST get failed", url);
+                        reject(event);
+                    }
+                });
+            });
+        };
+
+        doGetJson = function(url) {
+            return new Promise(function(resolve, reject) {
+                $.ajax({ type: "GET",
+                    url: url,
+					dataType: "json",
+                    success: function (response) {
+                        resolve(response);
+                    },
+                    error: function(event) {
+                        console.error("Error occured in REST client, when sending GET to url: " + url);
+                      //  utils.showErrorMessage("REST get failed", url);
                         reject(event);
                     }
                 });
@@ -55,7 +73,8 @@ define(['jquery', 'utils'],
 
         return {
             doPost: doPost,
-            doGet: doGet
+            doGet: doGet,
+            doGetJson: doGetJson
         };
 
     });

@@ -12,16 +12,27 @@ function initRest(){
 	include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
 	$dbclass = new DBClass();
 	$connection = $dbclass->getConnection();
-	$email=$_SERVER['PHP_AUTH_USER'];
-	$password=$_SERVER['PHP_AUTH_PW'];
+	if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 
-	if (login($connection,$email,$password)){
-		header("Content-Type: application/json; charset=UTF-8");
-		return $connection;
-	} else {
-		header("location: /login/login.php");
-		exit;
+		if(isset($_SERVER['PHP_AUTH_USER'])){
+			$email=$_SERVER['PHP_AUTH_USER'];
+			$password=$_SERVER['PHP_AUTH_PW'];
+
+			if (login($connection,$email,$password)){
+				header("Content-Type: application/json; charset=UTF-8");
+				return $connection;
+			} else {
+				header("location: /index.html");
+				exit;
+			}
+		} else {
+				header("location: /index.html");
+				exit;
+		}
+
 	}
+	header("Content-Type: application/json; charset=UTF-8");
+	return $connection;
 }
 
 function initPublicRest(){
@@ -43,7 +54,7 @@ session_start();
 
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: /login/login.php");
+    header("location: /index.html");
     exit;
 }
 
@@ -89,11 +100,13 @@ function is_org_admin(){
   if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
 
 	$userId=$_SESSION["id"];
-	$organizationId=$_SESSION["organization_id"];
-	$query = "SELECT id from user_organizations where user_id=:user_id and organization_id=:organization_id and confirmed='Y' and admin='Y'";
-	$stmt = $connection->prepare($query);
-	$stmt->execute(['user_id'=>$userId,'organization_id'=>$organizationId]);
-	return ($stmt->rowCount()>0);
+	if(isset($_SESSION["organization_id"])){
+		$organizationId=$_SESSION["organization_id"];
+		$query = "SELECT id from user_organizations where user_id=:user_id and organization_id=:organization_id and confirmed='Y' and admin='Y'";
+		$stmt = $connection->prepare($query);
+		$stmt->execute(['user_id'=>$userId,'organization_id'=>$organizationId]);
+		return ($stmt->rowCount()>0);
+	}
 
   }
   return false;
@@ -154,13 +167,11 @@ $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 }
 
 function login($connection,$email,$password){
-global $force_login;
-if($force_login===false){
-	$_SESSION["loggedin"] = true;
-	$_SESSION["id"] = 19;
-	$_SESSION["email"] = "oli@test.com";
-	$_SESSION["organization_id"]=1;
-	return true;
+
+$status = session_status();
+if($status == PHP_SESSION_NONE){
+    //There is no active session
+    session_start();
 }
 // Check if the user is logged in, if not then check for basic auth and if not, redirect them to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
@@ -170,6 +181,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     if (!$session_user || !password_verify($password, $session_user['password'])){
     	return false;
     }
+    session_destroy();
 	session_start();
 	$id=$session_user['id'];
 	// Store data in session variables
@@ -181,6 +193,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 	} else {
 	  $_SESSION["display_name"] = $session_user['email'];
 	}
+	$_SESSION["organization_id"]=0;
 	$sql = "SELECT organization_id FROM user_organizations WHERE user_id=:id and confirmed='Y' order by organization_id";
 	$stmt= $connection->prepare($sql);
 	$stmt->execute(['id'=>$id]);
@@ -194,7 +207,23 @@ return true;
 }
 
 function set_current_organizaton($organization_id){
-  $_SESSION["organization_id"] = $organization_id;
+	global $connection;
+
+	$sql = "select uo.organization_id,org.name from user_organizations uo, organizations org where user_id=:user_id and uo.organization_id=:organization_id and uo.confirmed='Y' and uo.organization_id=org.id";
+	$stmt= $connection->prepare($sql);
+	if( $stmt->execute(['user_id'=>$_SESSION["id"],'organization_id'=>$organization_id])){
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $org_id= $row['organization_id'];
+        if($org_id==$organization_id){
+  			$_SESSION["organization_id"] = $organization_id;
+  			return $row['name'];
+  		}
+  	}
+  	return false;
+}
+
+function get_current_organizaton(){
+	return $_SESSION["organization_id"];
 }
 
 function logout(){
@@ -222,7 +251,7 @@ function password_reset_request($email){
 	$stmt = $connection->prepare("UPDATE users set password_confirmation_string = :confirmation_string WHERE email = :email");
     $success= $stmt->execute(["confirmation_string"=>$reset_string,"email"=>$email]);
 
-    if($success==true){
+    if($success==true && $stmt->rowCount()>0){
     	sendHtmlMail($email,get_string("password_reset_subject"),get_string("password_reset_body",array("%LINK%"=>$site_address."/reset_confirm.html?email=".urlencode($email)."&key=".urlencode($reset_string))));
     	return true;
     } else {

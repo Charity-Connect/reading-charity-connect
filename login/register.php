@@ -15,8 +15,8 @@ $organization = new Organization($connection);
 
 
 // Define variables and initialize with empty values
-$email = $password = $confirm_password = "";
-$email_err = $password_err = $confirm_password_err = "";
+$email = $name = $password = $confirm_password = "";
+$email_err =$name_err = $password_err = $confirm_password_err = "";
 
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -46,6 +46,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
     }
 
+    // Validate name
+    if(empty(trim($_POST["name"]))){
+        $name_err = "Please enter your name.";
+    } else{
+        $name = trim($_POST["name"]);
+    }
+
     // Validate password
     if(empty(trim($_POST["password"]))){
         $password_err = "Please enter a password.";
@@ -69,12 +76,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if(empty($email_err) && empty($password_err) && empty($confirm_password_err)){
         $user = new User($connection);
         $user->email=$email;
+        $user->display_name=$name;
         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
-        $user->organization_id=$_POST["organization"];
-        $id=$user->create();
+        $organization_id=$_POST["organization"];
+        $id=$user->create($organization_id);
         if($id>0){
                 // Redirect to login page
-                header("location: login.php");
+                header("location: /index.html");
 
         }else{
                 echo "Something went wrong. Please try again later.";
@@ -93,17 +101,26 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
         body{ font: 14px sans-serif; }
-        .wrapper{ width: 350px; padding: 20px; }
+        .wrapper{ padding: 20px; text-align: center; }
+        .loginFields{ max-width: 350px; margin: auto;}
+        label{ text-align: left;}
     </style>
 </head>
 <body>
+
     <div class="wrapper">
-        <h2>Sign Up</h2>
+            <h2 class="oj-sm-only-hide oj-web-applayout-header-title" title="Application Name"><img src="/images/handshake.png" alt="logo"/>
+Reading Charity Connect - Sign Up</h2>
         <p>Please fill this form to create an account.</p>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="loginFields">
+            <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
+                <label>Name</label>
+                <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
+                <span class="help-block"><?php echo $name_err; ?></span>
+            </div>
             <div class="form-group <?php echo (!empty($email_err)) ? 'has-error' : ''; ?>">
                 <label>E-mail address</label>
-                <input type="text" name="email" class="form-control" value="<?php echo $email; ?>">
+                <input type="email" name="email" class="form-control" value="<?php echo $email; ?>">
                 <span class="help-block"><?php echo $email_err; ?></span>
             </div>
             <div class="form-group <?php echo (!empty($password_err)) ? 'has-error' : ''; ?>">
@@ -117,8 +134,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 <span class="help-block"><?php echo $confirm_password_err; ?></span>
             </div>
             <div class="form-group">
-                <label>Organization</label>
-                <select id="organization" name="organization">
+                <label>Organization</label><br/>
+                <select id="organization" name="organization" class="form-control" >
                 <?php
                     $stmt = $organization->readAll();
                     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
@@ -128,10 +145,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 </select>
             </div>
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Submit">
-                <input type="reset" class="btn btn-default" value="Reset">
+                <input type="submit" class="btn btn-primary" value="Submit" style="width:45%">
+                <input type="reset" class="btn btn-default" value="Reset" style="width:45%">
             </div>
-            <p>Already have an account? <a href="login.php">Login here</a>.</p>
+            <p>Already have an account? <a href="/index.html">Login here</a>.</p>
         </form>
     </div>
 </body>

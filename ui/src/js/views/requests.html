@@ -3,8 +3,297 @@
  The Universal Permissive License (UPL), Version 1.0
  -->
 <div class="oj-hybrid-padding">
-  <h1>Requests Content Area</h1>
-  <div>
-      To change the content of this section, you will make edits to the requests.html file located in the /js/views folder.
-  </div>
+    <oj-bind-if test="[[requestsLoaded() !== true]]">
+        Loading...
+        <oj-progress id="progressBar" value="-1"></oj-progress>
+    </oj-bind-if>
+    <oj-bind-if test="[[requestsLoaded() == true]]">
+
+        <oj-bind-if test="[[requestsValid() !== true]]">
+            <oj-bind-text :style.color="red">
+                Critical Error: Requests not loaded
+            </oj-bind-text>
+        </oj-bind-if>
+
+        <oj-bind-if test="[[requestsValid() == true]]">
+            <div class="spacer-sm">
+                <div class="oj-panel">
+                    <strong>Info:</strong>
+                    please select a row from the below table to view a request
+                </div>
+            </div>
+
+            <div class="spacer-sm">
+                <div class="oj-panel oj-panel-alt2">
+                    <div class="oj-flex sm-1x-row">
+                        <div class="oj-sm-padding-1x-horizontal oj-flex-item">                    
+                            <h2>Requests</h2>
+                        </div>                    
+                        <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+                            <oj-bind-if test="[[mediumDisplay() !== true]]">
+                                <div class="oj-flex-bar">
+                                    <oj-label id="decisionFiltersLabel" class="oj-label-inline"><strong>Filter:</strong></oj-label>                                   
+                                    <oj-select-one id="selectDecisionFilters" labelled-by="decisionFiltersLabel"
+                                        value="{{selectedDecisionFilterDisplay}}"
+                                        on-value-changed="[[handleSelectedDecisionFilterChanged]]">
+                                        <oj-option value="decisionFilterAll">All</oj-option>
+                                        <oj-option value="decisionFilterUnreviewed">Unreviewed</oj-option>
+                                        <oj-option value="decisionFilterAccepted">Accepted</oj-option>
+                                        <oj-option value="decisionFilterRejected">Rejected</oj-option>
+                                        <oj-option value="decisionFilterCompleted">Completed</oj-option>
+                                    </oj-select-one>
+                                </div>
+                            </oj-bind-if>
+                            <oj-bind-if test="[[mediumDisplay() === true]]">
+                                <oj-buttonset-one id="buttonsetDecisionFilters"
+                                    value="{{selectedDecisionFilterDisplay}}"
+                                    on-value-changed="[[handleSelectedDecisionFilterChanged]]">
+                                    <oj-option value="decisionFilterAll">All</oj-option>
+                                    <oj-option value="decisionFilterUnreviewed">Unreviewed</oj-option>
+                                    <oj-option value="decisionFilterAccepted">Accepted</oj-option>
+                                    <oj-option value="decisionFilterRejected">Rejected</oj-option>
+                                    <oj-option value="decisionFilterCompleted">Completed</oj-option>
+                                </oj-buttonset-one>
+                            </oj-bind-if>                                
+                        </div>
+                    </div>                    
+                    <oj-bind-if test="[[mediumDisplay() !== true]]">
+                        <oj-list-view id="requestsListview" class="row-selectable" aria-label="listview using array"
+                            selection="{{requestRowSelected}}"
+                            on-selection-changed="[[handleRequestRowChanged]]"                                      
+                            selection-mode="single"                            
+                            data="[[requestsDataProvider]]">
+                            <template slot="itemTemplate">
+                                <div class="oj-flex-bar">
+                                    <oj-label id="typeLabel" class="oj-label-inline"><strong>Type:</strong></oj-label>
+                                    <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.type_name]]"></oj-bind-text></span>
+                                </div>
+                                <div class="oj-flex-bar">
+                                    <oj-label id="nameLabel" class="oj-label-inline"><strong>Name:</strong></oj-label>
+                                    <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.client_name]]"></oj-bind-text></span>
+                                </div>
+                                <div class="oj-flex-bar">
+                                    <oj-label id="targetDateLabel" class="oj-label-inline"><strong>Target Date:</strong></oj-label>
+                                    <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.requestTargetDate]]"></oj-bind-text></span>
+                                </div>
+                                <div class="oj-flex-bar">
+                                    <oj-label id="dateNeededLabel" class="oj-label-inline"><strong>Date Needed:</strong></oj-label>
+                                    <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.requestDateNeeded]]"></oj-bind-text></span>
+                                </div>
+                                <div class="oj-flex-bar">
+                                    <oj-label id="organizationLabel" class="oj-label-inline"><strong>Organization:</strong></oj-label>
+                                    <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.source_organization_name]]"></oj-bind-text></span>
+                                </div>
+                                <div class="oj-flex-bar">
+                                    <oj-label id="decisionMadeLabel" class="oj-label-inline"><strong>Decision Made:</strong></oj-label>
+                                    <strong>
+                                        <span class="oj-form-non-control-inline" :style.color="[[$current.data.styleState]]">
+                                            <oj-bind-text value="[[$current.data.requestSelectedDecision]]"></oj-bind-text>
+                                        </span>
+                                    </strong>
+                                </div>
+                            </template>
+                        </oj-list-view>                        
+                    </oj-bind-if>
+                    <oj-bind-if test="[[mediumDisplay() === true]]">                    
+                        <hr />
+                        <oj-table id="requestsTable" class="row-selectable" aria-label="table using array"
+                            selection="{{requestRowSelected}}"
+                            on-selection-changed="[[handleRequestRowChanged]]"
+                            selection-mode='{"row": "single"}'
+                            columns="{{requestsTableColumns}}"
+                            display='grid'
+                            data="[[requestsDataProvider]]">                
+                        </oj-table>
+                        <script type="text/html" id="decisionMade_tmpl">
+                            <td>
+                                <strong>
+                                    <span :style.color="[[$context.row.styleState]]">
+                                        <oj-bind-text value="[[$context.row.requestSelectedDecision]]"></oj-bind-text>
+                                    </span>
+                                </strong>
+                            </td>
+                        </script>                    
+                    </oj-bind-if>
+                    <oj-paging-control id="requestsPaging" data='[[requestsDataProvider]]'
+                        page-size='5' slot='bottom'>
+                    </oj-paging-control>                    
+                </div>
+            </div>
+            
+            <oj-bind-if test="[[showPanel()]]">
+                <div class="oj-panel oj-panel-alt2">
+                    <div class="oj-flex sm-1x-row">
+                        <div class="oj-sm-padding-1x-horizontal oj-flex-item">                    
+                            <h3>View request</h3>
+                        </div>                    
+                        <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+                            <oj-dialog style="display:none" id="agreeDialog" dialog-title="Agree to Help" cancel-behavior="none">
+                                <div slot="body">
+                                    <oj-label id="editTargetDateLabel"><strong>Target Date:</strong></oj-label>
+                                    <oj-input-date id="datepickerEditTargetDateInput" labelled-by="editTargetDateLabel"
+                                        keyboard-edit='disabled'
+                                        date-picker.footer-layout='' 
+                                        value="{{targetDateConvertor}}"
+                                        on-value-changed="[[handleTargetDateChanged]]"
+                                        placeholder="Input target date"                                
+                                        title="Pick target date">
+                                    </oj-input-date>
+                                    <hr />
+                                    <oj-label id="editRequestNotesLabel"><strong>Notes:</strong></oj-label>
+                                    <oj-text-area id="textareaEditRequestNotesInput" class="oj-form-control-full-width"
+                                        labelled-by="editRequestNotesLabel"
+                                        value="{{requestNotesUpdateVal}}"
+                                        raw-value="{{requestNotesUpdateRawVal}}"
+                                        on-raw-value-changed="[[handleRequestNotesUpdateChanged]]"                                         
+                                        placeholder="Input request notes"
+                                        title="Edit request notes textarea"
+                                        rows="5">                                
+                                    </oj-text-area>                                    
+                                </div>
+                                <div slot="footer">
+                                    <oj-button id="cancelButton"
+                                        on-oj-action="[[closeAgreeModalButton]]">
+                                        <span>Cancel</span>
+                                    </oj-button>
+                                    <oj-button id="okButton"
+                                        on-oj-action="[[closeAgreeModalButton]]"
+                                        disabled="[[disableOKButton]]">
+                                        <span>OK</span>
+                                    </oj-button>
+                                </div>
+                            </oj-dialog>
+                            
+                            <div class="oj-helper-clearfix">
+                                <oj-buttonset-many id="decisionOptions" class="oj-sm-float-end"
+                                    value="{{selectedDecisionDisplay}}"
+                                    on-value-changed="[[handleSelectedDecisionChanged]]">
+                                    <oj-option value="decisionAgree">Agree to Help</oj-option>
+                                    <oj-option value="decisionUnable">Unable to Help</oj-option>
+                                </oj-buttonset-many>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />  
+                    <div class="oj-flex sm-1x-row">
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editCategoryLabel"><strong>Category:</strong></oj-label>
+                            <oj-select-single id="selectEditCategory" labelled-by="editCategoryLabel"
+                                data="[[offerTypesCategoriesDataProvider]]"
+                                value="[[offerTypesCategorySelected]]"
+                                on-value-changed="[[handleOfferTypesCategoryChanged]]"                                
+                                placeholder="Display category"
+                                title="Displays category"
+                                readonly="true">
+                            </oj-select-single>
+                        </div>
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editTypeLabel"><strong>Type:</strong></oj-label>
+                            <oj-select-single id="selectEditType" labelled-by="editTypeLabel"
+                                data="[[offerTypesDataProvider]]"
+                                value="[[offerTypeSelected]]"
+                                placeholder="Display type"
+                                title="Displays type"
+                                readonly="true">
+                            </oj-select-single>
+                        </div>
+                    </div>
+                    <hr />  
+                    <div class="oj-flex sm-1x-row">  
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editNameLabel"><strong>Name:</strong></oj-label>
+                            <oj-input-text id="inputEditName" labelled-by="editNameLabel"
+                                value="[[requestSelected().client_name]]"
+                                placeholder="Display name"
+                                title="Displays name"
+                                readonly="true">
+                            </oj-input-text>
+                        </div>
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editPostcodeLabel"><strong>Postcode:</strong></oj-label>
+                            <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"
+                                value="[[requestSelected().client_postcode]]"
+                                placeholder="Display postcode"
+                                title="Displays postcode"
+                                readonly="true">                                
+                            </oj-input-text>
+                        </div>                        
+                    </div>
+                    <hr /> 
+                    <div class="oj-flex sm-1x-row">
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editTargetDateLabel"><strong>Target Date:</strong></oj-label>
+                            <oj-input-date id="datepickerEditTargetDate" labelled-by="editTargetDateLabel"
+                                keyboard-edit='disabled'
+                                date-picker.footer-layout='' 
+                                value="[[targetDateConvertor]]"
+                                placeholder="[[targetDatePlaceholder]]"
+                                title="Displays target date"
+                                readonly="true">
+                            </oj-input-date>
+                        </div>
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editDateNeededLabel"><strong>Date Needed:</strong></oj-label>
+                            <oj-input-date id="datepickerEditDateNeeded" labelled-by="editDateNeededLabel"
+                                keyboard-edit='disabled'
+                                date-picker.footer-layout='' 
+                                value="[[dateNeededConvertor]]"
+                                placeholder="Display date needed"                                
+                                title="Displays date needed"
+                                readonly="true">
+                            </oj-input-date>                            
+                        </div> 
+                        <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-label id="editOrganizationLabel"><strong>Organization:</strong></oj-label>
+                            <oj-input-text id="inputEditOrganization" labelled-by="editOrganizationLabel"
+                                value="[[requestSelected().source_organization_name]]"
+                                placeholder="Display organization"
+                                title="Displays organization"
+                                readonly="true">                                
+                            </oj-input-text>
+                        </div>                                                         
+                    </div>
+                    <hr />                     
+                    <oj-label id="editNeedNotesLabel"><strong>Comments from Requestor:</strong></oj-label>
+                    <oj-text-area id="textareaEditNeedNotes" class="oj-form-control-full-width"
+                        labelled-by="editNeedNotesLabel"
+                        value="[[requestSelected().need_notes]]"
+                        placeholder="Display need notes"
+                        title="Displays need notes"
+                        readonly="true"
+                        rows="5">                                
+                    </oj-text-area>
+                    <hr />
+                    <oj-label id="editRequestNotesLabel"><strong>Notes:</strong></oj-label>
+                    <oj-text-area id="textareaEditRequestNotes" class="oj-form-control-full-width"
+                        labelled-by="editRequestNotesLabel"
+                        value="[[requestNotesUpdateVal]]"
+                        placeholder="Display request notes"
+                        title="Displays request notes"
+                        readonly="[[selectedDecisionDisplay()[0] === 'decisionAgree' ? false : true]]"
+                        rows="5">                                
+                    </oj-text-area>
+                    <hr />                     
+                    <div class="oj-flex-bar sm-1x-row">
+                        <div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
+                            <oj-bind-if test="[[fileContentPosted() !== true]]">
+                                <span class="oj-helper-text-align-right">Posting...</span>
+                                <oj-progress id="progressBar" value="-1"></oj-progress>
+                            </oj-bind-if>
+                            <oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="saveButton"
+                                :style.color="[[postTextColor]]">
+                                <oj-bind-text value='[[postText]]'></oj-bind-text>
+                            </oj-label>
+                        </div>
+                        <div class="oj-sm-padding-1x-horizontal oj-flex">
+                            <oj-button id="saveButton" on-oj-action='[[saveButton]]'
+                                disabled="[[disableSaveButton]]">
+                                <span>Save</span>
+                            </oj-button>
+                        </div>
+                    </div>
+                </div>
+            </oj-bind-if>
+        </oj-bind-if>            
+    </oj-bind-if>
 </div>

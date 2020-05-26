@@ -16,7 +16,7 @@
   provided as part of the JET framework.
 
   Please see the demos under Cookbook/Patterns/App Shell: Web and the CSS documentation
-  under Support/API Docs/Non-Component Styling on the JET website for more information on how to use 
+  under Support/API Docs/Non-Component Styling on the JET website for more information on how to use
   the best practice patterns shown in this template.
 
   Aria Landmark role attributes are added to the different sections of the application
@@ -36,7 +36,7 @@
     <!-- injector:theme -->
     <link rel="stylesheet" href="css/libs/oj/v8.0.0/alta/oj-alta-min.css" type="text/css"/>
     <!-- endinjector -->
-    
+
     <!-- This contains icon fonts used by the starter template -->
     <link rel="stylesheet" href="css/demo-alta-site-min.css" type="text/css"/>
 
@@ -58,7 +58,7 @@
       <div id="announce" tabindex="-1" class="sendOffScreen" :aria-live="[[manner]]" aria-atomic="true">
           <p id="ariaLiveMessage"><oj-bind-text value="[[message]]"></oj-bind-text></p>
       </div>
-      
+
       <!--
          ** Oracle JET V8.0.0 web application navigation bar and header patterns.
          ** Please see the demos under Cookbook/Patterns/App Shell: Web
@@ -67,9 +67,15 @@
       -->
       <header role="banner" class="oj-web-applayout-header">
         <div class="oj-web-applayout-max-width oj-flex-bar oj-sm-align-items-center">
-          <div class="oj-flex-bar-middle oj-sm-align-items-baseline">
+          <div class="oj-flex-bar-middle oj-sm-align-items-center">
             <span role="img" class="oj-icon demo-oracle-icon" title="Oracle Logo" alt="Oracle Logo"></span>
-            <h1 class="oj-sm-only-hide oj-web-applayout-header-title" title="Application Name"><oj-bind-text value="[[appName]]"></oj-bind-text></h1>
+            <h1 class="oj-sm-only-hide oj-web-applayout-header-title" title="Application Name"><oj-bind-text value="[[appName]]"></oj-bind-text>:&nbsp;</h1>
+              <oj-menu-button id="organizationMenu" display="[[smScreen() ? 'icons' : 'all']]" chroming="half">
+                <span><oj-bind-text value="[[currentOrganization]]"></oj-bind-text></span>
+                <span slot="endIcon" :class="[[{'oj-icon demo-appheader-avatar': smScreen(), 'oj-component-icon oj-button-menu-dropdown-icon': !smScreen()}]]"></span>
+                <oj-menu id="orgMenu" slot="menu" style="display:none" on-oj-action="[[orgMenuItemAction]]">
+                </oj-menu>
+              </oj-menu-button>
           </div>
           <div class="oj-flex-bar-end">
             <!-- Responsive Toolbar -->
@@ -77,7 +83,7 @@
               <oj-menu-button id="userMenu" display="[[smScreen() ? 'icons' : 'all']]" chroming="half">
                 <span><oj-bind-text value="[[userLogin]]"></oj-bind-text></span>
                 <span slot="endIcon" :class="[[{'oj-icon demo-appheader-avatar': smScreen(), 'oj-component-icon oj-button-menu-dropdown-icon': !smScreen()}]]"></span>
-                <oj-menu id="menu1" slot="menu" style="display:none">
+                <oj-menu id="menu1" slot="menu" style="display:none" on-oj-action="[[menuItemAction]]">
                   <oj-option id="pref" value="pref">Preferences</oj-option>
                   <oj-option id="help" value="help">Help</oj-option>
                   <oj-option id="about" value="about">About</oj-option>
@@ -87,11 +93,10 @@
             </oj-toolbar>
           </div>
         </div>
-        <div role="navigation" class="oj-web-applayout-max-width oj-web-applayout-navbar">            
+        <div role="navigation" class="oj-web-applayout-max-width oj-web-applayout-navbar">
             <oj-navigation-list id="navList" data="[[navDataProvider]]"
                               :class="[[{'oj-md-condense oj-md-justify-content-flex-end': !smScreen()}]]"
-                              display="[[smScreen() ? 'icons' : 'all']]"
-                              edge="top"
+                              display="[[smScreen() ? 'icons' : 'all']]" edge="top" on-selection-changed="[[navChange]]"
                               item.renderer="[[KnockoutTemplateUtils.getRenderer('navTemplate', true)]]"
                               selection="{{router.stateId}}">
             </oj-navigation-list>
@@ -106,8 +111,9 @@
             position.at.vertical="top"
             position.at.horizontal="end"
             position.of="window">
-        </oj-messages>      
-      <oj-module role="main" class="oj-web-applayout-max-width oj-web-applayout-content" config="[[moduleConfig]]">
+        </oj-messages>
+
+      <oj-module role="main" class="oj-web-applayout-max-width oj-web-applayout-content" config="{{moduleConfig}}">
       </oj-module>
       <footer class="oj-web-applayout-footer" role="contentinfo">
         <div class="oj-web-applayout-footer-item oj-web-applayout-max-width">
@@ -120,11 +126,11 @@
           </ul>
         </div>
         <div class="oj-web-applayout-footer-item oj-web-applayout-max-width oj-text-secondary-color oj-text-sm">
-          Copyright © 2014, 2019 Oracle and/or its affiliates All rights reserved.
+          Copyright © Reading Connect 2020.
         </div>
       </footer>
     </div>
-    
+
     <script type="text/javascript" src="js/libs/require/require.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
 

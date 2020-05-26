@@ -15,7 +15,7 @@ if(isset($data)) {
     header("Access-Control-Allow-Headers: Content-type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 
-    $client_needs->client_id = $data['client_id'];
+    $client_needs->client_id = $_GET['client_id'];
     $client_needs->type = $data['type'];
     $client_needs->date_needed = $data['date_needed'];
     $client_needs->need_met = isset($data['need_met'])?$data['need_met']:'N';
@@ -84,10 +84,12 @@ if(isset($data)) {
                 $client_need  = array(
                 "id" => $id,
                 "client_id" => $client_id,
+                "requesting_organization_id" => $requesting_organization_id,
                 "type" => $type,
                 "date_needed" => $date_needed,
                 "need_met" => $need_met,
-                "notes" => $notes
+                "notes" => $notes,
+                "type_name" => $type_name
                 );
 
                 array_push($client_needs["client_needs"], $client_need);

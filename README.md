@@ -110,8 +110,8 @@ Only clients for the current organization are visible to others
 
 Clients can have multiple needs, and this records those needs and whether they have been met  
 
-/rest/client/{client id}/client_needs - GET to get a list of all clients for this client, POST to create or update  
-/rest/client/{client id}/client_needs/{client need id} - GET a single client need  
+/rest/clients/{client id}/client_needs - GET to get a list of all clients for this client, POST to create or update  
+/rest/clients/{client id}/client_needs/{client need id} - GET a single client need  
 
 #### Attributes
 - client_id  
@@ -129,7 +129,7 @@ Client needs can only be created and read for clients who the user has access to
 
 These are requests for meeting a need that have been received by an organization
 
-/rest/need_requests - GET to get a list of all need requests, POST to create or update  
+/rest/need_requests - GET to get a list of all need requests, POST to update  
 /rest/need_requests/{need_request id} - GET a single need request
 
 #### Attributes
@@ -143,8 +143,18 @@ These are requests for meeting a need that have been received by an organization
 
 #### Security
 
-SYstem administrators can see all need requests
+System administrators can see all need requests
 Users can only see need requests for the current organization
+
+#### Filters
+Add the following to filter the need requests;
+?filter=unresponded - requests that you haven't responded to yet
+?filter=agreed - requests that you have agreed to
+?filter=agreed - requests that you have agreed to
+?filter=rejected - requests that you have rejected
+?filter=completed - requests that you have agreed to and completed
+?filter=in_progress - requests that you have agreed to and which are in progress
+
 
 
 ### Offer Types

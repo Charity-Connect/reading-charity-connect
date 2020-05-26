@@ -5,130 +5,39 @@
  * @ignore
  */
 /*
- * Your admin ViewModel code goes here
+ * Your organization ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient',
-    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
-    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (oj, ko, $, accUtils, restClient) {
+define(['utils','ojs/ojcore', 'knockout', 'jquery','accUtils','ojs/ojmodule-element-utils','ojs/ojnavigationlist'],
+ function(utils,oj, ko, $,accUtils,moduleUtils) {
 
-            function AdminViewModel() {
-                var self = this;
+    function OrganizationViewModel() {
+      var self = this;
+      self.sysModuleConfig = ko.observable(moduleUtils.createConfig(utils.appConstants.sysModuleConfig));
+      self.selectedItem = ko.observable('systemAdminOrganizations');
 
-                self.connected = function () {
-                    accUtils.announce('Admin page loaded.');
-                    document.title = "Admin";
+      self.connected = function() {
+        accUtils.announce('Admin page loaded.');
+        document.title = "Admin";
+        // Implement further logic if needed
+      };
 
-                    self.organizationsValues = ko.observableArray();
-                    self.organizationsDataProvider = ko.observable();
+      self.tabChanged = function (event) {
+        var name = event.detail.value;
+        var viewPath = 'views/' + name + '.html';
+        var modelPath = 'viewModels/' + name;
+        self.sysModuleConfig(moduleUtils.createConfig({viewPath: viewPath,
+          viewModelPath: modelPath, params: {parentRouter: self.router}})
+        );
 
-                    self.organizationsTableColumns = [
-                        {headerText: 'NAME', field: "name"},
-                        {headerText: 'ADDRESS', field: "address"},
-                        {headerText: 'PHONE', field: "phone"}
-                    ];
 
-//                function postLoginDetails() {
-//                    //POST /rest/login - REST
-//                    const loginParams = {
-//                        email: "oli.harris@oracle.com",
-//                        password: "Drag0nA1r!"
-//                    }; 
-//                    return $.when(restClient.doPost('http://www.rdg-connect.org/rest/login', loginParams)
-//                        .then(
-//                            success = function(response) {
-//                                console.log(response);                        
-//                            },
-//                            error = function(response) {
-//                            }                    
-//                        ).then(function() {                                                        
-//                        })       
-//                    );
-//                };
+      }
+    }
 
-                    var getData = function () {
-                        self.organizationsLoaded = ko.observable();
-                        self.organizationsValid = ko.observable();
-
-                        self.organizationRowSelected = ko.observableArray();
-                        function getOrganizationsAjax() {
-                            //GET /rest/organizations - REST
-                            self.organizationsLoaded(false);
-                            return $.when(restClient.doGet('http://www.rdg-connect.org/rest/organizations')
-                                .then(
-                                    success = function (response) {
-                                        console.log(response.organizations);
-                                        self.organizationsValues(response.organizations);
-                                        self.organizationsValid(true);
-                                    },
-                                    error = function (response) {
-                                        console.log("Organizations not loaded");
-                                        self.organizationsValid(false);
-                                }).then(function () {
-                                    var sortCriteria = {key: 'name', direction: 'ascending'};
-                                    var arrayDataSource = new oj.ArrayTableDataSource(self.organizationsValues(), {idAttribute: 'id'});
-                                    arrayDataSource.sort(sortCriteria);
-                                    self.organizationsDataProvider(new oj.PagingTableDataSource(arrayDataSource));
-                                }).then(function () {
-                                    self.organizationsLoaded(true);
-                                })
-                            );
-                        };
-
-                        self.addOrganizationButtonSelected = ko.observableArray([]);
-                        self.organizationSelected = ko.observable("");
-                        self.showPanel = ko.computed(function () {
-                            if (self.addOrganizationButtonSelected().length) {
-                                // big reset!                                
-                                self.organizationRowSelected([]);
-                                self.organizationSelected("");
-                                return true;                                                            
-                            }
-                            if (self.organizationRowSelected().length) {
-                                return true;                            
-                            }
-                        }, this);
-                        
-                        self.handleOrganizationRowChanged = function (event) {
-                            if (event.detail.value[0] !== undefined) {
-                                self.addOrganizationButtonSelected([]);                                                                
-                                //find whether node exists based on selection
-                                function searchNodes(nameKey, myArray){
-                                    for (var i=0; i < myArray.length; i++) {
-                                        if (myArray[i].id === nameKey) {
-                                            return myArray[i];                                    
-                                        }
-                                    }
-                                };                        
-                                self.organizationSelected(searchNodes(event.target.currentRow.rowKey, self.organizationsValues()));                         
-                                console.log(self.organizationSelected());                                
-                            }
-                        };
-
-                        self.saveAdditionButton = function () {
-                        };
-                        self.saveEditButton = function () {
-                        };
-
-                        Promise.all([getOrganizationsAjax()])
-                        .then(function () {
-                        })
-                        .catch(function () {
-                            //even if error remove loading bar
-                            self.organizationsLoaded(true);
-                        });
-                    }();
-                };
-
-                self.disconnected = function () {
-                    // Implement if needed
-                };
-
-                self.transitionCompleted = function () {
-                    // Implement if needed
-                };
-            }
-
-            return AdminViewModel;
-        }
+    /*
+     * Returns an instance of the ViewModel providing one instance of the ViewModel. If needed,
+     * return a constructor for the ViewModel so that the ViewModel is constructed
+     * each time the view is displayed.
+     */
+    return OrganizationViewModel;
+  }
 );

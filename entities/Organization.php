@@ -15,7 +15,7 @@ class Organization{
 
     public function create(){
 		if(is_admin()){
-			$sql = "INSERT INTO organizations ( name,address,phone,approver_email) values (:name,:address,:phone)";
+			$sql = "INSERT INTO organizations ( name,address,phone) values (:name,:address,:phone)";
 			$stmt= $this->connection->prepare($sql);
 			if( $stmt->execute(['name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone])){
 				$this->id=$this->connection->lastInsertId();
