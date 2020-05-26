@@ -17,7 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@integration
+        uses: actions/checkout@v2
+        with:
+          ref: integration
       - name: Check env variables
         run: |
           echo $STAGE_FTP_SERVER $STAGE_FTP_USERNAME $STAGE_FTP_PASSWORD
