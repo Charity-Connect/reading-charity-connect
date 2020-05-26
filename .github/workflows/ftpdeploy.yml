@@ -9,7 +9,7 @@ on:
 jobs:
   Deploy_To_Staging:
     name: Deploy to Staging
-    if: github.ref == 'integration'
+    if: ${{ github.ref == 'integration' }}
     env:
       STAGE_FTP_SERVER: ftp://rdg-connect.org/
       STAGE_FTP_USERNAME: gituser-test@rdg-connect.org
