@@ -110,8 +110,8 @@ Only clients for the current organization are visible to others
 
 Clients can have multiple needs, and this records those needs and whether they have been met  
 
-/rest/client/{client id}/client_needs - GET to get a list of all clients for this client, POST to create or update  
-/rest/client/{client id}/client_needs/{client need id} - GET a single client need  
+/rest/clients/{client id}/client_needs - GET to get a list of all clients for this client, POST to create or update  
+/rest/clients/{client id}/client_needs/{client need id} - GET a single client need  
 
 #### Attributes
 - client_id  
