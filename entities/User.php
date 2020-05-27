@@ -173,9 +173,9 @@ class User{
 		if($stmt->rowCount()==1){
             $sql = "UPDATE users SET confirmed='Y' WHERE id=:id";
             $stmt= $this->connection->prepare($sql);
-            return $stmt->execute(['id'=>$this->id]);
-        } else {
-            return false;
+            return $stmt->execute(['id'=>$id]);
         }
+        return false;
+
     }
 }
