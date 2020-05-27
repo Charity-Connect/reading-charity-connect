@@ -16,7 +16,7 @@ if(isset($data)) {
     $user->display_name = $data['display_name'];
     $user->email = $data['email'];
     $user->phone = $data['phone'];
-    $organization_id = $data['organization_id'];
+    $id = $data['id'];
 
     if(isset($data['id'])){
         $user->id = $data['id'];
@@ -30,7 +30,7 @@ if(isset($data)) {
         }
 
     } else {
-	$id=$user->create($organization_id);
+	$id=$user->create($id);
         if($id>0){
             $user_arr  = array(
                     "id" => $user->id,

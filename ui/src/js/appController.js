@@ -51,15 +51,17 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         .then(
                             success = function(response) {
                                 self.userLogin(response.email);
-                                utils.appConstants.users.displayName = response.display_name;
-                                utils.appConstants.users.email = response.email;
-                                utils.appConstants.users.organizationId = response.organization_id;
-                                utils.appConstants.users.confirmed = response.confirmed;
+
                                 self.currentOrganization(response.organization_name);
                                 if(response.confirmed!="Y"){
 									alert("Your account is not confirmed yet. Please check your email for a message."); // please add a proper way to display the message.
 								}
-								const user_confirmed_organizations=response.user_organizations.filter(user_organization => user_organization.confirmed=='Y');
+                                const user_confirmed_organizations = response.user_organizations.filter(function(user_organization){
+                                    utils.appConstants.users.organizationId = user_organization.organization_id;
+                                    return user_organization.confirmed == 'Y';
+
+                                });
+
 								if(user_confirmed_organizations.length==0){
 									alert("You are not a confirmed member of any organization yet."); // please add a proper way to display the message.
 								}
@@ -84,6 +86,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         .then(
                             success = function(response) {
                                 self.currentOrganization(response.organization_name);
+                                utils.appConstants.users.organizationId = response.organization_id;
                             },
                             error = function() {
                                 alert("err");
@@ -154,6 +157,31 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                                 }
                             }
                         });
+
+                }
+
+                self.getOrgAdminDetails = function () {
+                    return $.ajax({
+                        type: 'GET',
+                        contentType: 'application/json',
+                        url: '/rest/org_admin_check',
+                        success: function (response) {
+                            if (response == "true") {
+                                utils.appConstants.sysModuleConfig = {viewPath: 'views/orgAdmin.html',
+                                    viewModelPath: 'viewModels/orgAdmin' , params: {parentRouter: self.router}}
+                                ;
+                                self.appName("Charity Connect - System Admin");
+
+                                self.routerConfig.orgAdmin = {label: 'Org Admin'};
+                                self.router.configure(self.routerConfig);
+
+                                self.navData.push(
+                                    {name: 'Org Admin', id: 'orgAdmin',
+                                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-library-icon-24'}
+                                );
+                            }
+                        }
+                    });
 
                 }
 
