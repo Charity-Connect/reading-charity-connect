@@ -4,8 +4,6 @@ on:
     branches:
       - master
       - integration
-    paths-ignore:
-    - 'README.md'
 jobs:
   Deploy_To_Staging:
     name: Deploy to Staging
@@ -18,12 +16,12 @@ jobs:
           ref: integration
           fetch-depth: 2
       - name: Deploy
-        # Copy (ftp) all files from source git repo to destination using lftp
-        uses: sebastianpopp/ftp-action@releases/v2
+        # Copy (ftp) only changed files from source git repo to destination using git ftp
+        uses: SamKirkland/FTP-Deploy-Action@3.1.1
         with:
-          host: ftp://rdg-connect.org/
-          user: gituser-test@rdg-connect.org
-          password: ${{ secrets.FTP_TEST_SECRET }}
+          ftp-server: ${{ secrets.FTP_TEST_HOST }}
+          ftp-username: ${{ secrets.FTP_TEST_USER }}
+          ftp-password: ${{ secrets.FTP_TEST_PASSWORD }}
   Deploy_To_Production:
     name: Deploy to Production
     if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
@@ -37,6 +35,6 @@ jobs:
         # Copy (ftp) only changed files from source git repo to destination using git ftp
         uses: SamKirkland/FTP-Deploy-Action@3.1.1
         with:
-          ftp-server: ftp://ftp.rdg-connect.org/
-          ftp-username: gituser@rdg-connect.org
+          ftp-server: ${{ secrets.FTP_HOST }}
+          ftp-username: ${{ secrets.FTP_USER }}
           ftp-password: ${{ secrets.FTP_PASSWORD }}
