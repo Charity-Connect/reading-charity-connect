@@ -10,21 +10,28 @@ jobs:
   Deploy_To_Staging:
     name: Deploy to Staging
     if: ${{ github.ref == 'refs/heads/integration' && github.event_name == 'push' }}
-    env:
-      STAGE_FTP_SERVER: ftp://rdg-connect.org/
-      STAGE_FTP_USERNAME: gituser-test@rdg-connect.org
-      STAGE_FTP_PASSWORD: ${{ secrets.FTP_TEST_SECRET }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           ref: integration
-      - name: Check env variables
-        run: |
-          echo $STAGE_FTP_SERVER $STAGE_FTP_USERNAME $STAGE_FTP_PASSWORD
       - name: Deploy
-        run: |
-          sudo apt-get update
-          sudo apt-get install lftp
-          lftp $INPUT_STAGE_FTP_SERVER -u $INPUT_STAGE_FTP_USERNAME,$INPUT_STAGE_FTP_PASSWORD -e "set ftp:ssl-force false; set ssl:verify-certificate false; mirror --reverse --continue --dereference -x ^\.git/$ $INPUT_LOCALDIR $INPUT_REMOTEDIR; quit"
+        uses: SamKirkland/FTP-Deploy-Action@3.1.1
+        with:
+          ftp-server: ftp://rdg-connect.org/
+          ftp-username: gituser-test@rdg-connect.org
+          ftp-password: ${{ secrets.FTP_TEST_SECRET }}
+  Deploy_To_Production:
+    name: Deploy to Production
+    if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Deploy
+        uses: SamKirkland/FTP-Deploy-Action@3.1.1
+        with:
+          ftp-server: ftp://ftp.rdg-connect.org/
+          ftp-username: gituser@rdg-connect.org
+          ftp-password: ${{ secrets.FTP_PASSWORD }}
