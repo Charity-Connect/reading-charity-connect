@@ -1,5 +1,9 @@
 # Charity Connect
 
+Deployment Status
+
+![Publish Website](https://github.com/mmillmor/charity-connect/workflows/Publish%20Website/badge.svg)
+
 ## Available Services
 
 ### Users
