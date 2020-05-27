@@ -7,10 +7,10 @@
 /*
  * Your requests ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
-    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
+define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils',
+    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojselectcombobox', 'ojs/ojlistview', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
+        function (oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider, ResponsiveUtils, ResponsiveKnockoutUtils) {
 
             function RequestsViewModel() {
                 var self = this;
@@ -19,13 +19,17 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     accUtils.announce('Requests page loaded.');
                     document.title = "Requests";
 
+                    // observable for medium screens (above 768px)
+                    var mdQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.MD_UP);
+                    self.mediumDisplay = ResponsiveKnockoutUtils.createMediaQueryObservable(mdQuery);
+
                     self.selectedDecisionFilterDisplay = ko.observable('decisionFilterAll');
                     self.requestsDataProvider = ko.observable();
                     self.updateRequestsDataProvider = function(requestsValues) {
                         var sortCriteria = {key: 'type_name', direction: 'ascending'};
                         var arrayDataSource = new oj.ArrayTableDataSource(requestsValues, {idAttribute: 'id'});
-                        arrayDataSource.sort(sortCriteria);
-                        self.requestsDataProvider(new oj.PagingTableDataSource(arrayDataSource));                     
+                        arrayDataSource.sort(sortCriteria);                            
+                        self.requestsDataProvider(new oj.PagingTableDataSource(arrayDataSource));
                     };
 
                     self.requestsValues = ko.observableArray();
@@ -56,8 +60,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.requestSelected = ko.observable("");
                     self.offerTypesCategorySelected = ko.observable("");
                     self.offerTypeSelected = ko.observable("");
-                    self.targetDateConvertor = ko.observable();
-                    self.dateNeededConvertor = ko.observable();
+                    self.targetDateConvertor = ko.observable("");
+                    self.dateNeededConvertor = ko.observable("");
                     self.showPanel = ko.computed(function () {
                         if (self.requestRowSelected().length) {
                             return true;
@@ -103,11 +107,28 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                         }
                                     }
                                 };
-                                self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));
+                                if (event.target.id === "requestsListview") {
+                                    self.requestSelected(searchNodes(event.target.currentItem, self.requestsValues()));                                    
+                                } else if (event.target.id === "requestsTable") {
+                                    self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));                                    
+                                }
                                 console.log(self.requestSelected());
 
-                                var calculateCategory = utils.calculateCategory(self.requestSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());
-                                self.offerTypesCategorySelected(calculateCategory);
+                                _getOfferCategoryFromTypeAjax = function(code) {
+                                    self.offerTypesCategorySelected("");
+                                    //GET /rest/offer_types/{code} - REST
+                                    return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${code}`)
+                                        .then(
+                                            success = function (response) {
+                                                console.log(response.category);                                                
+                                                self.offerTypesCategorySelected(response.category);                                                
+                                            },
+                                            error = function (response) {
+                                                console.log(`Category from Offer Types "${code}" not loaded`);
+                                        })
+                                    );
+                                };
+                                _getOfferCategoryFromTypeAjax(self.requestSelected().type);
 
                                 if (self.requestSelected().requestSelectedDecision === "Accepted") {
                                     self.selectedDecisionDisplay(['decisionAgree']);
@@ -165,7 +186,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     utils.sortAlphabetically(self.offerTypesArray(), "value");
                                     self.offerTypesDataProvider(new ArrayDataProvider(self.offerTypesArray(), { keyAttributes: 'value' }));
                                 }).then(function () {
-                                    self.offerTypeSelected(self.offerTypesArray()[0].value);
+                                    if (self.requestRowSelected().length) {
+                                        self.offerTypeSelected(self.requestSelected().type);                                        
+                                    } else {
+                                        self.offerTypeSelected(self.offerTypesArray()[0].value);
+                                    }
                                 })
                             );
                         };
@@ -234,8 +259,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                     var postData = function() {
                         self.fileContentPosted = ko.observable(true);
-                        self.postTextColor = ko.observable();
                         self.postText = ko.observable();
+                        self.postTextColor = ko.observable();
                         self.saveButton = function () {
                             //locale "en-GB" - change UTC to YYYY-MM-DD
                             _formatDate = function(inputDate) {
@@ -248,30 +273,25 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                             var responseJson = {
                                 agreed: self.decisionStatus(),
-                                client_name: $('#inputEditName')[0].value,
-                                client_need_id: self.requestSelected().client_need_id,
-                                client_postcode: $('#inputEditPostcode')[0].value,
                                 complete: self.requestSelected().complete,
-                                date_needed: _formatDate($('#datepickerEditDateNeeded')[0].value),
                                 id: self.requestSelected().id,
-                                need_notes: $('#textareaEditNeedNotes')[0].value,
-                                request_organization_id: self.requestSelected().request_organization_id,
                                 request_response_notes: $('#textareaEditRequestNotes')[0].value,
-                                source_organization_name: $('#inputEditOrganization')[0].value,
-                                target_date: _formatDate($('#datepickerEditTargetDate')[0].value),
-                                type_name: $('#selectEditType')[0].valueItem.data.label
+                                target_date: _formatDate($('#datepickerEditTargetDate')[0].value)
                             };
 
                             self.fileContentPosted(false);
                             self.disableSaveButton(true);
                             //POST /rest/need_requests - REST
-                            return $.when(restClient.doPost('/rest/need_requests', responseJson)
+                            return $.when(restClient.doPost(restUtils.constructUrl(restUtils.EntityUrl.NEED_REQUESTS), responseJson)
                                 .then(
                                     success = function (response) {
                                         self.postText("You have succesfully saved the request.");
                                         self.postTextColor("green");
-                                        self.getRequestsAjax();
                                         console.log("data posted");
+                                        
+                                        //update requestsTable
+                                        self.selectedDecisionFilterDisplay('decisionFilterAll');                                        
+                                        self.getRequestsAjax();
                                     },
                                     error = function (response) {
                                         self.postText("Error: Request not saved.");
@@ -302,15 +322,19 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     success = function (response) {
                                         console.log(response.need_request);
                                         $.each(response.need_request, function(index, item) {
+                                            var targetDateCleansed;
+                                            var targetDateCleansedLocale;
                                             if (this.target_date) {
                                                 //no need to split as UTC anyway
-                                                var targetDateCleansed = new Date(this.target_date);
-                                                var targetDateCleansedLocale = targetDateCleansed.toLocaleDateString();
+                                                targetDateCleansed = new Date(this.target_date);
+                                                targetDateCleansedLocale = targetDateCleansed.toLocaleDateString();
                                             }
+                                            var dateNeededCleansed;
+                                            var dateNeededCleansedLocale;
                                             if (this.date_needed) {
                                                 //no need to split as UTC anyway
-                                                var dateNeededCleansed = new Date(this.date_needed);
-                                                var dateNeededCleansedLocale = dateNeededCleansed.toLocaleDateString();
+                                                dateNeededCleansed = new Date(this.date_needed);
+                                                dateNeededCleansedLocale = dateNeededCleansed.toLocaleDateString();
                                             }
                                             
                                             var decisionString = "";
@@ -340,6 +364,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 request_organization_id: this.request_organization_id,
                                                 request_response_notes: this.request_response_notes,
                                                 source_organization_name: this.source_organization_name,
+                                                type: this.type,
                                                 type_name: this.type_name
                                             });
                                         });

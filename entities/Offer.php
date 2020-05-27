@@ -11,6 +11,8 @@ class Offer{
     public $type_name;
     public $details;
     public $quantity;
+    public $quantity_taken;
+    public $quantity_available;
     public $date_available;
     public $date_end;
     public $postcode;
@@ -22,11 +24,32 @@ class Offer{
         $this->connection = $connection;
     }
 
+        private $base_query = "SELECT o.id
+        ,o.organization_id
+        ,org.name as organization_name
+        ,o.name
+        ,o.type
+        ,t.name as type_name
+        ,o.details
+        ,o.quantity
+        ,o.quantity_taken
+        ,(o.quantity-o.quantity_taken) as quantity_available
+        ,o.date_available
+        ,o.date_end
+        ,o.postcode
+        ,o.latitude
+        ,o.longitude
+        ,o.distance
+        from offers o
+        ,offer_types t
+        ,organizations org
+        where o.type=t.type
+        and o.organization_id=org.id ";
+
+
     public function create(){
 
-    	if(!is_admin()){
-    		$this->id=$_SESSION('organization_id');
-    	}
+    	$this->organization_id=$_SESSION["organization_id"];
 		if(isset($this->postcode)&&$this->postcode!=""){
 			list($latitude,$longitude)=getGeocode($this->postcode);
 		}
@@ -54,11 +77,11 @@ class Offer{
     }
     public function readAll(){
         if(is_admin()){
-            $query = "SELECT o.id,o.organization_id, org.name as organization_name, o.name,o.type,t.name as type_name,o.details,o.quantity,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude, o.distance from offers o , offer_types t, organizations org where o.type=t.type and o.organization_id=org.id ORDER BY o.id";
+            $query = $this->base_query." ORDER BY o.id";
        		$stmt = $this->connection->prepare($query);
        		$stmt->execute();
         } else {
-	        $query = "SELECT o.id,o.organization_id, org.name as organization_name, o.name,o.type,t.name as type_name,o.details,o.quantity,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude, o.distance from offers o, offer_types t, organizations org where o.organization_id=:organization_id and o.organization_id=org.id and o.type=t.type ORDER BY o.id";
+	        $query = $this->base_query." and o.organization_id=org.id ORDER BY o.id";
 			$stmt = $this->connection->prepare($query);
 	        $stmt->execute(['organization_id'=>$_SESSION["organization_id"]]);
         }
@@ -75,6 +98,8 @@ class Offer{
         $this->type_name=$row['type_name'];
         $this->details=$row['details'];
         $this->quantity=$row['quantity'];
+        $this->quantity_taken=$row['quantity_taken'];
+        $this->quantity_available=$row['quantity_available'];
         $this->date_available=$row['date_available'];
         $this->date_end=$row['date_end'];
         $this->postcode=$row['postcode'];
@@ -85,11 +110,11 @@ class Offer{
 
     public function readOne($id){
         if(is_admin()){
-	        $query = "SELECT o.id,o.organization_id, org.name as organization_name,o.name,o.type,t.name as type_name, o.details,o.quantity,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude,o.distance from offers o, offer_types t, organizations org where o.type=t.type and o.organization_id=org.id and o.id=:id";
-	        $stmt = $this->connection->prepare($query);
+	        $query = $this->base_query." and o.id=:id";
+			$stmt = $this->connection->prepare($query);
 	        $stmt->execute(['id'=>$id]);
 	    } else {
-	        $query = "SELECT o.id,o.organization_id, org.name as organization_name,o.name,o.type,t.name as type_name,o.details,o.quantity,o.date_available, o.date_end, o.postcode,o.latitude,o.longitude,o.distance from offers o , offer_types t, organizations org where o.organization_id=:organization_id and o.organization_id=org.id and o.type=t.type and o.id=:id";
+	        $query = $this->base_query." and o.organization_id=:organization_id and o.id=:id";
 	        $stmt = $this->connection->prepare($query);
 	        $stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
 	    }
@@ -117,9 +142,9 @@ class Offer{
 				$longitude=$offerOrig->getLongitude();
 			}
 
-        	$sql = "UPDATE offers SET organization_id=:organization_id,name=:name, type=:type, details=:details, quantity=:quantity,date_available=:date_available,date_end=:date_end,postcode=:postcode,latitude=:latitude,longitude=:longitude WHERE id=:id";
+        	$sql = "UPDATE offers SET name=:name, type=:type, details=:details, quantity=:quantity,date_available=:date_available,date_end=:date_end,postcode=:postcode,latitude=:latitude,longitude=:longitude WHERE id=:id";
         	$stmt= $this->connection->prepare($sql);
-        	return $stmt->execute(['id'=>$this->id,'organization_id'=>$this->organization_id,'name'=>$this->name,'type'=>$this->type,'details'=>$this->details,'quantity'=>$this->quantity,'date_available'=>$this->date_available,'date_end'=>$this->date_end,'postcode'=>$this->postcode
+        	return $stmt->execute(['id'=>$this->id,'name'=>$this->name,'type'=>$this->type,'details'=>$this->details,'quantity'=>$this->quantity,'date_available'=>$this->date_available,'date_end'=>$this->date_end,'postcode'=>$this->postcode
         		,'latitude'=>($latitude==-1) ? null:$latitude
 				,'longitude'=>($latitude==-1) ? null:$longitude
 			]);

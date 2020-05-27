@@ -29,36 +29,10 @@ define(['ojs/ojcore', 'knockout'],
             }]);
         };
 
-        
-        //function for reverse search of Category based on Type loaded in
-        calculateCategory = function (type, offerTypesValues, offerTypesCategoriesValues) {
-            //find whether node exists based on selection
-            function searchNodes(nameKey, myArray){
-                for (var i=0; i < myArray.length; i++) {
-                    if (myArray[i].type === nameKey) {
-                        return myArray[i];                                    
-                    }
-                }
-            };
-            var searchTypes = searchNodes(type, offerTypesValues);                            
-
-            //find whether node exists based on selection
-            function searchNodes(nameKey, myArray){
-                for (var i=0; i < myArray.length; i++) {
-                    if (myArray[i].category === nameKey) {
-                        return myArray[i];                                    
-                    }
-                }
-            };
-            var searchCategories = searchNodes(searchTypes, offerTypesCategoriesValues).code;
-            return searchCategories;
-        };
-
         return {
-            appConstants:appConstants,
+            appConstants: appConstants,
             sortAlphabetically: sortAlphabetically,
-            showErrorMessage: showErrorMessage,
-            calculateCategory: calculateCategory
+            showErrorMessage: showErrorMessage
         };
 
     });

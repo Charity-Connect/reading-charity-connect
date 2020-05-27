@@ -30,13 +30,22 @@
 /* -----------------------------------------------
 :: OJ Element control
 -------------------------------------------------- */
+.demo-oracle-icon {
+    width: 52px;
+    height: 32px
+}
+
+.demo-oracle-icon:before {
+    content: url("images/handshake.png");
+}
+
 oj-table {
     width: 100%;
 }
 
 oj-table td:not(.oj-table-body-message) {
     white-space: normal !important;
-    word-wrap:break-word;
+    word-wrap: break-word;
 }
 
 
@@ -64,28 +73,14 @@ ul.no-disc {
 
 
 /* -----------------------------------------------
-:: Element control - breadcrumbs
+:: .oj-listview.row-selectable
 -------------------------------------------------- */
-#breadcrumbs {
-    padding: 0;
+.oj-listview.row-selectable .oj-listview-item {
+    background-color: #fff;
 }
 
-#breadcrumbs li {
-    position: relative;
-}
-
-#breadcrumbs li:after {
-    content: '\3009';
-    position: absolute;
-    top: 12px;
-    right: -8px;
-    color: #0572ce;
-    font-weight: 700;
-    line-height: 1;
-}
-
-#breadcrumbs li:last-of-type:after {
-    content: "";
+.oj-listview.row-selectable .oj-listview-item.oj-selected {
+    background-color: #fef9e8;
 }
 
 

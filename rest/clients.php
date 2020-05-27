@@ -15,7 +15,6 @@ if(isset($data)) {
     header("Access-Control-Allow-Headers: Content-address, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 
-    $client->organization_id = $data['organization_id'];
     $client->name = $data['name'];
     $client->address = $data['address'];
     $client->postcode = $data['postcode'];

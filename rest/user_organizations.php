@@ -16,12 +16,10 @@ if(isset($data)) {
 
 
     $user_organization->user_id = $data['user_id'];
-    $user_organization->organization_id = $data['organization_id'];
-    $user_organization->id = $data['id'];
+    $user_organization->phone = $data['phone'];
     $user_organization->admin = $data['admin'];
     $user_organization->user_approver = $data['user_approver'];
     $user_organization->need_approver = $data['need_approver'];
-    $user_organization->confirmed = $data['confirmed'];
 
     if(isset($data['id'])){
         $user_organization->id = $data['id'];
@@ -40,8 +38,7 @@ if(isset($data)) {
             $user_organization_arr  = array(
                     "id" => $user_organization->id,
                     "user_id" => $user_organization->user_id,
-                    "organization_id" => $user_organization->organization_id,
-                    "confirmed" => $user_organization->confirmed,
+                    "phone" => $user_organization->phone,
                     "admin" => $user_organization->admin,
                     "user_approver" => $user_organization->user_approver,
                     "need_approver" => $user_organization->need_approver

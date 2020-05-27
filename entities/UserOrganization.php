@@ -22,6 +22,9 @@ class UserOrganization{
         $sql = "INSERT INTO user_organizations ( user_id,organization_id,admin,user_approver,need_approver,confirmed,confirmation_string) values (:user_id,:organization_id,:admin,:user_approver,:need_approver,:confirmed,:confirmation_string)";
         $stmt= $this->connection->prepare($sql);
         $this->confirmation_string=generate_string(60);
+        if(!isset($this->organization_id)){
+        	$this->organization_id=$_SESSION['organization_id'];
+        }
 
         if( $stmt->execute(['user_id'=>$this->user_id,'organization_id'=>$this->organization_id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'confirmed'=>$this->confirmed,'confirmation_string'=>$this->confirmation_string])){
             $this->id=$this->connection->lastInsertId();

@@ -15,7 +15,7 @@ if(isset($data)) {
     header("Access-Control-Allow-Headers: Content-type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 
-    $client_needs->client_id = $data['client_id'];
+    $client_needs->client_id = $_GET['client_id'];
     $client_needs->type = $data['type'];
     $client_needs->date_needed = $data['date_needed'];
     $client_needs->need_met = isset($data['need_met'])?$data['need_met']:'N';

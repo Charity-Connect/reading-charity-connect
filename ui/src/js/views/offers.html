@@ -26,10 +26,10 @@
             <div class="spacer-sm">
                 <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
-                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
+                        <div class="oj-sm-padding-1x-horizontal oj-flex-item">                    
                             <h2>Offers</h2>    
                         </div>                    
-                        <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+                        <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">                                        
                                 <oj-buttonset-many id="addOfferButton" class="oj-sm-float-end"
                                     value="{{addOfferButtonSelected}}">
@@ -39,7 +39,7 @@
                         </div>
                     </div>
                     <hr />                    
-                    <oj-table id="executionsTable" class="row-selectable" aria-label="table using array"
+                    <oj-table id="offersTable" class="row-selectable" aria-label="table using array"
                         selection="{{offerRowSelected}}"
                         on-selection-changed="[[handleOfferRowChanged]]"
                         selection-mode='{"row": "single"}'
@@ -127,6 +127,8 @@
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                             <oj-label id="editDateAvailableLabel"><strong>Date Available:</strong></oj-label>
                             <oj-input-date id="datepickerEditDateAvailable" labelled-by="editDateAvailableLabel"
+                                keyboard-edit='disabled'
+                                date-picker.footer-layout='' 
                                 value="{{dateAvailableConvertor}}"
                                 placeholder="Input date available"                                
                                 title="Pick date available">
@@ -135,6 +137,8 @@
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                             <oj-label id="editDateEndLabel"><strong>Date End:</strong></oj-label>
                             <oj-input-date id="datepickerEditDateEnd" labelled-by="editDateEndLabel"
+                                keyboard-edit='disabled'
+                                date-picker.footer-layout='' 
                                 value="{{dateEndConvertor}}"
                                 placeholder="Input date end"                                
                                 title="Pick date end">
@@ -144,27 +148,31 @@
                     <hr />                    
                     <oj-label id="editOfferNotesLabel"><strong>Offer Notes:</strong></oj-label>
                     <oj-text-area id="textareaEditOfferNotes" class="oj-form-control-full-width"
-                        labelled-by="editOfferotesLabel"
-                        value="{{offerSelected().notes}}"
+                        labelled-by="editOfferNotesLabel"
+                        value="{{offerRowSelected().length ? offerSelected().details : ''}}"
                         placeholder="Input offer notes"
                         title="Edit offer notes textarea"
                         rows="5">                                
                     </oj-text-area>
                     <hr />
-                    <div class="oj-helper-clearfix">                                        
-                        <oj-bind-if test="[[addOfferButtonSelected().length]]">
-                            <oj-button id="saveAdditionButton" class="oj-sm-float-end"
-                                on-oj-action='[[saveAdditionButton]]'>
+                    <div class="oj-flex-bar sm-1x-row">
+                        <div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
+                            <oj-bind-if test="[[fileContentPosted() !== true]]">
+                                <span class="oj-helper-text-align-right">Posting...</span>
+                                <oj-progress id="progressBar" value="-1"></oj-progress>
+                            </oj-bind-if>
+                            <oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="saveButton"
+                                :style.color="[[postTextColor]]">
+                                <oj-bind-text value='[[postText]]'></oj-bind-text>
+                            </oj-label>
+                        </div>
+                        <div class="oj-sm-padding-1x-horizontal oj-flex">
+                            <oj-button id="saveButton" on-oj-action='[[saveButton]]'
+                                disabled="[[disableSaveButton]]">
                                 <span>Save</span>
                             </oj-button>
-                        </oj-bind-if>
-                        <oj-bind-if test="[[offerRowSelected().length]]">
-                            <oj-button id="saveEditButton" class="oj-sm-float-end"
-                                on-oj-action='[[saveEditButton]]'>
-                                <span>Save</span>
-                            </oj-button>
-                        </oj-bind-if>                                 
-                    </div> 
+                        </div>
+                    </div>
                 </div>
             </oj-bind-if>
         </oj-bind-if>            

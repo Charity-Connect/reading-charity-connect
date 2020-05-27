@@ -15,7 +15,6 @@ if(isset($data)) {
     header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 
-    $offer->organization_id = $data['organization_id'];
     $offer->name = $data['name'];
     $offer->type = $data['type'];
     $offer->details = $data['details'];
@@ -23,6 +22,7 @@ if(isset($data)) {
     $offer->date_available = $data['date_available'];
     $offer->date_end = $data['date_end'];
     $offer->postcode = $data['postcode'];
+    $offer->distance = $data['distance'];
 
     if(isset($data['id'])){
         $offer->id = $data['id'];
@@ -94,6 +94,8 @@ if(isset($data)) {
                 "type_name" => $type_name,
                 "details" => $details,
                 "quantity" => $quantity,
+                "quantity_taken" => $quantity_taken,
+                "quantity_available" => $quantity_available,
                 "date_available" => $date_available,
                 "date_end" => $date_end,
                 "postcode" => $postcode,

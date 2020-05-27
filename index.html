@@ -5,7 +5,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
         body{ font: 14px sans-serif; }
-        .wrapper{ width: 350px; padding: 20px; }
+        .wrapper{ padding: 20px; text-align: center; }
+        .loginFields{ max-width: 350px; margin: auto;}
     </style>
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 	<script>
@@ -14,9 +15,20 @@
 
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
-		if(urlParams.has('redirect')){
-			$("#redirect").val(urlParams.get('redirect'))
+		var redirect="/ui/index.html";
+		if (location.hostname === "localhost"){
+			redirect="/ui/web/index.html";
 		}
+		if(urlParams.has('redirect')){
+			redirect=urlParams.get('redirect');
+		}
+		$("#redirect").val(redirect);
+
+		$.get("/rest/login_check", function( data ) {
+		  if(data==="true"){
+			window.location.href = redirect;
+		  }
+		});
 
 	});
 </script>
@@ -24,9 +36,10 @@
 </head>
 <body>
     <div class="wrapper">
-        <h2>Login</h2>
+            <h2 class="oj-sm-only-hide oj-web-applayout-header-title" title="Application Name"><img src="/images/handshake.png" alt="logo"/>
+Reading Charity Connect - Login</h2>
         <p>Please fill in your credentials to login.</p>
-        <form action="/rest/login" method="post">
+        <form action="/rest/login" method="post" class="loginFields">
             <div class="form-group">
             <input type="hidden" name="redirect" id="redirect" value="/ui/index.html">
                 <label>E-mail address</label>
@@ -37,9 +50,11 @@
                 <label>Password</label>
                 <input type="password" name="password" class="form-control">
                 <span class="help-block"></span>
+                <span class="help-block" style="float: right;"><a href="/reset_password.html">Forgotten Password?</a></span>
+                <br/>
             </div>
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Login">
+                <input type="submit" class="btn btn-primary" style="width:350px;" value="Login">
             </div>
             <p>Don't have an account? <a href="/login/register.php">Sign up now</a>.</p>
         </form>

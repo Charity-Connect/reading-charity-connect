@@ -1,6 +1,8 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Client.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/NeedRequest.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+
 class ClientNeed{
 
     // Connection instance
@@ -32,7 +34,11 @@ class ClientNeed{
 
     	if($stmt->rowCount()==1){
 
-		$sql = "INSERT INTO client_needs ( client_id,requesting_organization_id,type,date_needed,need_met,notes) values (:client_id,:type,:date_needed,:need_met,:notes)";
+    	if(!isset($this->need_met)){
+    		$this->need_met='N';
+    	}
+
+		$sql = "INSERT INTO client_needs ( client_id,requesting_organization_id,type,date_needed,need_met,notes) values (:client_id,:requesting_organization_id,:type,:date_needed,:need_met,:notes)";
 		$stmt= $this->connection->prepare($sql);
 		if( $stmt->execute(['client_id'=>$this->client_id,'requesting_organization_id'=>$_SESSION['organization_id'],'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'notes'=>$this->notes])){
 		    $this->id=$this->connection->lastInsertId();
@@ -44,9 +50,11 @@ class ClientNeed{
 		    c.id=n.client_id
 		    and n.id=:id
 		    and o.type=n.type
+		    and o.quantity_taken<o.quantity
 		    and n.date_needed between coalesce(o.date_available,n.date_needed) and coalesce(o.date_end,n.date_needed)";
 		    $stmt = $this->connection->prepare($sql);
 			$stmt->execute(['id'=>$this->id]);
+
 			$oranization_list=array();
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 				if(!is_null($row['distance'])){
@@ -59,12 +67,12 @@ class ClientNeed{
 						}
 					}
 				}
-				array_push($oranization_list,	$row['organization_id']);
+				//array_push($oranization_list,	$row['organization_id']);
+			$oranization_list[$row['organization_id']]=$row['id'];
 			}
 
-			$oranization_list=array_unique($oranization_list);
-
-			foreach ($oranization_list as $organization){
+			//$oranization_list=array_unique($oranization_list);
+			foreach($oranization_list as $org_id=>$off_id){
 				$sql="select c.name as client_name,c.address,c.postcode,u.email,u.display_name as user_name,o.name as source_org_name,o2.name as target_org_name, ot.name type_name
 				from clients c, users u, organizations o, user_organizations uo, organizations o2, offer_types ot
 				where o.id=:organization_id
@@ -78,15 +86,15 @@ class ClientNeed{
 
 				$need_request=new NeedRequest($this->connection);
 				$need_request->client_need_id=$this->id;
-				$need_request->organization_id=$organization;
+				$need_request->request_organization_id=$org_id;
+				$need_request->offer_id=$off_id;
 				$need_request->create();
 
 				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-				echo $row['email'];
 					sendHtmlMail($row['email']
 					,get_string("need_request_subject")
 					,get_string("need_request_body"
-						,array("%LINK%"=>$site_address."/need_confirm.html?need_id=".$need_request->id."&key=".$need_request->confirmation_code
+						,array("%LINK%"=>$site_address."/need_confirm.html?need_id=".$need_request->id."&key=".$need_request->getConfirmationCode()
 										,"%USER_NAME%"=>$row['user_name']
 										,"%CLIENT_NAME%"=>$row['client_name']
 										,"%SOURCE_ORG_NAME%"=>$row['source_org_name']

@@ -37,21 +37,20 @@ class User{
         ,'confirmation_string'=>$this->confirmation_string
         ])){
             $this->id=$this->connection->lastInsertId();
-            if(isset($organization_id)){
-                $organization_user = new UserOrganization($this->connection);
-                $organization_user->user_id=$this->id;
-                $organization_user->organization_id=$organization_id;
-                $organization_user->admin='N';
-                $organization_user->user_approver='N';
-                $organization_user->need_approver='N';
-                if(isset($_SESSION['id'])){
-	                $organization_user->confirmed='Y';
-                } else {
-	                $organization_user->confirmed='N';
-                }
-                $organization_user->create();
+			$organization_user = new UserOrganization($this->connection);
+			$organization_user->user_id=$this->id;
+			$organization_user->organization_id=$organization_id;
+			$organization_user->admin='N';
+			$organization_user->user_approver='N';
+			$organization_user->need_approver='N';
+			if(isset($_SESSION['id'])){
+				$organization_user->confirmed='Y';
+			} else {
+				$organization_user->confirmed='N';
+			}
+			$organization_user->create();
 
-            }
+
 
             $messageString=get_string("new_user_confirmation",array("%NAME%"=>$this->display_name,"%LINK%"=>$site_address."/rest/confirm_user.php?id=".$this->id."&key=".$this->confirmation_string));
 			sendHtmlMail($this->email,get_string("new_user_subject"),$messageString);
@@ -167,13 +166,16 @@ class User{
 		}
     }
 
-    public function confirmUser($confirmation_string){
-        if($confirmation_string==$this->confirmation_string){
+    public function confirmUser($id,$confirmation_string){
+		$query = "SELECT 1 from users u where u.id=:id and confirmation_string=:confirmation_string";
+		$stmt = $this->connection->prepare($query);
+		$stmt->execute(['id'=>$id,'confirmation_string'=>$confirmation_string]);
+		if($stmt->rowCount()==1){
             $sql = "UPDATE users SET confirmed='Y' WHERE id=:id";
             $stmt= $this->connection->prepare($sql);
-            return $stmt->execute(['id'=>$this->id]);
-        } else {
-            return false;
+            return $stmt->execute(['id'=>$id]);
         }
+        return false;
+
     }
 }

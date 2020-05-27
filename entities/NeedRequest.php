@@ -10,6 +10,7 @@ class NeedRequest{
     public $request_organization_id;
     public $client_name;
     public $client_postcode;
+    public $type;
     public $type_name;
     public $date_needed;
     private $confirmation_code;
@@ -19,6 +20,7 @@ class NeedRequest{
     public $request_response_notes;
     public $need_notes;
     public $source_organization_name;
+    public $offer_id;
 
     public function __construct($connection){
         $this->connection = $connection;
@@ -27,6 +29,7 @@ class NeedRequest{
     private $base_query = "SELECT request.id
 	        	,request.client_need_id
 	        	,request.organization_id as request_organization_id
+	        	,request.offer_id
 	        	,request.target_date
 	        	,request.notes request_response_notes
 	        	,request.agreed
@@ -36,6 +39,7 @@ class NeedRequest{
 	        	,client_need.notes need_notes
 	        	,client.name as client_name
 	        	,client.postcode as client_postcode
+	        	,types.type
 	        	,types.name as type_name
 	        	,client_need.date_needed
 	        	,org.name source_organization_name
@@ -54,13 +58,20 @@ class NeedRequest{
 
         $this->confirmation_code=generate_string(60);
 
-        $sql = "INSERT INTO need_requests ( client_need_id,organization_id,confirmation_code,agreed,complete,target_date,notes) values (:client_need_id,:organization_id,:confirmation_code,:agreed,:complete,:target_date,:notes)";
+        $sql = "INSERT INTO need_requests ( client_need_id,organization_id,offer_id,confirmation_code,agreed,complete,target_date,notes) values (:client_need_id,:organization_id,:offer_id,:confirmation_code,:agreed,:complete,:target_date,:notes)";
         $stmt= $this->connection->prepare($sql);
+        if(!isset($this->agreed)){
+        	$this->agreed='N';
+        }
+        if(!isset($this->complete)){
+        	$this->complete='N';
+        }
         if( $stmt->execute(['client_need_id'=>$this->client_need_id
         	,'organization_id'=>$this->request_organization_id
+        	,'offer_id'=>$this->offer_id
         	,'confirmation_code'=>$this->confirmation_code
-        	,'agreed'=>isset($this->$agreed)?$this->$agreed:'N'
-        	,'complete'=>isset($this->$complete)?$this->$complete:'N'
+        	,'agreed'=>$this->agreed
+        	,'complete'=>$this->complete
         	,'target_date'=>$this->target_date
         	,'notes'=>$this->request_response_notes
         	])){
@@ -71,6 +82,10 @@ class NeedRequest{
             return -1;
         }
 
+    }
+
+    public function getConfirmationCode(){
+    	return $this->confirmation_code;
     }
     public function readAll(){
 
@@ -121,9 +136,11 @@ class NeedRequest{
         $this->client_need_id=$row['client_need_id'];
         $this->client_name=$row['client_name'];
         $this->client_postcode=$row['client_postcode'];
+        $this->type=$row['type'];
         $this->type_name=$row['type_name'];
         $this->date_needed=$row['date_needed'];
         $this->request_organization_id=$row['request_organization_id'];
+        $this->offer_id=$row['offer_id'];
         $this->confirmation_code=$row['confirmation_code'];
         $this->agreed=$row['agreed'];
         $this->complete=$row['complete'];
@@ -150,8 +167,12 @@ class NeedRequest{
     public function update(){
 
     	$stmt=$this->readOne($this->id);
+
 		if($stmt->rowCount()==1){
 
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			$orig_agreed=$row['agreed'];
+			$offer_id=$row['offer_id'];
 
 	        $sql = "UPDATE need_requests SET agreed=:agreed,complete=:complete,target_date=:target_date,notes=:notes WHERE id=:id";
 
@@ -161,7 +182,15 @@ class NeedRequest{
 				,'complete'=>$this->complete
 				,'target_date'=>$this->target_date
 				,'notes'=>$this->request_response_notes]);
-			return $result;
+
+
+			if($this->agreed!=$orig_agreed){
+	        	$sql = "UPDATE offers o SET o.quantity_taken=(select count(*) from need_requests nr where nr.offer_id=o.id and nr.agreed='Y') WHERE o.id=:offer_id";
+				$stmt= $this->connection->prepare($sql);
+	        	$result= $stmt->execute(['offer_id'=>$offer_id]);
+	        }
+	        return $result;
+
 		} else {
 			return false;
 		}

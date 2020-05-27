@@ -13,8 +13,6 @@ if(isset($data)) {
     header("Access-Control-Max-Age: 3600");
     header("Access-Control-Allow-Headers: Content-organization_id, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-    $need_request->client_need_id = $data['client_need_id'];
-    $need_request->request_organization_id = $data['request_organization_id'];
     $need_request->agreed = $data['agreed'];
     $need_request->complete = $data['complete'];
     $need_request->target_date = $data['target_date'];
@@ -32,6 +30,8 @@ if(isset($data)) {
         }
 
     } else {
+	    $need_request->client_need_id = $data['client_need_id'];
+	    $need_request->request_organization_id = $data['request_organization_id'];
 		$id=$need_request->create();
         if($id>0){
             $need_request_arr  = array(
@@ -92,6 +92,7 @@ if(isset($data)) {
                 "client_need_id" => $client_need_id,
                 "client_name" => $client_name,
                 "client_postcode" => $client_postcode,
+                "type" => $type,
                 "type_name" => $type_name,
                 "date_needed" => $date_needed,
                 "request_organization_id" => $request_organization_id,

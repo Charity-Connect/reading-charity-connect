@@ -22,11 +22,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offersValues = ko.observableArray();
                     self.offersDataProvider = ko.observable();
                     self.offersTableColumns = [
-                        {headerText: 'OFFER NAME', field: "name"},
+                        {headerText: 'NAME', field: "name"},
                         {headerText: 'TYPE', field: "type_name"},
-                        {headerText: 'QUANTITY', field: "quantity"},
-                        {headerText: 'DATE AVAILABLE', field: 'offerDateAvailable', sortProperty: "offerDateAvailableRaw"},
-                        {headerText: 'DATE END', field: 'offerDateEnd', sortProperty: "offerDateEndRaw"}
+                        {headerText: 'QUANTITY AVAILABLE', field: "quantity"},
+                        {headerText: 'DATE FROM', field: 'offerDateAvailable', sortProperty: "offerDateAvailableRaw"},
+                        {headerText: 'DATE TO', field: 'offerDateEnd', sortProperty: "offerDateEndRaw"}
                     ];
 
                     self.offerTypesCategoriesValues = ko.observableArray();
@@ -79,8 +79,22 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 self.offerSelected(searchNodes(event.target.currentRow.rowKey, self.offersValues()));
                                 console.log(self.offerSelected());
 
-                                var calculateCategory = utils.calculateCategory(self.offerSelected().type_name, self.offerTypesValues(), self.offerTypesCategoriesValues());
-                                self.offerTypesCategorySelected(calculateCategory);
+                                _getOfferCategoryFromTypeAjax = function(code) {
+                                    self.offerTypesCategorySelected("");
+                                    //GET /rest/offer_types/{code} - REST
+                                    return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${code}`)
+                                        .then(
+                                            success = function (response) {
+                                                console.log(response.category);
+                                                self.offerTypesCategorySelected(response.category);
+                                            },
+                                            error = function (response) {
+                                                console.log(`Category from Offer Types "${code}" not loaded`);
+                                        })
+                                    );
+                                };
+                                _getOfferCategoryFromTypeAjax(self.offerSelected().type);
+
                                 if (self.offerSelected().offerDateAvailableRaw) {
                                     self.dateAvailableConvertor(new Date(self.offerSelected().offerDateAvailableRaw).toISOString());
                                 } else {
@@ -123,22 +137,78 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     utils.sortAlphabetically(self.offerTypesArray(), "value");
                                     self.offerTypesDataProvider(new ArrayDataProvider(self.offerTypesArray(), { keyAttributes: 'value' }));
                                 }).then(function () {
-                                    self.offerTypeSelected(self.offerTypesArray()[0].value);
+                                    if (self.offerRowSelected().length) {
+                                        self.offerTypeSelected(self.offerSelected().type);
+                                    } else {
+                                        self.offerTypeSelected(self.offerTypesArray()[0].value);
+                                    }
                                 })
                             );
                         };
                     }();
 
-                    self.saveAdditionButton = function () {
-                    };
-                    self.saveEditButton = function () {
-                    };
+                    var postData = function() {
+                        self.fileContentPosted = ko.observable(true);
+                        self.postText = ko.observable();
+                        self.postTextColor = ko.observable();
+                        self.disableSaveButton = ko.observable(false);
+                        self.saveButton = function () {
+                            //locale "en-GB" - change UTC to YYYY-MM-DD
+                            _formatDate = function(inputDate) {
+                                if (inputDate !== null) {
+                                    return inputDate.split('T')[0];
+                                } else {
+                                    return null;
+                                }
+                            };
+
+                            var responseJson = {
+                                id: self.offerRowSelected().length ? self.offerSelected().id : null,
+                                date_available: _formatDate($('#datepickerEditDateAvailable')[0].value),
+                                date_end: _formatDate($('#datepickerEditDateEnd')[0].value),
+                                details: $('#textareaEditOfferNotes')[0].value,
+                                distance: $('#inputEditDistance')[0].value,
+                                name: $('#inputEditName')[0].value,
+                                postcode: $('#inputEditPostcode')[0].value,
+                                quantity: $('#inputEditQuantity')[0].value,
+                                type: $('#selectEditType')[0].valueItem.data.value
+                            };
+
+                            self.fileContentPosted(false);
+                            self.disableSaveButton(true);
+                            //POST /rest/offers - REST
+                            return $.when(restClient.doPost(restUtils.constructUrl(restUtils.EntityUrl.OFFERS), responseJson)
+                                .then(
+                                    success = function (response) {
+                                        self.postText("You have succesfully saved the offer.");
+                                        self.postTextColor("green");
+                                        console.log("data posted");
+
+                                        //update offersTable
+                                        self.getOffersAjax();
+                                    },
+                                    error = function (response) {
+                                        self.postText("Error: Offer not saved.");
+                                        self.postTextColor("red");
+                                        console.log("data not posted");
+                                }).then(function () {
+                                    self.fileContentPosted(true);
+                                    $("#postMessage").css('display', 'inline-block').fadeOut(2000, function(){
+                                        self.disableSaveButton(false);
+                                    });
+                                }).then(function () {
+                                    console.log(responseJson);
+                                })
+                            );
+                        };
+                    }();
 
                     var getData = function () {
-                        self.offersLoaded = ko.observable();
-                        self.offersValid = ko.observable();
+                        self.getOffersAjax = function() {
+                            self.offersLoaded = ko.observable();
+                            self.offersValid = ko.observable();
 
-                        function getOffersAjax() {
+                            self.offersValues([]);
                             //GET /rest/offers - REST
                             self.offersLoaded(false);
                             return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.OFFERS))
@@ -146,15 +216,27 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     success = function (response) {
                                         console.log(response.offers);
                                         $.each(response.offers, function(index, item) {
+                                            var dateAvailableCleansed;
+                                            var dateAvailableCleansedLocale;
                                             if (this.date_available) {
                                                 //no need to split as UTC anyway
-                                                var dateAvailableCleansed = new Date(this.date_available);
-                                                var dateAvailableCleansedLocale = dateAvailableCleansed.toLocaleDateString();
+                                                dateAvailableCleansed = new Date(this.date_available);
+                                                dateAvailableCleansedLocale = dateAvailableCleansed.toLocaleDateString();
+                                            } else {
+                                                //if new entry and nothing selected
+                                                dateAvailableCleansed = "";
+                                                dateAvailableCleansedLocale = "";
                                             }
+                                            var dateEndCleansed;
+                                            var dateEndCleansedLocale;
                                             if (this.date_end) {
                                                 //no need to split as UTC anyway
-                                                var dateEndCleansed = new Date(this.date_end);
-                                                var dateEndCleansedLocale = dateEndCleansed.toLocaleDateString();
+                                                dateEndCleansed = new Date(this.date_end);
+                                                dateEndCleansedLocale = dateEndCleansed.toLocaleDateString();
+                                            } else {
+                                                //if new entry and nothing selected
+                                                dateEndCleansed = "";
+                                                dateEndCleansedLocale = "";
                                             }
                                             self.offersValues().push({
                                                 offerDateAvailableRaw: dateAvailableCleansed,
@@ -168,7 +250,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 organization_id: this.organization_id,
                                                 organization_name: this.organization_name,
                                                 postcode: this.postcode,
-                                                quantity: this.quantity,
+                                                quantity: this.quantity_available+"/"+this.quantity,
                                                 type: this.type,
                                                 type_name: this.type_name
                                             });
@@ -216,7 +298,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             );
                         };
 
-                        Promise.all([getOffersAjax()])
+                        Promise.all([self.getOffersAjax()])
                         .then(function () {
                             Promise.all([getOfferTypesCategoriesAjax()])
                         })
