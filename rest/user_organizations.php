@@ -15,13 +15,12 @@ if(isset($data)) {
     header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 
-    $user_organization->user_id = $data['user_id'];
+    $user_organization->id = $data['id'];
     $user_organization->admin = $data['admin'];
     $user_organization->user_approver = $data['user_approver'];
     $user_organization->need_approver = $data['need_approver'];
 
     if(isset($data['id'])){
-        $user_organization->id = $data['id'];
         if($user_organization->update()){
             $user_organization->read();
             echo json_encode($user_organization);
@@ -32,7 +31,8 @@ if(isset($data)) {
         }
 
     } else {
-	$id=$user_organization->create();
+	    $user_organization->user_id = $data['user_id'];
+		$id=$user_organization->create();
         if($id>0){
             $user_organization_arr  = array(
                     "id" => $user_organization->id,
