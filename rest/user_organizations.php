@@ -19,6 +19,10 @@ if(isset($data)) {
     $user_organization->admin = $data['admin'];
     $user_organization->user_approver = $data['user_approver'];
     $user_organization->need_approver = $data['need_approver'];
+    if(isset($data['confirmed'])){
+    	$user_organization->confirmed = $data['confirmed'];
+    }
+
 
     if(isset($data['id'])){
         if($user_organization->update()){

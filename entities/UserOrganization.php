@@ -128,9 +128,16 @@ class UserOrganization{
 
     	$stmt=$this->readOne($this->id);
 		if($stmt->rowCount()==1){
-			$sql = "UPDATE user_organizations SET admin=:admin, user_approver=:user_approver, need_approver=:need_approver WHERE id=:id";
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			$orig_confirmed=$row['confirmed'];
+			$organization_id=$row['organization_id'];
+			if(!is_org_admin()|| $organization_id!=$_SESSION['organization_id']||!isset($this->confirmed)){
+				$this->confirmed = $orig_confirmed;
+			}
+
+			$sql = "UPDATE user_organizations SET admin=:admin, user_approver=:user_approver, need_approver=:need_approver,confirmed=:confirmed WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver]);
+			return $stmt->execute(['id'=>$this->id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'confirmed'=>$this->confirmed]);
 		} else {
 			return false;
 		}
