@@ -8,10 +8,6 @@ define(['ojs/ojcore', 'knockout'],
         var appConstants = {
             sysModuleConfig: {},
             users: {
-                displayName: "",
-                email: "",
-                phone: "",
-                confirmed: "",
                 organizationId: ""
             }
         }
