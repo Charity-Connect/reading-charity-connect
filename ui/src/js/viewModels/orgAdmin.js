@@ -104,7 +104,35 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                             }
                         };
                     }();
+                    self.saveOrgButton = function () {
 
+                        var orgData =
+                        {
+                            "id":self.userOrgId(),
+                            "name":self.userOrgName(),
+                            "address": self.userOrgAddress(),
+                            "phone": self.userOrgPhone()
+                        };
+                        return $.when(restClient.doPost('/rest/organizations', orgData)
+                            .then(
+                                success = function (response) {
+                                    self.postText("You have succesfully saved user org details.");
+                                    self.postTextColor("green");
+                                    console.log("user org data posted");
+                                },
+                                error = function (response) {
+                                    self.postText("Error: User org changes not saved.");
+                                    self.postTextColor("red");
+                                    console.log("user org data not posted");
+                                }).then(function () {
+                                self.fileContentPosted(true);
+                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                    //self.disableSaveButton(false);
+                                });
+                            })
+                        );
+
+                    }
 
                     self.saveButton = function () {
 
@@ -140,7 +168,7 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                                     );
                                 },
                                 error = function (response) {
-                                    self.postText("Error: Use changes not saved.");
+                                    self.postText("Error: User changes not saved.");
                                     self.postTextColor("red");
                                     console.log("user data not posted");
                                 }).then(function () {
@@ -148,8 +176,6 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                                 $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
                                     //self.disableSaveButton(false);
                                 });
-                            }).then(function () {
-                                //console.log(orgData);
                             })
                         );
                     };

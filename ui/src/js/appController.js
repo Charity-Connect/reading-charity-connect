@@ -167,10 +167,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         url: '/rest/org_admin_check',
                         success: function (response) {
                             if (response == "true") {
-                                utils.appConstants.sysModuleConfig = {viewPath: 'views/orgAdmin.html',
-                                    viewModelPath: 'viewModels/orgAdmin' , params: {parentRouter: self.router}}
-                                ;
-                                self.appName("Charity Connect - System Admin");
+                                self.appName("Charity Connect - Admin");
 
                                 self.routerConfig.orgAdmin = {label: 'Org Admin'};
                                 self.router.configure(self.routerConfig);

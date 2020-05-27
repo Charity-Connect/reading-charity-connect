@@ -31,32 +31,42 @@
                                 <oj-bind-text  value='[[userOrgName]]'> </oj-bind-text>
                             </h2>
                         </div>
-                    </div>
-                    <div class="oj-flex " >
-                        <div class="oj-flex-item oj-padding-end">
-                            <oj-label id="edituserOrgAddressLabel" class="oj-label-inline">Address:</oj-label>
-                        </div>
-                        <div class="oj-flex-item" style="width: 75%;">
-                            <oj-input-text id="inputuserOrgAddressEmail" labelled-by="edituserOrgAddressLabel"
-                                           value="{{userOrgAddress}}"
-                                           readonly="true"
-                                           title="Edit address input">
-                            </oj-input-text>
+                        <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+                            <div class="oj-helper-clearfix">
+                                <oj-button id="saveOrgButton" class="oj-sm-float-end"
+                                           on-oj-action='[[saveOrgButton]]'>
+                                    <span>Save</span>
+                                </oj-button>
+                            </div>
                         </div>
                     </div>
+                    <oj-form-layout label-edge="start">
+                        <div class="oj-form oj-sm-odd-cols-1 oj-md-labels-inline oj-padding">
+                            <div class="oj-flex " >
+                                <div class="oj-flex-item oj-padding-end">
+                                    <oj-label id="edituserOrgAddressLabel" class="oj-label-inline">Address:</oj-label>
+                                </div>
+                                <div class="oj-flex-item" style="width: 75%;">
+                                    <oj-input-text id="inputuserOrgAddressEmail" labelled-by="edituserOrgAddressLabel"
+                                                   value="{{userOrgAddress}}"
+                                                   title="Edit address input">
+                                    </oj-input-text>
+                                </div>
+                            </div>
 
-                    <div class="oj-flex " >
-                        <div class="oj-flex-item oj-padding-end">
-                            <oj-label id="edituserOrgPhoneLabel" class="oj-label-inline">Phone:</oj-label>
+                            <div class="oj-flex " >
+                                <div class="oj-flex-item oj-padding-end">
+                                    <oj-label id="edituserOrgPhoneLabel" class="oj-label-inline">Phone:</oj-label>
+                                </div>
+                                <div class="oj-flex-item" style="width: 75%;">
+                                    <oj-input-text id="inputuserOrgEditPhone" labelled-by="edituserOrgPhoneLabel"
+                                                   value="{{userOrgPhone}}"
+                                                   title="Edit phone input">
+                                    </oj-input-text>
+                                </div>
+                            </div>
                         </div>
-                        <div class="oj-flex-item" style="width: 75%;">
-                            <oj-input-text id="inputuserOrgEditPhone" labelled-by="edituserOrgPhoneLabel"
-                                           value="{{userOrgPhone}}"
-                                           readonly="true"
-                                           title="Edit phone input">
-                            </oj-input-text>
-                        </div>
-                    </div>
+                    </oj-form-layout>
 
                     <hr />
                     <oj-table id="userTable" class="row-selectable" aria-label="table using array"
