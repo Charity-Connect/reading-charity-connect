@@ -58,11 +58,8 @@ class NeedRequest{
 
         $this->confirmation_code=generate_string(60);
 
-        $sql = "INSERT INTO need_requests ( client_need_id,organization_id,offer_id,confirmation_code,agreed,complete,target_date,notes) values (:client_need_id,:organization_id,:offer_id,:confirmation_code,:agreed,:complete,:target_date,:notes)";
+        $sql = "INSERT INTO need_requests ( client_need_id,organization_id,offer_id,confirmation_code,complete,target_date,notes) values (:client_need_id,:organization_id,:offer_id,:confirmation_code,:complete,:target_date,:notes)";
         $stmt= $this->connection->prepare($sql);
-        if(!isset($this->agreed)){
-        	$this->agreed='N';
-        }
         if(!isset($this->complete)){
         	$this->complete='N';
         }
@@ -70,7 +67,6 @@ class NeedRequest{
         	,'organization_id'=>$this->request_organization_id
         	,'offer_id'=>$this->offer_id
         	,'confirmation_code'=>$this->confirmation_code
-        	,'agreed'=>$this->agreed
         	,'complete'=>$this->complete
         	,'target_date'=>$this->target_date
         	,'notes'=>$this->request_response_notes
