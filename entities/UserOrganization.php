@@ -19,6 +19,7 @@ class UserOrganization{
     }
 
     public function create(){
+    	global $site_address;
         $sql = "INSERT INTO user_organizations ( user_id,organization_id,admin,user_approver,need_approver,confirmed,confirmation_string) values (:user_id,:organization_id,:admin,:user_approver,:need_approver,:confirmed,:confirmation_string)";
         $stmt= $this->connection->prepare($sql);
         $this->confirmation_string=generate_string(60);
@@ -127,9 +128,16 @@ class UserOrganization{
 
     	$stmt=$this->readOne($this->id);
 		if($stmt->rowCount()==1){
-			$sql = "UPDATE user_organizations SET user_id=:user_id, organization_id=:organization_id, admin=:admin, user_approver=:user_approver, need_approver=:need_approver WHERE id=:id";
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			$orig_confirmed=$row['confirmed'];
+			$organization_id=$row['organization_id'];
+			if(!is_org_admin()|| $organization_id!=$_SESSION['organization_id']||!isset($this->confirmed)){
+				$this->confirmed = $orig_confirmed;
+			}
+
+			$sql = "UPDATE user_organizations SET admin=:admin, user_approver=:user_approver, need_approver=:need_approver,confirmed=:confirmed WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id,'user_id'=>$this->user_id,'organization_id'=>$this->organization_id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver]);
+			return $stmt->execute(['id'=>$this->id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'confirmed'=>$this->confirmed]);
 		} else {
 			return false;
 		}

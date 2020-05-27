@@ -72,13 +72,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
     }
 
+    $organization_id=$_POST["organization"];
     // Check input errors before inserting in database
     if(empty($email_err) && empty($password_err) && empty($confirm_password_err)){
         $user = new User($connection);
         $user->email=$email;
         $user->display_name=$name;
         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
-        $organization_id=$_POST["organization"];
         $id=$user->create($organization_id);
         if($id>0){
                 // Redirect to login page
@@ -139,7 +139,11 @@ Reading Charity Connect - Sign Up</h2>
                 <?php
                     $stmt = $organization->readAll();
                     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-                        echo "<option value=\"".$row['id']."\">".$row['name']."</option>";
+                    	if($organization_id==$row['id']){
+                        	echo "<option value=\"".$row['id']."\" selected=\"selected\">".$row['name']."</option>";
+						} else {
+                        	echo "<option value=\"".$row['id']."\">".$row['name']."</option>";
+                        }
                     }
                     ?>
                 </select>
