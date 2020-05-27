@@ -24,7 +24,7 @@ class User{
         $this->connection = $connection;
     }
 
-    public function create(){
+    public function create($organization_id){
         global $site_address;
 
         $sql = "INSERT INTO users ( password,display_name,email,phone,confirmation_string) values (:password,:display_name,:email,:phone,:confirmation_string)";
@@ -39,7 +39,7 @@ class User{
             $this->id=$this->connection->lastInsertId();
 			$organization_user = new UserOrganization($this->connection);
 			$organization_user->user_id=$this->id;
-			$organization_user->organization_id=$_SESSION['organization_id'];
+			$organization_user->organization_id=$organization_id;
 			$organization_user->admin='N';
 			$organization_user->user_approver='N';
 			$organization_user->need_approver='N';
