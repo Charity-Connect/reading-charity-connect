@@ -56,12 +56,10 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                                 if(response.confirmed!="Y"){
 									alert("Your account is not confirmed yet. Please check your email for a message."); // please add a proper way to display the message.
 								}
-                                const user_confirmed_organizations = response.user_organizations.filter(function(user_organization){
-                                    utils.appConstants.users.organizationId = user_organization.organization_id;
-                                    return user_organization.confirmed == 'Y';
-
-                                });
-
+								const user_confirmed_organizations=response.user_organizations.filter(user_organization => {
+                                        utils.appConstants.users.organizationId = user_organization.organization_id;
+                                        return user_organization.confirmed=='Y'});
+                                
 								if(user_confirmed_organizations.length==0){
 									alert("You are not a confirmed member of any organization yet."); // please add a proper way to display the message.
 								}
