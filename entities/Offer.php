@@ -81,7 +81,7 @@ class Offer{
        		$stmt = $this->connection->prepare($query);
        		$stmt->execute();
         } else {
-	        $query = $this->base_query." and o.organization_id=org.id ORDER BY o.id";
+	        $query = $this->base_query." and o.organization_id=:organization_id ORDER BY o.id";
 			$stmt = $this->connection->prepare($query);
 	        $stmt->execute(['organization_id'=>$_SESSION["organization_id"]]);
         }
