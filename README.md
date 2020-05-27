@@ -1,5 +1,9 @@
 # Charity Connect
 
+Deployment Status
+
+![Publish Website](https://github.com/mmillmor/charity-connect/workflows/Publish%20Website/badge.svg)
+
 ## Available Services
 
 ### Users
@@ -206,7 +210,3 @@ Can be ready by all logged in users
 /rest/org_admin_check - GET returns true if the logged in user is an admin of the current organization, false if not  
 /rest/password_reset_request - POST email address to request a password reset e-mail  
 /rest/password_reset_confirm - POST email address, key, password and password2 to reset the password  
-
-### Deployment Status
-
-![Publish Website](https://github.com/mmillmor/charity-connect/workflows/Publish%20Website/badge.svg)

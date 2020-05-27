@@ -51,15 +51,12 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         .then(
                             success = function(response) {
                                 self.userLogin(response.email);
-
+                                utils.appConstants.users.organizationId = response.organization_id;
                                 self.currentOrganization(response.organization_name);
                                 if(response.confirmed!="Y"){
 									alert("Your account is not confirmed yet. Please check your email for a message."); // please add a proper way to display the message.
 								}
-								const user_confirmed_organizations=response.user_organizations.filter(user_organization => {
-                                        utils.appConstants.users.organizationId = user_organization.organization_id;
-                                        return user_organization.confirmed=='Y'});
-                                
+								const user_confirmed_organizations=response.user_organizations.filter(user_organization => user_organization.confirmed=='Y');
 								if(user_confirmed_organizations.length==0){
 									alert("You are not a confirmed member of any organization yet."); // please add a proper way to display the message.
 								}
@@ -85,6 +82,12 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                             success = function(response) {
                                 self.currentOrganization(response.organization_name);
                                 utils.appConstants.users.organizationId = response.organization_id;
+                                if (self.router.currentState().id === "orgAdmin") {
+                                    self.moduleConfig(moduleUtils.createConfig({viewPath: 'views/orgAdmin.html',
+                                        viewModelPath: 'viewModels/orgAdmin', params: {parentRouter: self.router}})
+                                    );
+                                    self.router.go("orgAdmin");
+                                }
                             },
                             error = function() {
                                 alert("err");
