@@ -7,6 +7,6 @@ initRest();
 
 $id=$_GET["id"];
 if($org_name=set_current_organizaton($id)){
-	echo "{\"organization_name\":\"".$org_name."\"}";
+	echo "{\"organization_id\":".$id.",\"organization_name\":\"".$org_name."\"}";
 }
 ?>
