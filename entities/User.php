@@ -18,6 +18,7 @@ class User{
     private $confirmation_string;
     private $force_read=false;
     public $organization_name;
+    public $organization_id;
     public $user_organizations=array();
 
     public function __construct($connection){
@@ -99,6 +100,7 @@ class User{
         $this->email=$row['email'];
         $this->phone=$row['phone'];
         $this->confirmed=$row['confirmed'];
+        $this->organization_id=$row['organization_id'];
         $this->organization_name=$row['organization_name'];
         if(isset($row['confirmation_string'])){
         	$this->confirmation_string=$row['confirmation_string'];
@@ -127,17 +129,17 @@ class User{
 
     public function readOne($id){
         	if(is_admin()||$this->force_read==true){
-	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.name as organization_name from users u, user_organizations uo, organizations org where u.id=uo.user_id and org.id=uo.organization_id and u.id=:id order by if(org.id=:organization_id,-1,u.id)";
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name from users u, user_organizations uo, organizations org where u.id=uo.user_id and org.id=uo.organization_id and u.id=:id order by if(org.id=:organization_id,-1,u.id)";
 	        	$stmt = $this->connection->prepare($query);
 	        	$stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
 	        } else if(is_org_admin()){
-				$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.name as organization_name
+				$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name
 				from users u, user_organizations uo, organizations org
 				where u.id=uo.user_id
 				and org.id=uo.organization_id and
 				uo.organization_id=:organization_id
 				and u.id=:id
-				UNION (SELECT u.id,u.display_name,u.email,u.phone ,u.confirmed, org.name as organization_name
+				UNION (SELECT u.id,u.display_name,u.email,u.phone ,u.confirmed, org.id as organization_id, org.name as organization_name
 				from users u, user_organizations uo, organizations org
 				where
 				u.id=:id2 and u.id=:id
@@ -145,7 +147,7 @@ class User{
 				$stmt = $this->connection->prepare($query);
 				$stmt->execute(['organization_id'=>$_SESSION["organization_id"],'id'=>$id,'id2'=>$_SESSION["id"]]);
 	        } else {
-	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.name as organization_name from users u left join organizations org on org.id=:organization_id where u.id=:id ";
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name from users u left join organizations org on org.id=:organization_id where u.id=:id ";
 	        	$stmt = $this->connection->prepare($query);
 		        $stmt->execute(['id'=>$_SESSION["id"],'organization_id'=>$_SESSION["organization_id"]]);
         }
