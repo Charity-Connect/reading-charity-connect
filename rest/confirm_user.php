@@ -14,8 +14,7 @@ $user = new User($connection);
 $id=$_GET['id'];
 $key=$_GET['key'];
 
-$user->forceRead($id);
-if($user->confirmUser($key)){
+if($user->confirmUser($id,$key)){
     echo "User account confirmed";
 } else {
     echo "Error confirming user account";

@@ -166,8 +166,11 @@ class User{
 		}
     }
 
-    public function confirmUser($confirmation_string){
-        if($confirmation_string==$this->confirmation_string){
+    public function confirmUser($id,$confirmation_string){
+		$query = "SELECT 1 from users u where u.id=:id and confirmation_string=:confirmation_string";
+		$stmt = $this->connection->prepare($query);
+		$stmt->execute(['id'=>$id,'confirmation_string'=>$confirmation_string]);
+		if($stmt->rowCount()==1){
             $sql = "UPDATE users SET confirmed='Y' WHERE id=:id";
             $stmt= $this->connection->prepare($sql);
             return $stmt->execute(['id'=>$this->id]);
