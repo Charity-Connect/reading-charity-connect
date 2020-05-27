@@ -18,6 +18,7 @@ class User{
     private $confirmation_string;
     private $force_read=false;
     public $organization_name;
+    public $organization_id;
     public $user_organizations=array();
 
     public function __construct($connection){
@@ -37,21 +38,20 @@ class User{
         ,'confirmation_string'=>$this->confirmation_string
         ])){
             $this->id=$this->connection->lastInsertId();
-            if(isset($organization_id)){
-                $organization_user = new UserOrganization($this->connection);
-                $organization_user->user_id=$this->id;
-                $organization_user->organization_id=$organization_id;
-                $organization_user->admin='N';
-                $organization_user->user_approver='N';
-                $organization_user->need_approver='N';
-                if(isset($_SESSION['id'])){
-	                $organization_user->confirmed='Y';
-                } else {
-	                $organization_user->confirmed='N';
-                }
-                $organization_user->create();
+			$organization_user = new UserOrganization($this->connection);
+			$organization_user->user_id=$this->id;
+			$organization_user->organization_id=$organization_id;
+			$organization_user->admin='N';
+			$organization_user->user_approver='N';
+			$organization_user->need_approver='N';
+			if(isset($_SESSION['id'])){
+				$organization_user->confirmed='Y';
+			} else {
+				$organization_user->confirmed='N';
+			}
+			$organization_user->create();
 
-            }
+
 
             $messageString=get_string("new_user_confirmation",array("%NAME%"=>$this->display_name,"%LINK%"=>$site_address."/rest/confirm_user.php?id=".$this->id."&key=".$this->confirmation_string));
 			sendHtmlMail($this->email,get_string("new_user_subject"),$messageString);
@@ -100,6 +100,7 @@ class User{
         $this->email=$row['email'];
         $this->phone=$row['phone'];
         $this->confirmed=$row['confirmed'];
+        $this->organization_id=$row['organization_id'];
         $this->organization_name=$row['organization_name'];
         if(isset($row['confirmation_string'])){
         	$this->confirmation_string=$row['confirmation_string'];
@@ -128,15 +129,25 @@ class User{
 
     public function readOne($id){
         	if(is_admin()||$this->force_read==true){
-	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.name as organization_name from users u, user_organizations uo, organizations org where u.id=uo.user_id and org.id=uo.organization_id and u.id=:id order by if(org.id=:organization_id,-1,u.id)";
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name from users u, user_organizations uo, organizations org where u.id=uo.user_id and org.id=uo.organization_id and u.id=:id order by if(org.id=:organization_id,-1,u.id)";
 	        	$stmt = $this->connection->prepare($query);
 	        	$stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
 	        } else if(is_org_admin()){
-	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.name as organization_name from users u, user_organizations uo, organizations org where u.id=uo.user_id and org.id=uo.organization_id and uo.organization_id=:organization_id and u.id=:id UNION (SELECT u.id,u.display_name,u.email,u.phone from users u where u.id=:id and u.id=:id2)";
-	        	$stmt = $this->connection->prepare($query);
-	        	$stmt->execute(['organization_id'=>$_SESSION["organization_id"],'id'=>$id,'id2'=>$_SESSION["id"]]);
+				$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name
+				from users u, user_organizations uo, organizations org
+				where u.id=uo.user_id
+				and org.id=uo.organization_id and
+				uo.organization_id=:organization_id
+				and u.id=:id
+				UNION (SELECT u.id,u.display_name,u.email,u.phone ,u.confirmed, org.id as organization_id, org.name as organization_name
+				from users u, user_organizations uo, organizations org
+				where
+				u.id=:id2 and u.id=:id
+				and org.id=uo.organization_id and u.id=uo.user_id)";
+				$stmt = $this->connection->prepare($query);
+				$stmt->execute(['organization_id'=>$_SESSION["organization_id"],'id'=>$id,'id2'=>$_SESSION["id"]]);
 	        } else {
-	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.name as organization_name from users u left join organizations org on org.id=:organization_id where u.id=:id ";
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name from users u left join organizations org on org.id=:organization_id where u.id=:id ";
 	        	$stmt = $this->connection->prepare($query);
 		        $stmt->execute(['id'=>$_SESSION["id"],'organization_id'=>$_SESSION["organization_id"]]);
         }
@@ -167,13 +178,16 @@ class User{
 		}
     }
 
-    public function confirmUser($confirmation_string){
-        if($confirmation_string==$this->confirmation_string){
+    public function confirmUser($id,$confirmation_string){
+		$query = "SELECT 1 from users u where u.id=:id and confirmation_string=:confirmation_string";
+		$stmt = $this->connection->prepare($query);
+		$stmt->execute(['id'=>$id,'confirmation_string'=>$confirmation_string]);
+		if($stmt->rowCount()==1){
             $sql = "UPDATE users SET confirmed='Y' WHERE id=:id";
             $stmt= $this->connection->prepare($sql);
-            return $stmt->execute(['id'=>$this->id]);
-        } else {
-            return false;
+            return $stmt->execute(['id'=>$id]);
         }
+        return false;
+
     }
 }

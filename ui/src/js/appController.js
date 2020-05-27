@@ -51,10 +51,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         .then(
                             success = function(response) {
                                 self.userLogin(response.email);
-                                utils.appConstants.users.displayName = response.display_name;
-                                utils.appConstants.users.email = response.email;
                                 utils.appConstants.users.organizationId = response.organization_id;
-                                utils.appConstants.users.confirmed = response.confirmed;
                                 self.currentOrganization(response.organization_name);
                                 if(response.confirmed!="Y"){
 									alert("Your account is not confirmed yet. Please check your email for a message."); // please add a proper way to display the message.
@@ -84,6 +81,13 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         .then(
                             success = function(response) {
                                 self.currentOrganization(response.organization_name);
+                                utils.appConstants.users.organizationId = response.organization_id;
+                                if (self.router.currentState().id === "orgAdmin") {
+                                    self.moduleConfig(moduleUtils.createConfig({viewPath: 'views/orgAdmin.html',
+                                        viewModelPath: 'viewModels/orgAdmin', params: {parentRouter: self.router}})
+                                    );
+                                    self.router.go("orgAdmin");
+                                }
                             },
                             error = function() {
                                 alert("err");
@@ -154,6 +158,28 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                                 }
                             }
                         });
+
+                }
+
+                self.getOrgAdminDetails = function () {
+                    return $.ajax({
+                        type: 'GET',
+                        contentType: 'application/json',
+                        url: '/rest/org_admin_check',
+                        success: function (response) {
+                            if (response == "true") {
+                                self.appName("Charity Connect - Admin");
+
+                                self.routerConfig.orgAdmin = {label: 'Org Admin'};
+                                self.router.configure(self.routerConfig);
+
+                                self.navData.push(
+                                    {name: 'Org Admin', id: 'orgAdmin',
+                                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-library-icon-24'}
+                                );
+                            }
+                        }
+                    });
 
                 }
 

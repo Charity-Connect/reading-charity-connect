@@ -94,6 +94,8 @@ if(isset($data)) {
                 "type_name" => $type_name,
                 "details" => $details,
                 "quantity" => $quantity,
+                "quantity_taken" => $quantity_taken,
+                "quantity_available" => $quantity_available,
                 "date_available" => $date_available,
                 "date_end" => $date_end,
                 "postcode" => $postcode,

@@ -50,9 +50,11 @@ class ClientNeed{
 		    c.id=n.client_id
 		    and n.id=:id
 		    and o.type=n.type
+		    and o.quantity_taken<o.quantity
 		    and n.date_needed between coalesce(o.date_available,n.date_needed) and coalesce(o.date_end,n.date_needed)";
 		    $stmt = $this->connection->prepare($sql);
 			$stmt->execute(['id'=>$this->id]);
+
 			$oranization_list=array();
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 				if(!is_null($row['distance'])){
@@ -65,12 +67,12 @@ class ClientNeed{
 						}
 					}
 				}
-				array_push($oranization_list,	$row['organization_id']);
+				//array_push($oranization_list,	$row['organization_id']);
+			$oranization_list[$row['organization_id']]=$row['id'];
 			}
 
-			$oranization_list=array_unique($oranization_list);
-
-			foreach ($oranization_list as $organization){
+			//$oranization_list=array_unique($oranization_list);
+			foreach($oranization_list as $org_id=>$off_id){
 				$sql="select c.name as client_name,c.address,c.postcode,u.email,u.display_name as user_name,o.name as source_org_name,o2.name as target_org_name, ot.name type_name
 				from clients c, users u, organizations o, user_organizations uo, organizations o2, offer_types ot
 				where o.id=:organization_id
@@ -84,7 +86,8 @@ class ClientNeed{
 
 				$need_request=new NeedRequest($this->connection);
 				$need_request->client_need_id=$this->id;
-				$need_request->request_organization_id=$organization;
+				$need_request->request_organization_id=$org_id;
+				$need_request->offer_id=$off_id;
 				$need_request->create();
 
 				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
