@@ -1,18 +1,42 @@
+name: Publish Website
 on:
   push:
-    branches: [ master ]
-name: Publish Website
+    branches:
+      - master
+      - integration
+    paths-ignore:
+    - 'README.md'
 jobs:
-  FTP-Deploy-Action:
-    name: FTP-Deploy-Action
+  Deploy_To_Staging:
+    name: Deploy to Staging
+    if: ${{ github.ref == 'refs/heads/integration' && github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-      with:
-        fetch-depth: 2
-    - name: FTP-Deploy-Action
-      uses: SamKirkland/FTP-Deploy-Action@3.0.0
-      with:
-        ftp-server: ftp://ftp.rdg-connect.org/
-        ftp-username: gituser@rdg-connect.org
-        ftp-password: ${{ secrets.FTP_PASSWORD }}
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: integration
+          fetch-depth: 2
+      - name: Deploy
+        # Copy (ftp) all files from source git repo to destination using lftp
+        uses: sebastianpopp/ftp-action@releases/v2
+        with:
+          host: ftp://rdg-connect.org/
+          user: gituser-test@rdg-connect.org
+          password: ${{ secrets.FTP_TEST_SECRET }}
+  Deploy_To_Production:
+    name: Deploy to Production
+    if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 2
+      - name: Deploy
+        # Copy (ftp) only changed files from source git repo to destination using git ftp
+        uses: SamKirkland/FTP-Deploy-Action@3.1.1
+        with:
+          ftp-server: ftp://ftp.rdg-connect.org/
+          ftp-username: gituser@rdg-connect.org
+          ftp-password: ${{ secrets.FTP_PASSWORD }}
