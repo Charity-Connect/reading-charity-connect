@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: integration
+          fetch-depth: 2
       - name: Deploy
         uses: SamKirkland/FTP-Deploy-Action@3.1.1
         with:
@@ -29,6 +30,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@master
+        with:
+          fetch-depth: 2
       - name: Deploy
         uses: SamKirkland/FTP-Deploy-Action@3.1.1
         with:
