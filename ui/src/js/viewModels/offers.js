@@ -24,7 +24,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offersTableColumns = [
                         {headerText: 'NAME', field: "name"},
                         {headerText: 'TYPE', field: "type_name"},
-                        {headerText: 'QUANTITY AVAILABLE', field: "quantity"},
+                        {headerText: 'QUANTITY AVAILABLE', field: "quantityAvailable"},
                         {headerText: 'DATE FROM', field: 'offerDateAvailable', sortProperty: "offerDateAvailableRaw"},
                         {headerText: 'DATE TO', field: 'offerDateEnd', sortProperty: "offerDateEndRaw"}
                     ];
@@ -250,7 +250,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 organization_id: this.organization_id,
                                                 organization_name: this.organization_name,
                                                 postcode: this.postcode,
-                                                quantity: this.quantity_available+"/"+this.quantity,
+                                                quantityAvailable: this.quantity_available+"/"+this.quantity,
+                                                quantity: this.quantity,
                                                 type: this.type,
                                                 type_name: this.type_name
                                             });
