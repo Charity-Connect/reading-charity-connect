@@ -20,14 +20,14 @@ class UserOrganization{
 
     public function create(){
     	global $site_address;
-        $sql = "INSERT INTO user_organizations ( user_id,organization_id,admin,user_approver,need_approver,confirmed,confirmation_string) values (:user_id,:organization_id,:admin,:user_approver,:need_approver,:confirmed,:confirmation_string)";
+        $sql = "INSERT INTO user_organizations ( user_id,organization_id,admin,user_approver,need_approver,confirmed,confirmation_string,created_by,updated_by) values (:user_id,:organization_id,:admin,:user_approver,:need_approver,:confirmed,:confirmation_string,:user_id2,:user_id2)";
         $stmt= $this->connection->prepare($sql);
         $this->confirmation_string=generate_string(60);
         if(!isset($this->organization_id)){
         	$this->organization_id=$_SESSION['organization_id'];
         }
 
-        if( $stmt->execute(['user_id'=>$this->user_id,'organization_id'=>$this->organization_id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'confirmed'=>$this->confirmed,'confirmation_string'=>$this->confirmation_string])){
+        if( $stmt->execute(['user_id'=>$this->user_id,'organization_id'=>$this->organization_id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'confirmed'=>$this->confirmed,'confirmation_string'=>$this->confirmation_string,'user_id2'=>$_SESSION['id']])){
             $this->id=$this->connection->lastInsertId();
             if($this->confirmed=='N'){
             	$user= new User($this->connection);
@@ -135,9 +135,11 @@ class UserOrganization{
 				$this->confirmed = $orig_confirmed;
 			}
 
-			$sql = "UPDATE user_organizations SET admin=:admin, user_approver=:user_approver, need_approver=:need_approver,confirmed=:confirmed WHERE id=:id";
+			$sql = "UPDATE user_organizations SET admin=:admin, user_approver=:user_approver, need_approver=:need_approver,confirmed=:confirmed,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'confirmed'=>$this->confirmed]);
+			return $stmt->execute(['id'=>$this->id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'confirmed'=>$this->confirmed
+			,'updated_by'=>$_SESSION['id']
+			]);
 		} else {
 			return false;
 		}
@@ -158,9 +160,11 @@ class UserOrganization{
 
 	public function confirmUserOrganization($confirmation_string){
 		if($confirmation_string==$this->confirmation_string){
-			$sql = "UPDATE user_organizations SET confirmed='Y' WHERE id=:id";
+			$sql = "UPDATE user_organizations SET confirmed='Y',updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id]);
+			return $stmt->execute(['id'=>$this->id
+			,'updated_by'=>$_SESSION['id']
+			]);
 		} else {
 			return false;
 		}

@@ -18,9 +18,9 @@ class OfferType{
     public function replace(){
 
     	if(is_admin()){
-			$sql = "REPLACE INTO offer_types ( type,name,category,default_text,active) values (:type,:name,:category,:default_text,:active)";
+			$sql = "REPLACE INTO offer_types ( type,name,category,default_text,active,created_by,updated_by) values (:type,:name,:category,:default_text,:active,:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
-			if( $stmt->execute(['type'=>$this->type,'name'=>$this->name,'category'=>$this->category,'default_text'=>$this->default_text,'active'=>$this->active])){
+			if( $stmt->execute(['type'=>$this->type,'name'=>$this->name,'category'=>$this->category,'default_text'=>$this->default_text,'active'=>$this->active,'user_id'=>$_SESSION['id']])){
 				return $this->type;
 			} else {
 				return "";
@@ -38,14 +38,14 @@ class OfferType{
     }
 
     public function readActive(){
-        $query = "SELECT type,name,category,default_text from offer_types where active=1 ORDER BY name";
+        $query = "SELECT type,name,category,default_text from offer_types where active='Y' ORDER BY name";
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
         return $stmt;
     }
 
     public function readActiveCategory($category){
-        $query = "SELECT type,name,category,default_text from offer_types where active=1 and category=:category ORDER BY name";
+        $query = "SELECT type,name,category,default_text from offer_types where active='Y' and category=:category ORDER BY name";
         $stmt = $this->connection->prepare($query);
         $stmt->execute(['category'=>$category]);
         return $stmt;

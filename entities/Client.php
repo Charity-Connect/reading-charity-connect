@@ -26,7 +26,7 @@ class Client{
 			list($latitude,$longitude)=getGeocode($this->postcode);
 		}
 
-        $sql = "INSERT INTO clients ( name,address,postcode,latitude,longitude,phone,email,notes) values (:name,:address,:postcode,:latitude,:longitude,:phone,:email,:notes)";
+        $sql = "INSERT INTO clients ( name,address,postcode,latitude,longitude,phone,email,notes,created_by,updated_by) values (:name,:address,:postcode,:latitude,:longitude,:phone,:email,:notes,:user_id,:user_id)";
         $stmt= $this->connection->prepare($sql);
         if( $stmt->execute(['name'=>$this->name
         	,'address'=>$this->address
@@ -35,16 +35,19 @@ class Client{
         	,'longitude'=>($latitude==-1) ? null:$longitude
         	,'phone'=>$this->phone
         	,'email'=>$this->email
-        	,'notes'=>$this->notes])){
+        	,'notes'=>$this->notes
+        	,'user_id'=>$_SESSION['id']
+])){
             $this->id=$this->connection->lastInsertId();
 
 			$user = new User($this->connection);
         	$user->id=$_SESSION["id"];
         	$user->read();
 
-            $sql = "INSERT INTO client_links ( client_id,link_id,link_type) values (:client_id,:organization_id,'ORG')";
+            $sql = "INSERT INTO client_links ( client_id,link_id,link_type,created_by,updated_by) values (:client_id,:organization_id,'ORG',:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
-			$stmt->execute(['client_id'=>$this->id,'organization_id'=>$_SESSION["organization_id"]]);
+			$stmt->execute(['client_id'=>$this->id,'organization_id'=>$_SESSION["organization_id"],'user_id'=>$_SESSION['id']
+]);
 
             return $this->id;
         } else {
@@ -115,13 +118,15 @@ class Client{
 				$longitude=$clientOrig->getLongitude();
 			}
 
-	        $sql = "UPDATE clients SET name=:name, address=:address, postcode=:postcode,latitude=:latitude,longitude=:longitude,phone=:phone, email=:email, notes=:notes WHERE id=:id";
+	        $sql = "UPDATE clients SET name=:name, address=:address, postcode=:postcode,latitude=:latitude,longitude=:longitude,phone=:phone, email=:email, notes=:notes,updated_by=:updated_by WHERE id=:id";
 
 			$stmt= $this->connection->prepare($sql);
 	        $result= $stmt->execute(['id'=>$this->id,'name'=>$this->name,'address'=>$this->address,'postcode'=>$this->postcode
            		,'latitude'=>($latitude==-1) ? null:$latitude
 				,'longitude'=>($latitude==-1) ? null:$longitude
-				,'phone'=>$this->phone,'email'=>$this->email,'notes'=>$this->notes]);
+				,'phone'=>$this->phone,'email'=>$this->email,'notes'=>$this->notes
+				,'updated_by'=>$_SESSION['id']
+]);
 			return $result;
 		} else {
 			return false;

@@ -28,7 +28,7 @@ class User{
     public function create($organization_id){
         global $site_address;
 
-        $sql = "INSERT INTO users ( password,display_name,email,phone,confirmation_string) values (:password,:display_name,:email,:phone,:confirmation_string)";
+        $sql = "INSERT INTO users ( password,display_name,email,phone,confirmation_string,created_by,updated_by) values (:password,:display_name,:email,:phone,:confirmation_string,:user_id,:user_id)";
         $this->confirmation_string=generate_string(60);
         $stmt= $this->connection->prepare($sql);
         if( $stmt->execute(['password'=>$this->password
@@ -36,6 +36,7 @@ class User{
         ,'email'=>$this->email
         ,'phone'=>$this->phone
         ,'confirmation_string'=>$this->confirmation_string
+        ,'user_id'=>$_SESSION['id']
         ])){
             $this->id=$this->connection->lastInsertId();
 			$organization_user = new UserOrganization($this->connection);
@@ -159,9 +160,11 @@ class User{
     public function update(){
     	$stmt=$this->readOne($this->id);
 		if($stmt->rowCount()==1){
-			$sql = "UPDATE users SET display_name=:display_name, email=:email,phone=:phone WHERE id=:id";
+			$sql = "UPDATE users SET display_name=:display_name, email=:email,phone=:phone,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id,'display_name'=>$this->display_name,'email'=>$this->email,'phone'=>$this->phone]);
+			return $stmt->execute(['id'=>$this->id,'display_name'=>$this->display_name,'email'=>$this->email,'phone'=>$this->phone
+			,'updated_by'=>$_SESSION['id']
+			]);
 		} else {
 			return false;
 		}
@@ -183,9 +186,11 @@ class User{
 		$stmt = $this->connection->prepare($query);
 		$stmt->execute(['id'=>$id,'confirmation_string'=>$confirmation_string]);
 		if($stmt->rowCount()==1){
-            $sql = "UPDATE users SET confirmed='Y' WHERE id=:id";
+            $sql = "UPDATE users SET confirmed='Y',updated_by=:updated_by WHERE id=:id";
             $stmt= $this->connection->prepare($sql);
-            return $stmt->execute(['id'=>$id]);
+            return $stmt->execute(['id'=>$id
+            ,'updated_by'=>$_SESSION['id']
+			]);
         }
         return false;
 
