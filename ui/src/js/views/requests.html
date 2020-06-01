@@ -26,13 +26,13 @@
             <div class="spacer-sm">
                 <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
-                        <div class="oj-sm-padding-1x-horizontal oj-flex-item">                    
+                        <div class="oj-sm-padding-1x-horizontal oj-flex-item">
                             <h2>Requests</h2>
-                        </div>                    
+                        </div>
                         <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <oj-bind-if test="[[mediumDisplay() !== true]]">
                                 <div class="oj-flex-bar">
-                                    <oj-label id="decisionFiltersLabel" class="oj-label-inline"><strong>Filter:</strong></oj-label>                                   
+                                    <oj-label id="decisionFiltersLabel" class="oj-label-inline"><strong>Filter:</strong></oj-label>
                                     <oj-select-one id="selectDecisionFilters" labelled-by="decisionFiltersLabel"
                                         value="{{selectedDecisionFilterDisplay}}"
                                         on-value-changed="[[handleSelectedDecisionFilterChanged]]">
@@ -54,14 +54,14 @@
                                     <oj-option value="decisionFilterRejected">Rejected</oj-option>
                                     <oj-option value="decisionFilterCompleted">Completed</oj-option>
                                 </oj-buttonset-one>
-                            </oj-bind-if>                                
+                            </oj-bind-if>
                         </div>
-                    </div>                    
+                    </div>
                     <oj-bind-if test="[[mediumDisplay() !== true]]">
                         <oj-list-view id="requestsListview" class="row-selectable" aria-label="listview using array"
                             selection="{{requestRowSelected}}"
-                            on-selection-changed="[[handleRequestRowChanged]]"                                      
-                            selection-mode="single"                            
+                            on-selection-changed="[[handleRequestRowChanged]]"
+                            selection-mode="single"
                             data="[[requestsDataProvider]]">
                             <template slot="itemTemplate">
                                 <div class="oj-flex-bar">
@@ -93,9 +93,9 @@
                                     </strong>
                                 </div>
                             </template>
-                        </oj-list-view>                        
+                        </oj-list-view>
                     </oj-bind-if>
-                    <oj-bind-if test="[[mediumDisplay() === true]]">                    
+                    <oj-bind-if test="[[mediumDisplay() === true]]">
                         <hr />
                         <oj-table id="requestsTable" class="row-selectable" aria-label="table using array"
                             selection="{{requestRowSelected}}"
@@ -103,7 +103,7 @@
                             selection-mode='{"row": "single"}'
                             columns="{{requestsTableColumns}}"
                             display='grid'
-                            data="[[requestsDataProvider]]">                
+                            data="[[requestsDataProvider]]">
                         </oj-table>
                         <script type="text/html" id="decisionMade_tmpl">
                             <td>
@@ -113,30 +113,30 @@
                                     </span>
                                 </strong>
                             </td>
-                        </script>                    
+                        </script>
                     </oj-bind-if>
                     <oj-paging-control id="requestsPaging" data='[[requestsDataProvider]]'
                         page-size='5' slot='bottom'>
-                    </oj-paging-control>                    
+                    </oj-paging-control>
                 </div>
             </div>
-            
+
             <oj-bind-if test="[[showPanel()]]">
                 <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
-                        <div class="oj-sm-padding-1x-horizontal oj-flex-item">                    
+                        <div class="oj-sm-padding-1x-horizontal oj-flex-item">
                             <h3>View request</h3>
-                        </div>                    
+                        </div>
                         <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
-                            <oj-dialog style="display:none" id="agreeDialog" dialog-title="Agree to Help" cancel-behavior="none">
+                            <oj-dialog style="display:none" id="agreeDialog" dialog-title="Agreed to Help" cancel-behavior="none">
                                 <div slot="body">
                                     <oj-label id="editTargetDateLabel"><strong>Target Date:</strong></oj-label>
                                     <oj-input-date id="datepickerEditTargetDateInput" labelled-by="editTargetDateLabel"
                                         keyboard-edit='disabled'
-                                        date-picker.footer-layout='' 
+                                        date-picker.footer-layout=''
                                         value="{{targetDateConvertor}}"
                                         on-value-changed="[[handleTargetDateChanged]]"
-                                        placeholder="Input target date"                                
+                                        placeholder="Input target date"
                                         title="Pick target date">
                                     </oj-input-date>
                                     <hr />
@@ -145,11 +145,11 @@
                                         labelled-by="editRequestNotesLabel"
                                         value="{{requestNotesUpdateVal}}"
                                         raw-value="{{requestNotesUpdateRawVal}}"
-                                        on-raw-value-changed="[[handleRequestNotesUpdateChanged]]"                                         
+                                        on-raw-value-changed="[[handleRequestNotesUpdateChanged]]"
                                         placeholder="Input request notes"
                                         title="Edit request notes textarea"
-                                        rows="5">                                
-                                    </oj-text-area>                                    
+                                        rows="5">
+                                    </oj-text-area>
                                 </div>
                                 <div slot="footer">
                                     <oj-button id="cancelButton"
@@ -163,25 +163,49 @@
                                     </oj-button>
                                 </div>
                             </oj-dialog>
-                            
+
                             <div class="oj-helper-clearfix">
-                                <oj-buttonset-many id="decisionOptions" class="oj-sm-float-end"
-                                    value="{{selectedDecisionDisplay}}"
-                                    on-value-changed="[[handleSelectedDecisionChanged]]">
-                                    <oj-option value="decisionAgree">Agree to Help</oj-option>
-                                    <oj-option value="decisionUnable">Unable to Help</oj-option>
-                                </oj-buttonset-many>
+                                <oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Completed']]">
+                                    <oj-buttonset-many id="completedOptions" class="hide-buttons oj-sm-float-end"
+                                        value="{{selectedDecisionDisplay}}"
+                                        on-value-changed="[[handleSelectedDecisionChanged]]">
+                                        <oj-option value="decisionIncomplete">Mark as Incomplete</oj-option>
+                                    </oj-buttonset-many>
+                                </oj-bind-if>
+                                <oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Accepted']]">
+                                    <oj-buttonset-many id="acceptedOptions" class="hide-buttons oj-sm-float-end"
+                                        value="{{selectedDecisionDisplay}}"
+                                        on-value-changed="[[handleSelectedDecisionChanged]]">
+                                        <oj-option value="decisionDone">Mark as Done</oj-option>
+                                        <oj-option value="decisionCancel">Cancel Offer To Help</oj-option>
+                                    </oj-buttonset-many>
+                                </oj-bind-if>
+                                <oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Rejected']]">
+                                    <oj-buttonset-many id="rejectedOptions" class="hide-buttons oj-sm-float-end"
+                                        value="{{selectedDecisionDisplay}}"
+                                        on-value-changed="[[handleSelectedDecisionChanged]]">
+                                        <oj-option value="decisionAgreed">Agreed to Help</oj-option>
+                                    </oj-buttonset-many>
+                                </oj-bind-if>
+                                <oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Unaccepted']]">
+                                    <oj-buttonset-many id="unacceptedOptions" class="hide-buttons oj-sm-float-end"
+                                        value="{{selectedDecisionDisplay}}"
+                                        on-value-changed="[[handleSelectedDecisionChanged]]">
+                                        <oj-option value="decisionAgreed">Agreed to Help</oj-option>
+                                        <oj-option value="decisionCancel">Cancel Offer To Help</oj-option>
+                                    </oj-buttonset-many>
+                                </oj-bind-if>
                             </div>
                         </div>
                     </div>
-                    <hr />  
+                    <hr />
                     <div class="oj-flex sm-1x-row">
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                             <oj-label id="editCategoryLabel"><strong>Category:</strong></oj-label>
                             <oj-select-single id="selectEditCategory" labelled-by="editCategoryLabel"
                                 data="[[offerTypesCategoriesDataProvider]]"
                                 value="[[offerTypesCategorySelected]]"
-                                on-value-changed="[[handleOfferTypesCategoryChanged]]"                                
+                                on-value-changed="[[handleOfferTypesCategoryChanged]]"
                                 placeholder="Display category"
                                 title="Displays category"
                                 readonly="true">
@@ -198,8 +222,8 @@
                             </oj-select-single>
                         </div>
                     </div>
-                    <hr />  
-                    <div class="oj-flex sm-1x-row">  
+                    <hr />
+                    <div class="oj-flex sm-1x-row">
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                             <oj-label id="editNameLabel"><strong>Name:</strong></oj-label>
                             <oj-input-text id="inputEditName" labelled-by="editNameLabel"
@@ -215,17 +239,17 @@
                                 value="[[requestSelected().client_postcode]]"
                                 placeholder="Display postcode"
                                 title="Displays postcode"
-                                readonly="true">                                
+                                readonly="true">
                             </oj-input-text>
-                        </div>                        
+                        </div>
                     </div>
-                    <hr /> 
+                    <hr />
                     <div class="oj-flex sm-1x-row">
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                             <oj-label id="editTargetDateLabel"><strong>Target Date:</strong></oj-label>
                             <oj-input-date id="datepickerEditTargetDate" labelled-by="editTargetDateLabel"
                                 keyboard-edit='disabled'
-                                date-picker.footer-layout='' 
+                                date-picker.footer-layout=''
                                 value="[[targetDateConvertor]]"
                                 placeholder="[[targetDatePlaceholder]]"
                                 title="Displays target date"
@@ -236,24 +260,24 @@
                             <oj-label id="editDateNeededLabel"><strong>Date Needed:</strong></oj-label>
                             <oj-input-date id="datepickerEditDateNeeded" labelled-by="editDateNeededLabel"
                                 keyboard-edit='disabled'
-                                date-picker.footer-layout='' 
+                                date-picker.footer-layout=''
                                 value="[[dateNeededConvertor]]"
-                                placeholder="Display date needed"                                
+                                placeholder="Display date needed"
                                 title="Displays date needed"
                                 readonly="true">
-                            </oj-input-date>                            
-                        </div> 
+                            </oj-input-date>
+                        </div>
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                             <oj-label id="editOrganizationLabel"><strong>Organization:</strong></oj-label>
                             <oj-input-text id="inputEditOrganization" labelled-by="editOrganizationLabel"
                                 value="[[requestSelected().source_organization_name]]"
                                 placeholder="Display organization"
                                 title="Displays organization"
-                                readonly="true">                                
+                                readonly="true">
                             </oj-input-text>
-                        </div>                                                         
+                        </div>
                     </div>
-                    <hr />                     
+                    <hr />
                     <oj-label id="editNeedNotesLabel"><strong>Comments from Requestor:</strong></oj-label>
                     <oj-text-area id="textareaEditNeedNotes" class="oj-form-control-full-width"
                         labelled-by="editNeedNotesLabel"
@@ -261,7 +285,7 @@
                         placeholder="Display need notes"
                         title="Displays need notes"
                         readonly="true"
-                        rows="5">                                
+                        rows="5">
                     </oj-text-area>
                     <hr />
                     <oj-label id="editRequestNotesLabel"><strong>Notes:</strong></oj-label>
@@ -270,10 +294,10 @@
                         value="[[requestNotesUpdateVal]]"
                         placeholder="Display request notes"
                         title="Displays request notes"
-                        readonly="[[selectedDecisionDisplay()[0] === 'decisionAgree' ? false : true]]"
-                        rows="5">                                
+                        readonly="[[selectedDecisionDisplay()[0] === 'decisionAgreed' ? false : true]]"
+                        rows="5">
                     </oj-text-area>
-                    <hr />                     
+                    <hr />
                     <div class="oj-flex-bar sm-1x-row">
                         <div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <oj-bind-if test="[[fileContentPosted() !== true]]">
@@ -294,6 +318,6 @@
                     </div>
                 </div>
             </oj-bind-if>
-        </oj-bind-if>            
+        </oj-bind-if>
     </oj-bind-if>
 </div>
