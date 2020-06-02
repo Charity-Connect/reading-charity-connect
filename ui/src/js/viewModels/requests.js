@@ -53,7 +53,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
                     self.agreedStatus = ko.observable(null);
                     self.completeStatus = ko.observable(null);
-                    self.disableSaveButton = ko.observable(true);
                     self.requestNotesUpdateVal = ko.observable("");
 
                     self.selectedDecisionDisplay = ko.observableArray([]);
@@ -208,19 +207,17 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 if (self.selectedDecisionDisplay()[0]) {
                                     if (self.selectedDecisionDisplay()[0] === 'decisionIncomplete') {
                                         self.completeStatus("N");
+                                        self.saveButton();
                                     } else if (self.selectedDecisionDisplay()[0] === 'decisionDone') {
                                         self.completeStatus("Y");
+                                        self.saveButton();
                                     } else if (self.selectedDecisionDisplay()[0] === 'decisionCancel') {
                                         self.agreedStatus("N");
-                                    } else if (self.selectedDecisionDisplay()[0] === 'decisionAgreed') {
-                                        self.agreedStatus("Y");
-                                    }
-                                    self.disableSaveButton(false);
-                                } else if (!self.selectedDecisionDisplay()[0]) {
-                                    self.disableSaveButton(true);
+                                        self.saveButton();
+                                    };
                                 };
 
-                                //special behaviour for #agreeDialog and targetDate
+                                //special behaviour for 'decisionAgreed' button - #agreeDialog and targetDate
                                 if ((self.requestSelected().requestSelectedDecision === 'Rejected') || (self.requestSelected().requestSelectedDecision === 'Unaccepted')) {
                                     if (self.selectedDecisionDisplay()[0] === 'decisionAgreed') {
                                         document.getElementById('agreeDialog').open();
@@ -230,11 +227,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                         self.targetDatePlaceholder("Please select a decision");
                                         self.requestNotesUpdateVal(self.requestSelected().request_response_notes);
                                     };
-                                } else if (self.requestSelected().requestSelectedDecision === 'Unaccepted') {
-                                    if (self.selectedDecisionDisplay()[0] === 'decisionCancel') {
-                                        self.targetDateConvertor("");
-                                        self.targetDatePlaceholder("No target date");
-                                    }
                                 };
                             };
                         };
@@ -247,12 +239,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             }
                         };
 
-                        self.disableOKButton = ko.observable(true);
+                        self.disableSaveButton = ko.observable(true);
                         self.handleTargetDateChanged = function (event) {
                             if (event.target.value !== null) {
-                                self.disableOKButton(false);
+                                self.disableSaveButton(false);
                             } else {
-                                self.disableOKButton(true);
+                                self.disableSaveButton(true);
                             }
                         };
                         self.closeAgreeModalButton = function (event) {
@@ -262,14 +254,17 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 self.targetDateConvertor("");
                                 self.targetDatePlaceholder("Please select a decision");
                                 self.requestNotesUpdateVal(self.requestSelected().request_response_notes);
-                                self.disableSaveButton(true);
-                            };
+                            } else if (event.target.id === "saveButton") {
+                                self.agreedStatus("Y");
+                                self.saveButton();                                
+                            }
                             document.getElementById('agreeDialog').close();
                         };
                     }();
 
                     var postData = function() {
                         self.fileContentPosted = ko.observable(true);
+                       self.disableOptionButtons = ko.observable(false);
                         self.postText = ko.observable();
                         self.postTextColor = ko.observable();
                         self.saveButton = function () {
@@ -291,7 +286,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             };
 
                             self.fileContentPosted(false);
-                            self.disableSaveButton(true);
+                            self.disableOptionButtons(true);
                             //POST /rest/need_requests - REST
                             return $.when(restClient.doPost(restUtils.constructUrl(restUtils.EntityUrl.NEED_REQUESTS), responseJson)
                                 .then(
@@ -311,7 +306,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 }).then(function () {
                                     self.fileContentPosted(true);
                                     $("#postMessage").css('display', 'inline-block').fadeOut(2000, function(){
-                                        self.disableSaveButton(false);
+                                        self.disableOptionButtons(false);
                                     });
                                 }).then(function () {
                                     console.log(responseJson);
