@@ -156,10 +156,10 @@
                                         on-oj-action="[[closeAgreeModalButton]]">
                                         <span>Cancel</span>
                                     </oj-button>
-                                    <oj-button id="okButton"
-                                        on-oj-action="[[closeAgreeModalButton]]"
-                                        disabled="[[disableOKButton]]">
-                                        <span>OK</span>
+                                    <oj-button id="saveButton"
+                                        disabled="[[disableSaveButton]]"
+                                        on-oj-action="[[closeAgreeModalButton]]">
+                                        <span>Save</span>
                                     </oj-button>
                                 </div>
                             </oj-dialog>
@@ -167,6 +167,7 @@
                             <div class="oj-helper-clearfix">
                                 <oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Completed']]">
                                     <oj-buttonset-many id="completedOptions" class="hide-buttons oj-sm-float-end"
+                                        disabled="[[disableOptionButtons]]"
                                         value="{{selectedDecisionDisplay}}"
                                         on-value-changed="[[handleSelectedDecisionChanged]]">
                                         <oj-option value="decisionIncomplete">Mark as Incomplete</oj-option>
@@ -174,6 +175,7 @@
                                 </oj-bind-if>
                                 <oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Accepted']]">
                                     <oj-buttonset-many id="acceptedOptions" class="hide-buttons oj-sm-float-end"
+                                        disabled="[[disableOptionButtons]]"
                                         value="{{selectedDecisionDisplay}}"
                                         on-value-changed="[[handleSelectedDecisionChanged]]">
                                         <oj-option value="decisionDone">Mark as Done</oj-option>
@@ -182,6 +184,7 @@
                                 </oj-bind-if>
                                 <oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Rejected']]">
                                     <oj-buttonset-many id="rejectedOptions" class="hide-buttons oj-sm-float-end"
+                                        disabled="[[disableOptionButtons]]"
                                         value="{{selectedDecisionDisplay}}"
                                         on-value-changed="[[handleSelectedDecisionChanged]]">
                                         <oj-option value="decisionAgreed">Agreed to Help</oj-option>
@@ -189,15 +192,37 @@
                                 </oj-bind-if>
                                 <oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Unaccepted']]">
                                     <oj-buttonset-many id="unacceptedOptions" class="hide-buttons oj-sm-float-end"
+                                        disabled="[[disableOptionButtons]]"
                                         value="{{selectedDecisionDisplay}}"
                                         on-value-changed="[[handleSelectedDecisionChanged]]">
                                         <oj-option value="decisionAgreed">Agreed to Help</oj-option>
-                                        <oj-option value="decisionCancel">Cancel Offer To Help</oj-option>
+                                        <oj-option value="decisionCancel">Unable To Help</oj-option>
                                     </oj-buttonset-many>
                                 </oj-bind-if>
                             </div>
                         </div>
                     </div>
+                    <div id="statusBar" class="oj-flex-bar sm-1x-row">
+                        <div class="oj-sm-padding-1x-horizontal oj-flex-item">
+                             <span>Status:
+                                <strong>
+                                    <span :style.color="[[requestSelected().styleState]]">
+                                        <oj-bind-text value="[[requestSelected().requestSelectedDecision]]"></oj-bind-text>                                        
+                                   </span>
+                                </strong> 
+                            </span>
+                         </div>
+                        <div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column">
+                            <oj-bind-if test="[[fileContentPosted() !== true]]">
+                                <span class="oj-helper-text-align-right">Posting...</span>
+                                <oj-progress id="progressBar" value="-1"></oj-progress>
+                            </oj-bind-if>
+                            <oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide"
+                                :style.color="[[postTextColor]]">
+                                <oj-bind-text value='[[postText]]'></oj-bind-text>
+                            </oj-label>
+                         </div>
+                     </div>
                     <hr />
                     <div class="oj-flex sm-1x-row">
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
@@ -297,25 +322,6 @@
                         readonly="[[selectedDecisionDisplay()[0] === 'decisionAgreed' ? false : true]]"
                         rows="5">
                     </oj-text-area>
-                    <hr />
-                    <div class="oj-flex-bar sm-1x-row">
-                        <div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
-                            <oj-bind-if test="[[fileContentPosted() !== true]]">
-                                <span class="oj-helper-text-align-right">Posting...</span>
-                                <oj-progress id="progressBar" value="-1"></oj-progress>
-                            </oj-bind-if>
-                            <oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="saveButton"
-                                :style.color="[[postTextColor]]">
-                                <oj-bind-text value='[[postText]]'></oj-bind-text>
-                            </oj-label>
-                        </div>
-                        <div class="oj-sm-padding-1x-horizontal oj-flex">
-                            <oj-button id="saveButton" on-oj-action='[[saveButton]]'
-                                disabled="[[disableSaveButton]]">
-                                <span>Save</span>
-                            </oj-button>
-                        </div>
-                    </div>
                 </div>
             </oj-bind-if>
         </oj-bind-if>
