@@ -64,7 +64,7 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                         self.needDetailCategory(params.category);
                         self.needDetailDefaultText(params.default_text);
                         self.needDetailActive([]);
-                        if (params.active === "1") {
+                        if (params.active === "Y") {
                             self.needDetailActive(["active"]);
                         }
 
@@ -114,7 +114,7 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                                 "type": self.needDetailType(),
                                 "category": self.needDetailCategory(),
                                 "default_text": self.needDetailDefaultText(),
-                                "active": (self.needDetailActive().length > 0) ? 1 : 0
+                                "active": (self.needDetailActive().length > 0) ? "Y" : "N"
                             };
                         return $.when(restClient.doPost('/rest/offer_types', needData)
                             .then(

@@ -38,9 +38,9 @@ class ClientNeed{
     		$this->need_met='N';
     	}
 
-		$sql = "INSERT INTO client_needs ( client_id,requesting_organization_id,type,date_needed,need_met,notes) values (:client_id,:requesting_organization_id,:type,:date_needed,:need_met,:notes)";
+		$sql = "INSERT INTO client_needs ( client_id,requesting_organization_id,type,date_needed,need_met,notes,created_by,updated_by) values (:client_id,:requesting_organization_id,:type,:date_needed,:need_met,:notes,:user_id,:user_id)";
 		$stmt= $this->connection->prepare($sql);
-		if( $stmt->execute(['client_id'=>$this->client_id,'requesting_organization_id'=>$_SESSION['organization_id'],'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'notes'=>$this->notes])){
+		if( $stmt->execute(['client_id'=>$this->client_id,'requesting_organization_id'=>$_SESSION['organization_id'],'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'notes'=>$this->notes,'user_id'=>$_SESSION['id']])){
 		    $this->id=$this->connection->lastInsertId();
 
 
@@ -166,9 +166,11 @@ class ClientNeed{
 
     	$stmt=readOne($this->client_id,$this->id);
 		if($stmt->rowCount()==1){
-	        $sql = "UPDATE client_needs SET client_id=:client_id, type=:type, date_needed=:date_needed, need_met=:need_met notes=:notes WHERE id=:id";
+	        $sql = "UPDATE client_needs SET client_id=:client_id, type=:type, date_needed=:date_needed, need_met=:need_met notes=:notes,updated_by=:updated_by WHERE id=:id";
 	        $stmt= $this->connection->prepare($sql);
-	        return $stmt->execute(['id'=>$this->id,'client_id'=>$this->client_id,'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'notes'=>$this->notes]);
+	        return $stmt->execute(['id'=>$this->id,'client_id'=>$this->client_id,'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'notes'=>$this->notes
+	        ,'updated_by'=>$_SESSION['id']
+]);
 		} else {
 			return false;
 		}

@@ -28,7 +28,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.updateRequestsDataProvider = function(requestsValues) {
                         var sortCriteria = {key: 'type_name', direction: 'ascending'};
                         var arrayDataSource = new oj.ArrayTableDataSource(requestsValues, {idAttribute: 'id'});
-                        arrayDataSource.sort(sortCriteria);                            
+                        arrayDataSource.sort(sortCriteria);
                         self.requestsDataProvider(new oj.PagingTableDataSource(arrayDataSource));
                     };
 
@@ -40,7 +40,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         {headerText: 'TARGET DATE', field: "requestTargetDate", sortProperty: "requestTargetDateRaw"},
                         {headerText: 'DATE NEEDED', field: "requestDateNeeded", sortProperty: "requestDateNeededRaw"},
                         {headerText: 'ORGANIZATION', field: "source_organization_name"},
-                        {headerText: 'DECISION MADE', renderer: self.renderer1, sortProperty: "requestSelectedDecision"}                        
+                        {headerText: 'DECISION MADE', renderer: self.renderer1, sortProperty: "requestSelectedDecision"}
                     ];
 
                     self.offerTypesCategoriesValues = ko.observableArray();
@@ -51,10 +51,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offerTypesArray = ko.observableArray([]);
                     self.offerTypesDataProvider = ko.observable();
 
-                    self.decisionStatus = ko.observable(null);
+                    self.agreedStatus = ko.observable(null);
+                    self.completeStatus = ko.observable(null);
                     self.disableSaveButton = ko.observable(true);
-                    self.requestNotesUpdateVal = ko.observable("");                    
-                    
+                    self.requestNotesUpdateVal = ko.observable("");
+
                     self.selectedDecisionDisplay = ko.observableArray([]);
                     self.requestRowSelected = ko.observableArray();
                     self.requestSelected = ko.observable("");
@@ -64,14 +65,17 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.dateNeededConvertor = ko.observable("");
                     self.showPanel = ko.computed(function () {
                         if (self.requestRowSelected().length) {
+                            self.selectedDecisionDisplay([]);
                             return true;
                         }
                     }, this);
 
                     var primaryHandlerLogic = function() {
                         self.handleSelectedDecisionFilterChanged = function () {
+                            self.requestRowSelected([]);
+
                             var activeFilters = {};
-                            //filter decisionFilters search                        
+                            //filter decisionFilters search
                             activeFilters.decisionFilter = self.selectedDecisionFilterDisplay();
                             console.log(activeFilters);
 
@@ -84,7 +88,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                         return true;
                                     }
                                 } else {
-                                    var cleanRequestSelectedDecisionItem = "decisionFilter" + item["requestSelectedDecision"];                                    
+                                    var cleanRequestSelectedDecisionItem = "decisionFilter" + item["requestSelectedDecision"];
                                     //pick up detected active filters - 1x array toString (decisionFilters)
                                     if (cleanRequestSelectedDecisionItem.indexOf(activeFilters["decisionFilter"]) >= 0) {
                                         return true;
@@ -93,10 +97,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             });
                             console.log(requestArray);
 
-                            //update requestsDataProvider                      
+                            //update requestsDataProvider
                             self.updateRequestsDataProvider(requestArray);
                         };
-                        
+
                         self.handleRequestRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
                                 //find whether node exists based on selection
@@ -108,9 +112,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     }
                                 };
                                 if (event.target.id === "requestsListview") {
-                                    self.requestSelected(searchNodes(event.target.currentItem, self.requestsValues()));                                    
+                                    self.requestSelected(searchNodes(event.target.currentItem, self.requestsValues()));
                                 } else if (event.target.id === "requestsTable") {
-                                    self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));                                    
+                                    self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));
                                 }
                                 console.log(self.requestSelected());
 
@@ -120,8 +124,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${code}`)
                                         .then(
                                             success = function (response) {
-                                                console.log(response.category);                                                
-                                                self.offerTypesCategorySelected(response.category);                                                
+                                                console.log(response.category);
+                                                self.offerTypesCategorySelected(response.category);
                                             },
                                             error = function (response) {
                                                 console.log(`Category from Offer Types "${code}" not loaded`);
@@ -129,15 +133,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     );
                                 };
                                 _getOfferCategoryFromTypeAjax(self.requestSelected().type);
-
-                                if (self.requestSelected().requestSelectedDecision === "Accepted") {
-                                    self.selectedDecisionDisplay(['decisionAgree']);
-                                } else if (self.requestSelected().requestSelectedDecision === "Rejected") {
-                                    self.selectedDecisionDisplay(['decisionUnable']);
-                                } else {
-                                    self.selectedDecisionDisplay([]);
-                                    self.disableSaveButton(true);
-                                }
 
                                 if (self.requestSelected().requestTargetDateRaw) {
                                     self.targetDateConvertor(new Date(self.requestSelected().requestTargetDateRaw).toISOString());
@@ -187,7 +182,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     self.offerTypesDataProvider(new ArrayDataProvider(self.offerTypesArray(), { keyAttributes: 'value' }));
                                 }).then(function () {
                                     if (self.requestRowSelected().length) {
-                                        self.offerTypeSelected(self.requestSelected().type);                                        
+                                        self.offerTypeSelected(self.requestSelected().type);
                                     } else {
                                         self.offerTypeSelected(self.offerTypesArray()[0].value);
                                     }
@@ -208,22 +203,38 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     });
                                     self.selectedDecisionDisplay(decisionArray);
                                 };
-                                //#agreeDialog, targetDate and #saveButton behaviour
-                                if (self.selectedDecisionDisplay()[0] === 'decisionAgree') {
-                                    document.getElementById('agreeDialog').open();
-                                    self.targetDatePlaceholder("Please select target date");
-                                    self.decisionStatus("Y");
-                                    self.disableSaveButton(false);
-                                } else if (self.selectedDecisionDisplay()[0] === 'decisionUnable') {
-                                    self.targetDateConvertor("");
-                                    self.targetDatePlaceholder("No target date");
-                                    self.decisionStatus("N");
+
+                                //set status and #saveButton behaviour
+                                if (self.selectedDecisionDisplay()[0]) {
+                                    if (self.selectedDecisionDisplay()[0] === 'decisionIncomplete') {
+                                        self.completeStatus("N");
+                                    } else if (self.selectedDecisionDisplay()[0] === 'decisionDone') {
+                                        self.completeStatus("Y");
+                                    } else if (self.selectedDecisionDisplay()[0] === 'decisionCancel') {
+                                        self.agreedStatus("N");
+                                    } else if (self.selectedDecisionDisplay()[0] === 'decisionAgreed') {
+                                        self.agreedStatus("Y");
+                                    }
                                     self.disableSaveButton(false);
                                 } else if (!self.selectedDecisionDisplay()[0]) {
-                                    self.targetDateConvertor("");
-                                    self.targetDatePlaceholder("Please select a decision");
-                                    self.requestNotesUpdateVal(self.requestSelected().request_response_notes);
                                     self.disableSaveButton(true);
+                                };
+
+                                //special behaviour for #agreeDialog and targetDate
+                                if ((self.requestSelected().requestSelectedDecision === 'Rejected') || (self.requestSelected().requestSelectedDecision === 'Unaccepted')) {
+                                    if (self.selectedDecisionDisplay()[0] === 'decisionAgreed') {
+                                        document.getElementById('agreeDialog').open();
+                                        self.targetDatePlaceholder("Please select target date");
+                                    } else if (!self.selectedDecisionDisplay()[0]) {
+                                        self.targetDateConvertor("");
+                                        self.targetDatePlaceholder("Please select a decision");
+                                        self.requestNotesUpdateVal(self.requestSelected().request_response_notes);
+                                    };
+                                } else if (self.requestSelected().requestSelectedDecision === 'Unaccepted') {
+                                    if (self.selectedDecisionDisplay()[0] === 'decisionCancel') {
+                                        self.targetDateConvertor("");
+                                        self.targetDatePlaceholder("No target date");
+                                    }
                                 };
                             };
                         };
@@ -272,8 +283,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             };
 
                             var responseJson = {
-                                agreed: self.decisionStatus(),
-                                complete: self.requestSelected().complete,
+                                agreed: self.agreedStatus() !== null ? self.agreedStatus() : self.requestSelected().agreed,
+                                complete: self.completeStatus() !== null ? self.completeStatus() : self.requestSelected().complete,
                                 id: self.requestSelected().id,
                                 request_response_notes: $('#textareaEditRequestNotes')[0].value,
                                 target_date: _formatDate($('#datepickerEditTargetDate')[0].value)
@@ -288,10 +299,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                         self.postText("You have succesfully saved the request.");
                                         self.postTextColor("green");
                                         console.log("data posted");
-                                        
+
                                         //update requestsTable
-                                        self.selectedDecisionFilterDisplay('decisionFilterAll');                                        
-                                        self.getRequestsAjax();
+                                        self.selectedDecisionFilterDisplay('decisionFilterAll');
+                                        self.getRequestsAjax("updatePanel");
                                     },
                                     error = function (response) {
                                         self.postText("Error: Request not saved.");
@@ -310,7 +321,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     }();
 
                     var getData = function () {
-                        self.getRequestsAjax = function() {
+                        self.getRequestsAjax = function(context) {
                             self.requestsLoaded = ko.observable();
                             self.requestsValid = ko.observable();
 
@@ -336,17 +347,20 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 dateNeededCleansed = new Date(this.date_needed);
                                                 dateNeededCleansedLocale = dateNeededCleansed.toLocaleDateString();
                                             }
-                                            
+
                                             var decisionString = "";
                                             var styleState = "";
-                                            if (this.agreed === "Y") {
-                                                decisionString = "Accepted";
+                                            if (this.complete === "Y") {
+                                                decisionString = "Completed";
                                                 styleState = "#18BE94"; //green
+                                            } else if (this.agreed === "Y") {
+                                                decisionString = "Accepted";
+                                                styleState = "#309fdb"; //blue
                                             } else if (this.agreed === "N") {
-                                                decisionString = "Rejected";                                                
+                                                decisionString = "Rejected";
+                                                styleState = "#E96D76"; //red
                                             } else {
-                                                decisionString = "Unreviewed";                                                                                                
-                                                styleState = "#309fdb"; //blue                                                                          
+                                                decisionString = "Unaccepted";
                                             };
                                             self.requestsValues().push({
                                                 requestTargetDateRaw: targetDateCleansed,
@@ -355,10 +369,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 requestDateNeeded: dateNeededCleansedLocale,
                                                 requestSelectedDecision: decisionString,
                                                 styleState: styleState,
+                                                agreed: this.agreed,
+                                                complete: this.complete,
                                                 client_name: this.client_name,
                                                 client_need_id: this.client_need_id,
                                                 client_postcode: this.client_postcode,
-                                                complete: this.complete,
                                                 id: this.id,
                                                 need_notes: this.need_notes,
                                                 request_organization_id: this.request_organization_id,
@@ -376,6 +391,17 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                         self.requestsValid(false);
                                 }).then(function () {
                                     self.updateRequestsDataProvider(self.requestsValues());
+                                    //sort panel refresh on #saveButton only
+                                    if (context === "updatePanel") {
+                                        self.requestRowSelected([{
+                                            "startKey": {
+                                              "row": self.requestSelected().id
+                                            },
+                                            "endKey": {
+                                              "row": self.requestSelected().id
+                                            }
+                                        }]);
+                                    };
                                 }).then(function () {
                                     self.requestsLoaded(true);
                                 })

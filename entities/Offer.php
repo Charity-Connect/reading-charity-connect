@@ -53,8 +53,8 @@ class Offer{
 		if(isset($this->postcode)&&$this->postcode!=""){
 			list($latitude,$longitude)=getGeocode($this->postcode);
 		}
-		$sql = "INSERT INTO offers (organization_id,name,type,details,quantity,date_available,date_end,postcode,latitude,longitude,distance) values
-(:organization_id,:name,:type,:details,:quantity,:date_available,:date_end,:postcode,:latitude,:longitude,:distance)";
+		$sql = "INSERT INTO offers (organization_id,name,type,details,quantity,date_available,date_end,postcode,latitude,longitude,distance,created_by,updated_by) values
+(:organization_id,:name,:type,:details,:quantity,:date_available,:date_end,:postcode,:latitude,:longitude,:distance,:user_id,:user_id)";
 		$stmt= $this->connection->prepare($sql);
 		if( $stmt->execute(['organization_id'=>$this->organization_id
 			,'name'=>$this->name
@@ -67,6 +67,7 @@ class Offer{
 			,'latitude'=>($latitude==-1) ? null:$latitude
 			,'longitude'=>($latitude==-1) ? null:$longitude
 			,'distance'=>$this->distance
+			,'user_id'=>$_SESSION['id']
 			])){
 			$this->id=$this->connection->lastInsertId();
 			return $this->id;
@@ -142,11 +143,14 @@ class Offer{
 				$longitude=$offerOrig->getLongitude();
 			}
 
-        	$sql = "UPDATE offers SET name=:name, type=:type, details=:details, quantity=:quantity,date_available=:date_available,date_end=:date_end,postcode=:postcode,latitude=:latitude,longitude=:longitude WHERE id=:id";
+        	$sql = "UPDATE offers SET name=:name, type=:type, details=:details, quantity=:quantity,date_available=:date_available,date_end=:date_end,postcode=:postcode,latitude=:latitude,longitude=:longitude,distance=:distance,updated_by=:updated_by WHERE id=:id";
         	$stmt= $this->connection->prepare($sql);
         	return $stmt->execute(['id'=>$this->id,'name'=>$this->name,'type'=>$this->type,'details'=>$this->details,'quantity'=>$this->quantity,'date_available'=>$this->date_available,'date_end'=>$this->date_end,'postcode'=>$this->postcode
         		,'latitude'=>($latitude==-1) ? null:$latitude
 				,'longitude'=>($latitude==-1) ? null:$longitude
+				,'distance'=>$this->distance
+				,'updated_by'=>$_SESSION['id']
+
 			]);
         } else {
         	return false;

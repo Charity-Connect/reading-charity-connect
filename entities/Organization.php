@@ -15,9 +15,9 @@ class Organization{
 
     public function create(){
 		if(is_admin()){
-			$sql = "INSERT INTO organizations ( name,address,phone) values (:name,:address,:phone)";
+			$sql = "INSERT INTO organizations ( name,address,phone,created_by,updated_by) values (:name,:address,:phone,:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
-			if( $stmt->execute(['name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone])){
+			if( $stmt->execute(['name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone,'user_id'=>$_SESSION['id']])){
 				$this->id=$this->connection->lastInsertId();
 				return $this->id;
 			} else {
@@ -55,9 +55,11 @@ class Organization{
 
     	if(is_admin() || ($this->id==$_SESSION['organization_id'] && is_org_admin())){
 
-			$sql = "UPDATE organizations SET name=:name, address=:address, phone=:phone WHERE id=:id";
+			$sql = "UPDATE organizations SET name=:name, address=:address, phone=:phone,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id,'name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone]);
+			return $stmt->execute(['id'=>$this->id,'name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone
+			,'updated_by'=>$_SESSION['id']
+]);
 		} else {
 			return false;
 		}

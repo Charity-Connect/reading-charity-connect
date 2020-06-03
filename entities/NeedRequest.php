@@ -58,7 +58,7 @@ class NeedRequest{
 
         $this->confirmation_code=generate_string(60);
 
-        $sql = "INSERT INTO need_requests ( client_need_id,organization_id,offer_id,confirmation_code,complete,target_date,notes) values (:client_need_id,:organization_id,:offer_id,:confirmation_code,:complete,:target_date,:notes)";
+        $sql = "INSERT INTO need_requests ( client_need_id,organization_id,offer_id,confirmation_code,complete,target_date,notes,created_by,updated_by) values (:client_need_id,:organization_id,:offer_id,:confirmation_code,:complete,:target_date,:notes,:user_id,:user_id)";
         $stmt= $this->connection->prepare($sql);
         if(!isset($this->complete)){
         	$this->complete='N';
@@ -70,6 +70,7 @@ class NeedRequest{
         	,'complete'=>$this->complete
         	,'target_date'=>$this->target_date
         	,'notes'=>$this->request_response_notes
+        	,'user_id'=>$_SESSION['id']
         	])){
             $this->id=$this->connection->lastInsertId();
 
@@ -170,20 +171,24 @@ class NeedRequest{
 			$orig_agreed=$row['agreed'];
 			$offer_id=$row['offer_id'];
 
-	        $sql = "UPDATE need_requests SET agreed=:agreed,complete=:complete,target_date=:target_date,notes=:notes WHERE id=:id";
+	        $sql = "UPDATE need_requests SET agreed=:agreed,complete=:complete,target_date=:target_date,notes=:notes,updated_by=:updated_by WHERE id=:id";
 
 			$stmt= $this->connection->prepare($sql);
 	        $result= $stmt->execute(['id'=>$this->id
            		,'agreed'=>$this->agreed
 				,'complete'=>$this->complete
 				,'target_date'=>$this->target_date
-				,'notes'=>$this->request_response_notes]);
+				,'notes'=>$this->request_response_notes
+				,'updated_by'=>$_SESSION['id']
+]);
 
 
 			if($this->agreed!=$orig_agreed){
-	        	$sql = "UPDATE offers o SET o.quantity_taken=(select count(*) from need_requests nr where nr.offer_id=o.id and nr.agreed='Y') WHERE o.id=:offer_id";
+	        	$sql = "UPDATE offers o SET o.quantity_taken=(select count(*) from need_requests nr where nr.offer_id=o.id and nr.agreed='Y'),updated_by=:updated_by WHERE o.id=:offer_id";
 				$stmt= $this->connection->prepare($sql);
-	        	$result= $stmt->execute(['offer_id'=>$offer_id]);
+	        	$result= $stmt->execute(['offer_id'=>$offer_id
+	        					,'updated_by'=>$_SESSION['id']
+]);
 	        }
 	        return $result;
 

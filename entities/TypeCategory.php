@@ -14,9 +14,9 @@ class TypeCategory{
 
     public function replace(){
     	if(is_admin()){
-			$sql = "REPLACE INTO type_categories (code, name) values (:code,:name)";
+			$sql = "REPLACE INTO type_categories (code, name,created_by,updated_by) values (:code,:name,:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
-			if( $stmt->execute(['code'=>$this->code,'name'=>$this->name])){
+			if( $stmt->execute(['code'=>$this->code,'name'=>$this->name,'user_id'=>$_SESSION['id']])){
 				return $this->code;
 			} else {
 				return "";
