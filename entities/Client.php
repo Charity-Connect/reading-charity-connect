@@ -1,5 +1,7 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/User.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/ClientShareRequest.php';
 class Client{
 
     // Connection instance
@@ -15,6 +17,7 @@ class Client{
     public $phone;
     public $email;
     public $notes;
+    private $force_read=false;
 
     public function __construct($connection){
         $this->connection = $connection;
@@ -23,7 +26,7 @@ class Client{
     public function create(){
 
 		if(isset($this->postcode)&&$this->postcode!=""){
-			list($latitude,$longitude)=getGeocode($this->postcode);
+			list($this->latitude,$this->longitude)=getGeocode($this->postcode);
 		}
 
         $sql = "INSERT INTO clients ( name,address,postcode,latitude,longitude,phone,email,notes,created_by,updated_by) values (:name,:address,:postcode,:latitude,:longitude,:phone,:email,:notes,:user_id,:user_id)";
@@ -31,8 +34,8 @@ class Client{
         if( $stmt->execute(['name'=>$this->name
         	,'address'=>$this->address
         	,'postcode'=>$this->postcode
-        	,'latitude'=>($latitude==-1) ? null:$latitude
-        	,'longitude'=>($latitude==-1) ? null:$longitude
+        	,'latitude'=>($this->latitude==-1) ? null:$this->latitude
+        	,'longitude'=>($this->latitude==-1) ? null:$this->longitude
         	,'phone'=>$this->phone
         	,'email'=>$this->email
         	,'notes'=>$this->notes
@@ -46,8 +49,7 @@ class Client{
 
             $sql = "INSERT INTO client_links ( client_id,link_id,link_type,created_by,updated_by) values (:client_id,:organization_id,'ORG',:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
-			$stmt->execute(['client_id'=>$this->id,'organization_id'=>$_SESSION["organization_id"],'user_id'=>$_SESSION['id']
-]);
+			$stmt->execute(['client_id'=>$this->id,'organization_id'=>$_SESSION["organization_id"],'user_id'=>$_SESSION['id']]);
 
             return $this->id;
         } else {
@@ -69,6 +71,13 @@ class Client{
         }
     }
 
+	public function forceRead($id){
+		$this->force_read=true;
+		$this->id=$id;
+		$this->read();
+	}
+
+
     public function read(){
         $stmt=$this->readOne($this->id);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -83,7 +92,7 @@ class Client{
    }
 
     public function readOne($id){
-        if(is_admin()){
+        if(is_admin()||$this->force_read==true){
         	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes from clients c where c.id=:id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$id]);
@@ -142,6 +151,140 @@ class Client{
 		} else {
 			return false;
 		}
-
     }
+
+	/* find an array of duplicates. Optionally pass in a single id and organization_id to find a single duplicate */
+    public function duplicateCheck($id=-1,$organization_id=-1){
+    	if(!isset($this->id)){
+    		$this->id=-1;
+    	}
+    	if(!isset($this->name)){
+    		$this->name="";
+    	}
+    	if(!isset($this->address)){
+    		$this->address="";
+    	}
+    	if(!isset($this->postcode)){
+    		$this->postcode="";
+    	}
+    	if(!isset($this->phone)){
+    		$this->phone="";
+    	}
+    	if(!isset($this->email)){
+    		$this->email="";
+    	}
+    	$query = "SELECT c.id,c.name,c.address,c.postcode,c.phone,c.email,l.link_id as organization_id, o.name as organization_name from clients c, client_links l, organizations o where c.id=l.client_id and l.link_type='ORG' and l.link_id=o.id and (lower(c.name)=:name or lower(c.address)=:address or lower(c.postcode)=:postcode or replace(c.phone,' ','') = :phone or lower(c.email)=:email) and c.id!=:id";
+
+		if($id!=-1){
+			$query=$query." and c.id=:client_id and o.id=:organization_id";
+		    $stmt = $this->connection->prepare($query);
+		    $stmt->execute(['client_id'=>$id,'organization_id'=>$organization_id, 'id'=>$this->id,'name'=>strtolower($this->name),'address'=>strtolower($this->address),'postcode'=>strtolower($this->postcode),'phone'=>str_replace(" ","",$this->phone),'email'=>strtolower($this->email)]);
+		} else {
+	    	$stmt = $this->connection->prepare($query);
+		    $stmt->execute(['id'=>$this->id,'name'=>strtolower($this->name),'address'=>strtolower($this->address),'postcode'=>strtolower($this->postcode),'phone'=>str_replace(" ","",$this->phone),'email'=>strtolower($this->email)]);
+		}
+		if( $stmt->rowCount()==0){
+	    	return false;
+	    }
+	    $matchedPeople=[];
+	    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+	    	$matchScore=0;
+	    	$matchArray=new stdClass();
+	    	$matchArray->id=$row['id'];
+	    	$matchArray->organization_id=$row['organization_id'];
+	    	$matchArray->organization_name=$row['organization_name'];
+	    	if(strtolower($row['name'])==strtolower($this->name)){
+	    		if($row['name']==""){
+	    			$matchArray->name="Not Set";
+				} else {
+		    		$matchScore=$matchScore+10;
+	    			$matchArray->name="Match";
+	    		}
+	    	} else {
+	    		$matchArray->name="No Match";
+	    	}
+	    	if(strtolower($row['address'])==strtolower($this->address)){
+	    		if($row['address']==""){
+	    			$matchArray->address="Not Set";
+				} else {
+		    		$matchScore=$matchScore+5;
+		    		$matchArray->address="Match";
+		    	}
+	    	}	else {
+	    		$matchArray->address="No Match";
+	    	}
+	    	if(strtolower($row['postcode'])==strtolower($this->postcode)){
+	    		if($row['postcode']==""){
+	    			$matchArray->postcode="Not Set";
+				} else {
+		    		$matchScore=$matchScore+5;
+		    		$matchArray->postcode="Match";
+		    	}
+	    	}	else {
+	    		$matchArray->postcode="No Match";
+	    	}
+	    	if(strtolower($row['email'])==strtolower($this->email)){
+	    		if($row['email']==""){
+	    			$matchArray->email="Not Set";
+				} else {
+		    		$matchScore=$matchScore+10;
+		    		$matchArray->email="Match";
+		    	}
+	    	}	else {
+	    		$matchArray->email="No Match";
+	    	}
+	    	if(str_replace(" ","",$row['phone'])==str_replace(" ","",$this->phone)){
+	    		if($row['phone']==""){
+	    			$matchArray->phone="Not Set";
+				} else {
+		    		$matchScore=$matchScore+5;
+	    			$matchArray->phone="Match";
+	    		}
+	    	}else {
+	    		$matchArray->phone="No Match";
+	    	}
+	    	if($matchScore>=10){
+	    		array_push($matchedPeople,$matchArray);
+	    	}
+	    }
+	    return $matchedPeople;
+	}
+
+	public function requestAccess($id,$organization_id,$notes){
+		global $site_address;
+		$matchedPeople=$this->duplicateCheck($id,$organization_id);
+		if($matchedPeople){
+			if(count($matchedPeople)!=1){
+				return false;
+			} else {
+
+
+				$shareRequest = new ClientShareRequest($this->connection);
+				$shareRequest->organization_id=$organization_id;
+				$shareRequest->requesting_organization_id=$_SESSION["organization_id"];
+				$shareRequest->client_id=$id;
+				$shareRequest->notes=$notes;
+				$shareRequest->create();
+
+				$matchedClient=new Client($this->connection);
+				$matchedClient->forceRead($id);
+
+			    $user_organization = new UserOrganization($this->connection);
+			    $stmt=$user_organization->readAllClientShareApprovers($organization_id);
+
+            	$messageSubject=get_string("client_share_subject",array("%CLIENT_NAME%"=>$matchedClient->name));
+            	$messageString=get_string("client_share_body",array("%SOURCE_ORGANISATION%"=>$_SESSION["organization_name"],"%CLIENT_NAME%"=>$matchedClient->name,"%LINK%"=>$site_address."/ui/index.html?root=requests"));
+			    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+			    	sendHtmlMail($row['email'],$messageSubject,$messageString);
+			    }
+
+			    return true;
+
+			}
+
+		} else {
+			return false;
+		}
+	}
+
 }

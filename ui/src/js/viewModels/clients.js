@@ -51,6 +51,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offerTypesCategorySelected = ko.observable("");
                     self.disableNeedSaveButton = ko.observable(true);
 
+					this.duplicatesColumns = ko.observableArray([{ headerText: '',field: 'field' }]);
+					this.duplicatesDataProvider = ko.observable(new ArrayDataProvider([{field:"Organization"},{field:"Name"}],{ keyAttributes: 'field' }));
+
                     self.selectedRowDisplay = ko.observable("clientNeeds");
                     self.addClientButtonSelected = ko.observableArray([]);
                     self.clientRowSelected = ko.observableArray();
@@ -131,6 +134,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             );
                         };
 
+
                         self.handleOfferTypesCategoryChanged = function(event) {
                             if (event.target.value !== "") {
                                 _getOfferTypesFromCategoryAjax(event.target.value);
@@ -169,7 +173,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     var addNeedDialogLogic = function() {
                         self.dateNeededConvertor = ko.observable("");
                         self.needNotesUpdateVal = ko.observable("");
-                        
+
                         self.addNeedButton = function () {
                             document.getElementById('addNeedDialog').open();
                         };
@@ -192,8 +196,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     }
                                 )
                             );
-                        };                        
-                        
+                        };
+
                         self.closeAddNeedModalButton = function (event) {
                             //inital disable
                             self.disableSelectEditType(true);
@@ -206,11 +210,65 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         };
                     }();
 
+					var duplicateCheckDialogLogic = function() {
+
+					}();
+
+
+
                     var postData = function() {
                         self.fileContentPosted = ko.observable(true);
                         self.postText = ko.observable();
                         self.postTextColor = ko.observable();
                         self.disableSaveButton = ko.observable(false);
+
+						self.closeDuplicateCheckModalButton = function (event) {
+							//inital disable
+							self.disableNeedSaveButton(true);
+							document.getElementById('duplicatesDialog').close();
+						};
+						self.forceSaveDuplicateCheckModalButton = function (event) {
+							console.log("saving");
+							saveClient();
+							self.disableNeedSaveButton(true);
+							document.getElementById('duplicatesDialog').close();
+						};
+
+						var saveClient = function () {
+
+							postAddress = restUtils.constructUrl(restUtils.EntityUrl.CLIENTS);
+							responseJson = {
+								id: self.clientRowSelected().length ? self.clientSelected().id : null,
+								name: $('#inputEditName')[0].value,
+								address: $('#textareaEditAddress')[0].value,
+								postcode: $('#inputEditPostcode')[0].value,
+								phone: $('#inputEditPhone')[0].value,
+								email: $('#inputEditEmail')[0].value,
+								notes: $('#textareaEditClientNotes')[0].value
+							};
+
+							return $.when(restClient.doPost(postAddress, responseJson)
+							.then(
+								success = function (response) {
+									self.postTextColor("green");
+										self.postText("You have succesfully saved the client.");
+										console.log("client data posted");
+										//update clientsTable
+										self.getClientsAjax();
+								},
+								error = function (response) {
+									self.postTextColor("red");
+										self.postText("Error: Client not saved.");
+										console.log("client data not posted");
+							}).then(function () {
+								self.fileContentPosted(true);
+								$(".postMessage").css('display', 'inline-block').fadeOut(2000, function(){
+									self.disableSaveButton(false);
+								});
+							})
+							);
+						}
+
                         self.saveButton = function (event) {
                             //locale "en-GB" - change UTC to YYYY-MM-DD
                             _formatDate = function(inputDate) {
@@ -224,7 +282,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                             var postAddress;
                             var responseJson;
                             if (event.target.id === "saveButton") {
-                                postAddress = restUtils.constructUrl(restUtils.EntityUrl.CLIENTS);
                                 responseJson = {
                                     id: self.clientRowSelected().length ? self.clientSelected().id : null,
                                     name: $('#inputEditName')[0].value,
@@ -234,6 +291,69 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     email: $('#inputEditEmail')[0].value,
                                     notes: $('#textareaEditClientNotes')[0].value
                                 };
+								self.fileContentPosted(false);
+								self.disableSaveButton(true);
+								//POST /rest/clients - REST
+
+
+								if(responseJson.id==null){
+
+									// new client, so do a duplicate check
+									return $.when(restClient.doPostJson("/rest/clients/duplicate_check", responseJson)
+									.then(
+										success = function (data, status, xhr) {
+											if(data.count==0){
+												saveClient();
+											} else {
+												self.postTextColor("red");
+												self.postText("duplicates.");
+												console.log("client data not posted - duplicates found");
+												document.getElementById('duplicatesDialog').open();
+												var header=[{ headerText: '',field: 'field' }];
+												var nameRow= new Object();
+												nameRow.field="Name: "+$('#inputEditName')[0].value;
+												var addressRow= new Object();
+												addressRow.field="Address: "+($('#textareaEditAddress')[0].value).split('\n')[0];
+												var postcodeRow= new Object();
+												postcodeRow.field="Postcode: "+$('#inputEditPostcode')[0].value;
+												var emailRow= new Object();
+												emailRow.field="Email: "+$('#inputEditEmail')[0].value;
+												var phoneRow= new Object();
+												phoneRow.field="Phone: "+$('#inputEditPhone')[0].value;
+												var buttonRow= new Object();
+												buttonRow.field="";
+												data.duplicates.forEach(function(duplicate){
+													header.push({ headerText: duplicate.organization_name,field: duplicate.organization_name, footerTemplate:'requestFooterTemplate' });
+													nameRow[duplicate.organization_name]= duplicate.name;
+													addressRow[duplicate.organization_name]= duplicate.address;
+													postcodeRow[duplicate.organization_name]= duplicate.postcode;
+													emailRow[duplicate.organization_name]= duplicate.email;
+													phoneRow[duplicate.organization_name]= duplicate.phone;
+													buttonRow[duplicate.organization_name]= "BUTTON:"+duplicate.id+":"+duplicate.organization_id;
+												});
+
+												self.duplicatesColumns (header);
+
+
+												self.duplicatesDataProvider(new ArrayDataProvider([nameRow,addressRow,postcodeRow,emailRow,phoneRow,buttonRow],{ keyAttributes: 'field' }));
+
+
+												self.disableSaveButton(false);
+												self.fileContentPosted(true);
+
+											}
+										},
+										error = function (response) {
+											self.postTextColor("red");
+												self.postText("Error: Client not saved.");
+												console.log("client data not posted");
+										}
+									)
+									);
+								} else {
+									saveClient();
+								}
+
                             } else if (event.target.id === "editNeedSaveButton")  {
                                 postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${self.clientSelected().id}/client_needs`;
                                 responseJson = {
@@ -241,49 +361,35 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     date_needed: _formatDate($('#datepickerEditNeedDateNeeded')[0].value),
                                     notes: $('#textareaEditNeedNotes')[0].value
                                 };
+								self.fileContentPosted(false);
+								self.disableSaveButton(true);
+								//POST /rest/need_requests - REST
+								return $.when(restClient.doPost(postAddress, responseJson)
+									.then(
+										success = function (response) {
+											self.postTextColor("green");
+												self.postText("You have succesfully saved the need.");
+												console.log("need data posted");
+												//update clientNeedsTable
+												self.getClientNeedsAjax(self.clientSelected().id);
+										},
+										error = function (response) {
+											self.postTextColor("red");
+												self.postText("Error: Need not saved.");
+												console.log("need data not posted");
+
+									}).then(function () {
+										self.fileContentPosted(true);
+										$(".postMessage").css('display', 'inline-block').fadeOut(2000, function(){
+											self.disableSaveButton(false);
+										});
+									}).then(function () {
+										self.closeAddNeedModalButton();
+										console.log(responseJson);
+									})
+								);
                             };
 
-                            self.fileContentPosted(false);
-                            self.disableSaveButton(true);
-                            //POST /rest/clients - REST, or
-                            //POST /rest/need_requests - REST
-                            return $.when(restClient.doPost(postAddress, responseJson)
-                                .then(
-                                    success = function (response) {
-                                        self.postTextColor("green");
-                                        if (event.target.id === "saveButton") {
-                                            self.postText("You have succesfully saved the client.");
-                                            console.log("client data posted");
-                                            //update clientsTable
-                                            self.getClientsAjax();
-                                        } else if (event.target.id === "editNeedSaveButton")  {
-                                            self.postText("You have succesfully saved the need.");
-                                            console.log("need data posted");
-                                            //update clientNeedsTable
-                                            self.getClientNeedsAjax(self.clientSelected().id);
-                                        };
-                                    },
-                                    error = function (response) {
-                                        self.postTextColor("red");
-                                        if (event.target.id === "saveButton") {
-                                            self.postText("Error: Client not saved.");
-                                            console.log("client data not posted");
-                                        } else if (event.target.id === "editNeedSaveButton")  {
-                                            self.postText("Error: Need not saved.");
-                                            console.log("need data not posted");
-                                        };
-                                }).then(function () {
-                                    self.fileContentPosted(true);
-                                    $(".postMessage").css('display', 'inline-block').fadeOut(2000, function(){
-                                        self.disableSaveButton(false);
-                                    });
-                                }).then(function () {
-                                    if (event.target.id === "editNeedSaveButton")  {
-                                        self.closeAddNeedModalButton();
-                                    };
-                                    console.log(responseJson);
-                                })
-                            );
                         };
                     }();
 

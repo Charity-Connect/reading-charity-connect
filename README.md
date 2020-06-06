@@ -95,6 +95,7 @@ Clients record an individual or an organization who may have needs, and exist fo
 
 /rest/clients - GET to get a list of all clients for your organization, POST to create or update  
 /rest/clients/{client id} - GET a single client  
+/rest/clients/duplicate_check - POST a single client to get a list of potential matches across all organizations, based on name, address, phone, postcode and e-mail
 
 #### Attributes
 - name  

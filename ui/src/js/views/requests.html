@@ -121,7 +121,97 @@
                 </div>
             </div>
 
-            <oj-bind-if test="[[showPanel()]]">
+			<oj-bind-if test="[[showSharePanel()]]">
+				<div class="oj-panel oj-panel-alt2">
+					<div class="oj-flex sm-1x-row">
+						<div class="oj-sm-padding-1x-horizontal oj-flex-item">
+							<h3>View share request</h3>
+						</div>
+						<div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+							<div class="oj-helper-clearfix">
+								<oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Approved']]">
+									<oj-buttonset-many id="approvedOptions" class="hide-buttons oj-sm-float-end"
+										disabled="[[disableOptionButtons]]"
+										value="{{selectedDecisionDisplay}}"
+										on-value-changed="[[handleSelectedDecisionChanged]]">
+										<oj-option value="decisionRevoke">Revoke Share</oj-option>
+									</oj-buttonset-many>
+								</oj-bind-if>
+								<oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Rejected']]">
+									<oj-buttonset-many id="rejectedOptions" class="hide-buttons oj-sm-float-end"
+										disabled="[[disableOptionButtons]]"
+										value="{{selectedDecisionDisplay}}"
+										on-value-changed="[[handleSelectedDecisionChanged]]">
+										<oj-option value="decisionShare">Share Client Details</oj-option>
+									</oj-buttonset-many>
+								</oj-bind-if>
+								<oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Open']]">
+									<oj-buttonset-many id="openOptions" class="hide-buttons oj-sm-float-end"
+										disabled="[[disableOptionButtons]]"
+										value="{{selectedDecisionDisplay}}"
+										on-value-changed="[[handleSelectedDecisionChanged]]">
+										<oj-option value="decisionShare">Share Client Details</oj-option>
+									</oj-buttonset-many>
+								</oj-bind-if>
+							</div>
+						</div>
+					</div>
+					<div id="statusBar" class="oj-flex-bar sm-1x-row">
+						<div class="oj-sm-padding-1x-horizontal oj-flex-item">
+							 <span>Status:
+								<strong>
+									<span :style.color="[[requestSelected().styleState]]">
+										<oj-bind-text value="[[requestSelected().requestSelectedDecision]]"></oj-bind-text>
+								   </span>
+								</strong>
+							</span>
+						 </div>
+						<div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column">
+							<oj-bind-if test="[[fileContentPosted() !== true]]">
+								<span class="oj-helper-text-align-right">Posting...</span>
+								<oj-progress id="progressBar" value="-1"></oj-progress>
+							</oj-bind-if>
+							<oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide"
+								:style.color="[[postTextColor]]">
+								<oj-bind-text value='[[postText]]'></oj-bind-text>
+							</oj-label>
+						 </div>
+					 </div>
+					<hr />
+					<div class="oj-flex sm-1x-row">
+						<div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+							<oj-label id="editNameLabel"><strong>Client:</strong></oj-label>
+							<oj-bind-text value="[[requestSelected().client_name]]"></oj-bind-text>
+							<oj-bind-if test="[[requestSelected().client_address != null]]">
+								<br/>
+								<oj-bind-text value="[[requestSelected().client_address]]"></oj-bind-text>
+							</oj-bind-if>
+							<oj-bind-if test="[[requestSelected().client_postcode != null]]">
+								<br/>
+								<oj-bind-text value="[[requestSelected().client_postcode]]"></oj-bind-text>
+							</oj-bind-if>
+						</div>
+						<div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+							<oj-label id="editOrganizationLabel"><strong>Requesting Organization:</strong></oj-label>
+							<oj-bind-text value="[[requestSelected().source_organization_name]]"></oj-bind-text>
+						</div>
+					</div>
+
+					<hr />
+					<oj-label id="editNeedNotesLabel"><strong>Comments from Requestor:</strong></oj-label>
+					<oj-bind-if test="[[requestSelected().need_notes != null]]">
+						<oj-bind-text value="[[requestSelected().need_notes]]"></oj-bind-text>
+					</oj-bind-if>
+					<oj-bind-if test="[[requestSelected().need_notes == null]]">
+						None
+					</oj-bind-if>
+
+				</div>
+            </oj-bind-if>
+
+
+
+            <oj-bind-if test="[[showNeedPanel()]]">
                 <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
                         <div class="oj-sm-padding-1x-horizontal oj-flex-item">
@@ -207,9 +297,9 @@
                              <span>Status:
                                 <strong>
                                     <span :style.color="[[requestSelected().styleState]]">
-                                        <oj-bind-text value="[[requestSelected().requestSelectedDecision]]"></oj-bind-text>                                        
+                                        <oj-bind-text value="[[requestSelected().requestSelectedDecision]]"></oj-bind-text>
                                    </span>
-                                </strong> 
+                                </strong>
                             </span>
                          </div>
                         <div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column">

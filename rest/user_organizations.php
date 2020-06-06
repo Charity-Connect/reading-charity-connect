@@ -19,6 +19,9 @@ if(isset($data)) {
     $user_organization->admin = $data['admin'];
     $user_organization->user_approver = $data['user_approver'];
     $user_organization->need_approver = $data['need_approver'];
+    $user_organization->manage_offers = $data['manage_offers'];
+    $user_organization->manage_clients = $data['manage_clients'];
+    $user_organization->client_share_approver = $data['client_share_approver'];
     if(isset($data['confirmed'])){
     	$user_organization->confirmed = $data['confirmed'];
     }
@@ -43,7 +46,10 @@ if(isset($data)) {
                     "user_id" => $user_organization->user_id,
                     "admin" => $user_organization->admin,
                     "user_approver" => $user_organization->user_approver,
-                    "need_approver" => $user_organization->need_approver
+                    "need_approver" => $user_organization->need_approver,
+                    "manage_offers" => $user_organization->manage_offers,
+                    "manage_clients" => $user_organization->manage_clients,
+                    "client_share_approver" => $user_organization->client_share_approver
                     );
             echo json_encode($user_organization_arr);
 
@@ -92,6 +98,9 @@ if(isset($data)) {
                 "admin" => $admin,
                 "user_approver" => $user_approver,
                 "need_approver" => $need_approver,
+                "manage_offers" => $manage_offers,
+                "manage_clients" => $manage_clients,
+                "client_share_approver" => $client_share_approver,
                 "confirmed" => $confirmed
                 );
 
@@ -128,6 +137,9 @@ if(isset($data)) {
                 "admin" => $admin,
                 "user_approver" => $user_approver,
                 "need_approver" => $need_approver,
+                "manage_offers" => $manage_offers,
+                "manage_clients" => $manage_clients,
+                "client_share_approver" => $client_share_approver,
                 "confirmed" => $confirmed
                 );
 
@@ -163,6 +175,9 @@ if(isset($data)) {
                 "admin" => $admin,
                 "user_approver" => $user_approver,
                 "need_approver" => $need_approver,
+                "manage_offers" => $manage_offers,
+                "manage_clients" => $manage_clients,
+                "client_share_approver" => $client_share_approver,
                 "confirmed" => $confirmed
                 );
 

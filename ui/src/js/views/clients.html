@@ -69,6 +69,89 @@
             </oj-bind-if>
 
             <oj-bind-if test="[[showPanel()]]">
+
+                                        <oj-dialog style="display:none; width:80%" id="duplicatesDialog" dialog-title="Duplicates found" >
+			                                <div slot="body">
+			                                          <oj-table id="duplicatesTable"
+											                    aria-label="Duplicate Clients Table"
+											                    data="[[duplicatesDataProvider]]"
+											                    columns-default="[[{'sortable': 'disabled'}]]"
+											                    columns="[[duplicatesColumns]]">
+															<template slot="cellTemplate" data-oj-as="cell">
+															  <oj-bind-if test="[[cell.data === 'Match']]">
+																   <span style="color:green"><oj-bind-text value="[[cell.data]]"></oj-bind-text></span>
+																</oj-bind-if>
+															  <oj-bind-if test="[[cell.data === 'No Match']]">
+																   <span style="color:red"><oj-bind-text value="[[cell.data]]"></oj-bind-text></span>
+																</oj-bind-if>
+															  <oj-bind-if test="[[cell.data.startsWith('BUTTON')]]">
+															  <span :id="[[cell.data.substring(7)]]">
+															  <a href="#" onClick="
+															  var id=this.parentNode.id.split(':')[0];
+															  var organization_id=this.parentNode.id.split(':')[1];
+															  responseJson = {
+                                    id: id,
+                                    organization_id: organization_id,
+                                    name: $('#inputEditName')[0].value,
+                                    address: $('#textareaEditAddress')[0].value,
+                                    postcode: $('#inputEditPostcode')[0].value,
+                                    phone: $('#inputEditPhone')[0].value,
+                                    email: $('#inputEditEmail')[0].value,
+                                    notes: $('#textareaEditClientNotes')[0].value
+                                };
+
+								$.ajax({type: 'POST'
+								,url:`/rest/clients/duplicate_request`
+								,data:JSON.stringify(responseJson)
+								,contentType: 'application/json'
+								,dataType: 'json'
+								,success:function(data){
+									document.getElementById('duplicatesDialog').close();
+								}
+								});
+
+                                console.log(responseJson);
+
+															      return false;
+																">click here</a>
+															  </span>
+																</oj-bind-if>
+															  <oj-bind-if test="[[cell.data != 'Match'&&cell.data != 'No Match' &&!cell.data.startsWith('BUTTON')]]">
+																   <span><oj-bind-text value="[[cell.data]]"></oj-bind-text></span>
+																</oj-bind-if>
+															</template>
+
+											          </oj-table>
+
+			                                </div>
+			                                <div slot="footer">
+												<div class="oj-flex-bar sm-1x-row">
+													<div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
+														<oj-bind-if test="[[fileContentPosted() !== true]]">
+															<span class="oj-helper-text-align-right">Posting...</span>
+															<oj-progress id="progressBar" value="-1"></oj-progress>
+														</oj-bind-if>
+														<oj-label class="postMessage oj-helper-text-align-right oj-sm-hide" for="saveButton"
+															:style.color="[[postTextColor]]">
+															<oj-bind-text value='[[postText]]'></oj-bind-text>
+														</oj-label>
+													</div>
+													<div class="oj-sm-padding-1x-horizontal oj-flex">
+														<oj-button id="editNeedCancelButton"
+															on-oj-action="[[closeDuplicateCheckModalButton]]">
+															<span>Cancel</span>
+														</oj-button>
+													</div>
+													<div class="oj-sm-padding-1x-horizontal oj-flex">
+														<oj-button id="editNeedSaveButton" on-oj-action='[[forceSaveDuplicateCheckModalButton]]'>
+															<span>Save anyway</span>
+														</oj-button>
+													</div>
+												</div>
+			                                </div>
+			                            </oj-dialog>
+
+
                 <oj-bind-if test="[[selectedRowDisplay() === 'clientFormFields']]">
                     <div class="oj-panel oj-panel-alt2">
                         <oj-bind-if test="[[addClientButtonSelected().length]]">

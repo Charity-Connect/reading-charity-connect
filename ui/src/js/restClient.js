@@ -30,6 +30,24 @@ define(['jquery', 'utils'],
             });
         };
 
+        doPostJson = function(url, dataObject) {
+            return new Promise(function (resolve, reject) {
+                $.ajax({ type: "POST",
+                    contentType: "application/json",
+                    url: url,
+					dataType: "json",
+                    data : JSON.stringify(dataObject),
+                    success: function (data, status, xhr) {
+                        resolve(data, status, xhr);
+                    },
+                    error: function (event) {
+                        console.error("Error occured in REST client, when sending POST to url: " + url);
+                        utils.showErrorMessage("REST post failed", url);
+                        reject(event);
+                    }
+                });
+            });
+        };
         /**
          * Method provides asynchronous HTTP GET request to given URL.
          * parameters:
@@ -73,6 +91,7 @@ define(['jquery', 'utils'],
 
         return {
             doPost: doPost,
+            doPostJson: doPostJson,
             doGet: doGet,
             doGetJson: doGetJson
         };
