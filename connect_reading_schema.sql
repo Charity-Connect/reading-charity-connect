@@ -71,6 +71,25 @@ CREATE TABLE `client_needs` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `client_share_requests`
+--
+
+CREATE TABLE `client_share_requests` (
+  `id` int(11) NOT NULL,
+  `organization_id` int(11) NOT NULL,
+  `requesting_organization_id` int(11) NOT NULL,
+  `client_id` int(11) NOT NULL,
+  `notes` varchar(2000) DEFAULT NULL,
+  `approved` char(1) DEFAULT NULL,
+  `creation_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` int(11) NOT NULL,
+  `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `need_requests`
 --
 
@@ -182,6 +201,22 @@ CREATE TABLE `strings` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `strings`
+--
+
+REPLACE INTO `strings` (`code`, `string`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+('new_org_user_confirmation', '<p>A new user has registered for your organization on RDG Connect;</p>\r\n<p>Name: %NAME%</p>\r\n<p>Email: %EMAIL%</p>\r\n<p>If you want to add this user to your organization, click <a href=\"%LINK%\">here</a>. If you do not recognize this user, simply ignore this e-mail.</p> ', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('new_org_user_subject', 'New User Registered at RDG Connect', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('new_user_confirmation', '<p>%NAME%,</p>\r\n\r\n<p>welcome to RDG Connect. To confirm your account, click <a href=\"%LINK%\">here</a>. If you did not sign up for an account, please ignore this e-mail.</p>', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('new_user_subject', 'Please confirm your account', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('password_reset_subject', 'RDG Connect Password Reset', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('password_reset_body', '<p>To reset your password at RDG Connect, click on the following link.</p>\r\n<p><a href=\"%LINK%\">%LINK%</a></p>\r\n<p>If you did not request to reset your password, ignore this e-mail.</p>', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('need_request_subject', 'Request for help from RDG Connect', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('need_request_body', '<p>%USER_NAME%,</p>\r\n<p>A request has come in from %SOURCE_ORG_NAME% to help %CLIENT_NAME%, which we believe %TARGET_ORG_NAME% can provide. The details of the request are;</p>\r\n<p>Name: %CLIENT_NAME%<br/>\r\nAddress:<br/>\r\n%CLIENT_ADDRESS%<br/>\r\n%CLIENT_POSTCODE%<br>\r\n<br/>\r\nRequest Type:%REQUEST_TYPE%<br/>\r\nDate Needed:%DATE_NEEDED%<br/>\r\nNotes:<br/>\r\n%NOTES%</p>\r\n<p>If you can confirm that you can provide this, please click here;</p>\r\n<p><a href=\"%LINK%\">%LINK%</a></p>\r\n<p>Thanks for your help</p>', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('client_share_subject', 'Reading Charity Connect Client Share Request (%CLIENT_NAME%)', '2020-06-06 22:04:23', NULL, '2020-06-06 22:04:23', NULL),
+('client_share_body', '<p>Another Reading Charity Connect organisation, %SOURCE_ORGANISATION%, has requested permission to jointly manage one of your clients. %CLIENT_NAME%. This helps to makes sure that different organisations don\'t create duplicate requests for help for %CLIENT_NAME%, and allows them to have a full picture of their support. However, it does allow them to view and manage the name, address, phone number, e-mail address and notes about %CLIENT_NAME%, so you should only share the information if you are happy that it is appropriate.</p>\r\n\r\n<p>Visit <a href=\"%LINK%\">%LINK%</a> to accept or reject this request.</p>', '2020-06-06 22:04:23', NULL, '2020-06-06 22:04:23', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -231,6 +266,9 @@ CREATE TABLE `user_organizations` (
   `admin` char(1) NOT NULL DEFAULT 'N',
   `user_approver` char(1) NOT NULL DEFAULT 'N',
   `need_approver` char(1) NOT NULL DEFAULT 'N',
+  `manage_offers` char(1) NOT NULL DEFAULT 'Y',
+  `manage_clients` char(1) NOT NULL DEFAULT 'Y',
+  `client_share_approver` char(1) NOT NULL DEFAULT 'N',
   `confirmed` char(1) NOT NULL DEFAULT 'N',
   `confirmation_string` varchar(60) NOT NULL,
   `creation_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -270,6 +308,7 @@ ALTER TABLE `clients`
 --
 ALTER TABLE `client_links`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_link` (`link_id`,`link_type`,`client_id`),
   ADD KEY `client_id` (`client_id`);
 
 --
@@ -278,6 +317,12 @@ ALTER TABLE `client_links`
 ALTER TABLE `client_needs`
   ADD PRIMARY KEY (`id`),
   ADD KEY `client_id` (`client_id`);
+
+--
+-- Indexes for table `client_share_requests`
+--
+ALTER TABLE `client_share_requests`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `need_requests`
@@ -363,6 +408,12 @@ ALTER TABLE `client_links`
 -- AUTO_INCREMENT for table `client_needs`
 --
 ALTER TABLE `client_needs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `client_share_requests`
+--
+ALTER TABLE `client_share_requests`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
