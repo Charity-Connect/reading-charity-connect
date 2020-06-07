@@ -194,12 +194,14 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 	  $_SESSION["display_name"] = $session_user['email'];
 	}
 	$_SESSION["organization_id"]=0;
-	$sql = "SELECT organization_id FROM user_organizations WHERE user_id=:id and confirmed='Y' order by organization_id";
+	$_SESSION["organization_name"]="No Confirmed Organizations";
+	$sql = "SELECT uo.organization_id,org.name FROM user_organizations uo, organizations org WHERE uo.user_id=:id and uo.confirmed='Y' and uo.organization_id=org.id order by organization_id";
 	$stmt= $connection->prepare($sql);
 	$stmt->execute(['id'=>$id]);
 	if($stmt->rowCount() >0){
 		if($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 			$_SESSION["organization_id"] = $row['organization_id'];
+			$_SESSION["organization_name"]=$row['name'];
 		}
 	}
 }
@@ -216,6 +218,7 @@ function set_current_organizaton($organization_id){
         $org_id= $row['organization_id'];
         if($org_id==$organization_id){
   			$_SESSION["organization_id"] = $organization_id;
+  			$_SESSION["organization_name"] = $row['name'];
   			return $row['name'];
   		}
   	}

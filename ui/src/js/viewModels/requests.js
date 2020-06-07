@@ -62,10 +62,21 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     self.offerTypeSelected = ko.observable("");
                     self.targetDateConvertor = ko.observable("");
                     self.dateNeededConvertor = ko.observable("");
-                    self.showPanel = ko.computed(function () {
+                    self.showNeedPanel = ko.computed(function () {
                         if (self.requestRowSelected().length) {
-                            self.selectedDecisionDisplay([]);
-                            return true;
+							if(self.requestSelected().type!="share"){
+                            	self.selectedDecisionDisplay([]);
+                            	return true;
+							}
+                        }
+                    }, this);
+
+                    self.showSharePanel = ko.computed(function () {
+                        if (self.requestRowSelected().length) {
+							if(self.requestSelected().type=="share"){
+                            	self.selectedDecisionDisplay([]);
+                            	return true;
+							}
                         }
                     }, this);
 
@@ -101,6 +112,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                         };
 
                         self.handleRequestRowChanged = function (event) {
+
                             if (event.detail.value[0] !== undefined) {
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray){
@@ -117,6 +129,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 }
                                 console.log(self.requestSelected());
 
+                                if(self.requestSelected().type!="share"){
+
                                 _getOfferCategoryFromTypeAjax = function(code) {
                                     self.offerTypesCategorySelected("");
                                     //GET /rest/offer_types/{code} - REST
@@ -132,6 +146,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     );
                                 };
                                 _getOfferCategoryFromTypeAjax(self.requestSelected().type);
+
+							}
 
                                 if (self.requestSelected().requestTargetDateRaw) {
                                     self.targetDateConvertor(new Date(self.requestSelected().requestTargetDateRaw).toISOString());
@@ -214,6 +230,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     } else if (self.selectedDecisionDisplay()[0] === 'decisionCancel') {
                                         self.agreedStatus("N");
                                         self.saveButton();
+                                    }else if (self.selectedDecisionDisplay()[0] === 'decisionRevoke') {
+                                        self.agreedStatus("N");
+                                        self.saveShareButton();
+                                    }else if (self.selectedDecisionDisplay()[0] === 'decisionShare') {
+                                        self.agreedStatus("Y");
+                                        self.saveShareButton();
                                     };
                                 };
 
@@ -256,7 +278,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 self.requestNotesUpdateVal(self.requestSelected().request_response_notes);
                             } else if (event.target.id === "saveButton") {
                                 self.agreedStatus("Y");
-                                self.saveButton();                                
+                                self.saveButton();
                             }
                             document.getElementById('agreeDialog').close();
                         };
@@ -313,6 +335,44 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                 })
                             );
                         };
+
+						self.saveShareButton = function () {
+
+							var responseJson = {
+								approved: self.agreedStatus() !== null ? self.agreedStatus() : self.requestSelected().agreed,
+								id: self.requestSelected().id.substring(1)
+							};
+
+							self.fileContentPosted(false);
+							self.disableOptionButtons(true);
+							//POST /rest/need_requests - REST
+							return $.when(restClient.doPost('/rest/client_share_requests', responseJson)
+								.then(
+									success = function (response) {
+										self.postText("You have succesfully saved the share request.");
+										self.postTextColor("green");
+										console.log("data posted");
+
+										//update requestsTable
+										self.selectedDecisionFilterDisplay('decisionFilterAll');
+										self.getRequestsAjax("updatePanel");
+									},
+									error = function (response) {
+										self.postText("Error: Request not saved.");
+										self.postTextColor("red");
+										console.log("data not posted");
+								}).then(function () {
+									self.fileContentPosted(true);
+									$("#postMessage").css('display', 'inline-block').fadeOut(2000, function(){
+										self.disableOptionButtons(false);
+									});
+								}).then(function () {
+									console.log(responseJson);
+								})
+							);
+                        };
+
+
                     }();
 
                     var getData = function () {
@@ -379,12 +439,58 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                             });
                                         });
 
-                                        self.requestsValid(true);
+
                                     },
                                     error = function (response) {
                                         console.log("Requests not loaded");
                                         self.requestsValid(false);
-                                }).then(function () {
+                                }).then(function(){
+ 									$.when(restClient.doGet("/rest/client_share_requests")
+										    .then(
+												success = function (response) {
+													if(response.count>0){
+													console.log(response.client_share_request);
+													$.each(response.client_share_request, function(index, item) {
+														var decisionString = "";
+														var styleState = "";
+														if (this.approved === "Y") {
+															decisionString = "Approved";
+															styleState = "#18BE94"; //green
+														} else if (this.approved === "N") {
+															decisionString = "Rejected";
+															styleState = "#E96D76"; //red
+														} else {
+															decisionString = "Open";
+														};
+														self.requestsValues().push({
+														requestTargetDateRaw: null,
+														requestTargetDate: null,
+														requestDateNeededRaw: new Date(),
+														requestDateNeeded: (new Date()).toLocaleDateString(),
+														requestSelectedDecision: decisionString,
+														styleState: styleState,
+														agreed: this.agreed,
+														complete: this.complete,
+														client_name: this.client_name,
+														client_need_id: null,
+														client_postcode: this.client_postcode,
+														client_address: this.client_address,
+														id: "S"+this.id,
+														need_notes: this.notes,
+														request_organization_id: this.organization_id,
+														request_response_notes: null,
+														source_organization_name: this.requesting_organization_name,
+														type: "share",
+														type_name: "Share Client Details"
+												});
+
+											});
+										}
+										self.requestsValid(true);
+										}
+											,error = function (response) {console.log("Requests not loaded"); self.requestsValid(false);}
+											)
+										).then(function () {
                                     self.updateRequestsDataProvider(self.requestsValues());
                                     //sort panel refresh on #saveButton only
                                     if (context === "updatePanel") {
@@ -399,7 +505,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                     };
                                 }).then(function () {
                                     self.requestsLoaded(true);
-                                })
+                                });
+
+								})
                             );
                         };
 
