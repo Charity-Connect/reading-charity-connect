@@ -158,30 +158,30 @@ class Client{
     	if(!isset($this->id)){
     		$this->id=-1;
     	}
-    	if(!isset($this->name)){
+    	if(!isset($this->name)||is_null($this->name)){
     		$this->name="";
     	}
-    	if(!isset($this->address)){
+    	if(!isset($this->address)||is_null($this->address)){
     		$this->address="";
     	}
-    	if(!isset($this->postcode)){
+    	if(!isset($this->postcode)||is_null($this->postcode)){
     		$this->postcode="";
     	}
-    	if(!isset($this->phone)){
+    	if(!isset($this->phone)||is_null($this->phone)){
     		$this->phone="";
     	}
-    	if(!isset($this->email)){
+    	if(!isset($this->email)||is_null($this->email)){
     		$this->email="";
     	}
-    	$query = "SELECT c.id,c.name,c.address,c.postcode,c.phone,c.email,l.link_id as organization_id, o.name as organization_name from clients c, client_links l, organizations o where c.id=l.client_id and l.link_type='ORG' and l.link_id=o.id and (lower(c.name)=:name or lower(c.address)=:address or lower(c.postcode)=:postcode or replace(c.phone,' ','') = :phone or lower(c.email)=:email) and c.id!=:id";
+    	$query = "SELECT c.id,ifnull(c.name,'') as name,ifnull(c.address,'') as address,ifnull(c.postcode,'') as postcode,ifnull(c.phone,'') as phone,ifnull(c.email,'') as email,l.link_id as organization_id, o.name as organization_name from clients c, client_links l, organizations o where c.id=l.client_id and l.link_type='ORG' and l.link_id=o.id and (trim(lower(c.name))=:name or trim(replace(lower(c.address),',',''))=:address or trim(lower(c.postcode))=:postcode or trim(replace(c.phone,' ','')) = :phone or trim(lower(c.email)=:email)) and c.id!=:id";
 
 		if($id!=-1){
 			$query=$query." and c.id=:client_id and o.id=:organization_id";
 		    $stmt = $this->connection->prepare($query);
-		    $stmt->execute(['client_id'=>$id,'organization_id'=>$organization_id, 'id'=>$this->id,'name'=>strtolower($this->name),'address'=>strtolower($this->address),'postcode'=>strtolower($this->postcode),'phone'=>str_replace(" ","",$this->phone),'email'=>strtolower($this->email)]);
+		    $stmt->execute(['client_id'=>$id,'organization_id'=>$organization_id, 'id'=>$this->id,'name'=>trim(strtolower($this->name)),'address'=>trim(str_replace("'","",strtolower($this->address))),'postcode'=>trim(strtolower($this->postcode)),'phone'=>trim(str_replace(" ","",$this->phone)),'email'=>trim(strtolower($this->email))]);
 		} else {
 	    	$stmt = $this->connection->prepare($query);
-		    $stmt->execute(['id'=>$this->id,'name'=>strtolower($this->name),'address'=>strtolower($this->address),'postcode'=>strtolower($this->postcode),'phone'=>str_replace(" ","",$this->phone),'email'=>strtolower($this->email)]);
+		    $stmt->execute(['id'=>$this->id,'name'=>trim(strtolower($this->name)),'address'=>trim(str_replace("'","",strtolower($this->address))),'postcode'=>trim(strtolower($this->postcode)),'phone'=>trim(str_replace(" ","",$this->phone)),'email'=>trim(strtolower($this->email))]);
 		}
 		if( $stmt->rowCount()==0){
 	    	return false;
@@ -192,56 +192,93 @@ class Client{
 	    	$matchArray=new stdClass();
 	    	$matchArray->id=$row['id'];
 	    	$matchArray->organization_id=$row['organization_id'];
+	    	if($row['organization_id']==$_SESSION['organization_id']){
+	    		$matchArray->current_organization='Y';
+	    	} else {
+	    		$matchArray->current_organization='N';
+	    	}
+
 	    	$matchArray->organization_name=$row['organization_name'];
-	    	if(strtolower($row['name'])==strtolower($this->name)){
-	    		if($row['name']==""){
+
+	    	if(trim(strtolower($row['name']))==trim(strtolower($this->name))){
+	    		if(trim($row['name'])==""){
 	    			$matchArray->name="Not Set";
 				} else {
 		    		$matchScore=$matchScore+10;
-	    			$matchArray->name="Match";
+    				$matchArray->name="Match: ".$row['name'];
 	    		}
 	    	} else {
-	    		$matchArray->name="No Match";
+	    		if(trim($row['name'])==""){
+				    $matchArray->name="Not Set";
+				} else if($matchArray->current_organization=='Y'){
+					$matchArray->name="No Match: ".$row['name'];
+				} else {
+					$matchArray->name="No Match";
+				}
 	    	}
-	    	if(strtolower($row['address'])==strtolower($this->address)){
-	    		if($row['address']==""){
+	    	if(trim(strtolower($row['address']))==trim(strtolower($this->address))){
+	    		if(trim($row['address'])===""){
 	    			$matchArray->address="Not Set";
 				} else {
 		    		$matchScore=$matchScore+5;
-		    		$matchArray->address="Match";
+    				$matchArray->address="Match: ".$row['address'];
 		    	}
 	    	}	else {
-	    		$matchArray->address="No Match";
+				if(trim($row['address'])==""){
+				    $matchArray->address="Not Set";
+				} else if($matchArray->current_organization=='Y'){
+					$matchArray->address="No Match: ".$row['address'];
+				} else {
+					$matchArray->address="No Match";
+				}
 	    	}
 	    	if(strtolower($row['postcode'])==strtolower($this->postcode)){
 	    		if($row['postcode']==""){
 	    			$matchArray->postcode="Not Set";
 				} else {
 		    		$matchScore=$matchScore+5;
-		    		$matchArray->postcode="Match";
+    				$matchArray->postcode="Match: ".$row['postcode'];
 		    	}
 	    	}	else {
-	    		$matchArray->postcode="No Match";
+				if(trim($row['postcode'])==""){
+				    $matchArray->postcode="Not Set";
+				} else if($matchArray->current_organization=='Y'){
+					$matchArray->postcode="No Match: ".$row['postcode'];
+				} else {
+					$matchArray->postcode="No Match";
+				}
 	    	}
 	    	if(strtolower($row['email'])==strtolower($this->email)){
 	    		if($row['email']==""){
 	    			$matchArray->email="Not Set";
 				} else {
 		    		$matchScore=$matchScore+10;
-		    		$matchArray->email="Match";
+    				$matchArray->email="Match: ".$row['email'];
 		    	}
 	    	}	else {
-	    		$matchArray->email="No Match";
+				if(trim($row['email'])==""){
+				    $matchArray->email="Not Set";
+				} else if($matchArray->current_organization=='Y'){
+					$matchArray->email="No Match: ".$row['email'];
+				} else {
+					$matchArray->email="No Match";
+				}
 	    	}
 	    	if(str_replace(" ","",$row['phone'])==str_replace(" ","",$this->phone)){
 	    		if($row['phone']==""){
 	    			$matchArray->phone="Not Set";
 				} else {
 		    		$matchScore=$matchScore+5;
-	    			$matchArray->phone="Match";
+    				$matchArray->phone="Match: ".$row['phone'];
 	    		}
 	    	}else {
-	    		$matchArray->phone="No Match";
+				if(trim($row['phone'])==""){
+				    $matchArray->phone="Not Set";
+				} else if($matchArray->current_organization=='Y'){
+					$matchArray->phone="No Match: ".$row['phone'];
+				} else {
+					$matchArray->phone="No Match";
+				}
 	    	}
 	    	if($matchScore>=10){
 	    		array_push($matchedPeople,$matchArray);

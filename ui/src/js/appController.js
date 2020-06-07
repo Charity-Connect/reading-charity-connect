@@ -110,7 +110,8 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 self.routerConfig = {
                     'requests': {label: 'Requests', isDefault: true},
                     'offers': {label: 'Offers'},
-                    'clients': {label: 'Clients'}
+                    'clients': {label: 'Clients'},
+                    'client/{clientId}': {label: 'Client'}
                 };
                 self.router.configure(self.routerConfig);
 
@@ -136,6 +137,30 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 
                 }
 
+
+                self.getOrgAdminDetails = function () {
+                    return $.ajax({
+                        type: 'GET',
+                        contentType: 'application/json',
+                        url: '/rest/org_admin_check',
+                        success: function (response) {
+                            if (response == "true") {
+                                self.appName("Charity Connect - Admin");
+
+                                self.routerConfig.orgAdmin = {label: 'Org Admin'};
+                                self.router.configure(self.routerConfig);
+
+                                self.navData.push(
+                                    {name: 'Org Admin', id: 'orgAdmin',
+                                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-library-icon-24'}
+                                );
+                            }
+                        }
+                    });
+
+                }
+
+
                 self.getAdminUserDetails = function () {
                     return $.ajax({
                             type: 'GET',
@@ -160,29 +185,6 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         });
 
                 }
-
-                self.getOrgAdminDetails = function () {
-                    return $.ajax({
-                        type: 'GET',
-                        contentType: 'application/json',
-                        url: '/rest/org_admin_check',
-                        success: function (response) {
-                            if (response == "true") {
-                                self.appName("Charity Connect - Admin");
-
-                                self.routerConfig.orgAdmin = {label: 'Org Admin'};
-                                self.router.configure(self.routerConfig);
-
-                                self.navData.push(
-                                    {name: 'Org Admin', id: 'orgAdmin',
-                                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-library-icon-24'}
-                                );
-                            }
-                        }
-                    });
-
-                }
-
 
                 self.loadModule = function () {
                     var name = self.router.moduleConfig.name();

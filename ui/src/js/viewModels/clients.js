@@ -7,13 +7,14 @@
 /*
  * Your clients ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
+define(['ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
+        function (Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
 
             function ClientsViewModel() {
                 var self = this;
+			    var router = Router.rootInstance;
 
                 self.connected = function () {
                     accUtils.announce('Clients page loaded.');
@@ -75,7 +76,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                     var primaryHandlerLogic = function() {
                         self.handleClientRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
-                                self.addClientButtonSelected([]);
+								self.addClientButtonSelected([]);
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray){
                                     for (var i=0; i < myArray.length; i++) {
@@ -84,6 +85,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                         }
                                     }
                                 };
+                                var client=searchNodes(event.target.currentRow.rowKey, self.clientsValues());
+
+                                //router.go('client/' + client.id);
                                 self.clientSelected(searchNodes(event.target.currentRow.rowKey, self.clientsValues()));
                                 console.log(self.clientSelected());
                                 self.getClientNeedsAjax(self.clientSelected().id);
@@ -309,19 +313,19 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 												self.postText("duplicates.");
 												console.log("client data not posted - duplicates found");
 												document.getElementById('duplicatesDialog').open();
-												var header=[{ headerText: '',field: 'field' }];
+												var header=[{ headerText: 'Organization',field: 'field' }];
 												var nameRow= new Object();
 												nameRow.field="Name: "+$('#inputEditName')[0].value;
 												var addressRow= new Object();
 												addressRow.field="Address: "+($('#textareaEditAddress')[0].value).split('\n')[0];
 												var postcodeRow= new Object();
-												postcodeRow.field="Postcode: "+$('#inputEditPostcode')[0].value;
+												postcodeRow.field="Postcode: "+(($('#inputEditPostcode')[0].value==null)?"":$('#inputEditPostcode')[0].value);
 												var emailRow= new Object();
-												emailRow.field="Email: "+$('#inputEditEmail')[0].value;
+												emailRow.field="Email: "+(($('#inputEditEmail')[0].value==null)?"":$('#inputEditEmail')[0].value);
 												var phoneRow= new Object();
-												phoneRow.field="Phone: "+$('#inputEditPhone')[0].value;
+												phoneRow.field="Phone: "+(($('#inputEditPhone')[0].value==null)?"":$('#inputEditPhone')[0].value);
 												var buttonRow= new Object();
-												buttonRow.field="";
+												buttonRow.field="Action";
 												data.duplicates.forEach(function(duplicate){
 													header.push({ headerText: duplicate.organization_name,field: duplicate.organization_name, footerTemplate:'requestFooterTemplate' });
 													nameRow[duplicate.organization_name]= duplicate.name;
@@ -329,13 +333,17 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 													postcodeRow[duplicate.organization_name]= duplicate.postcode;
 													emailRow[duplicate.organization_name]= duplicate.email;
 													phoneRow[duplicate.organization_name]= duplicate.phone;
-													buttonRow[duplicate.organization_name]= "BUTTON:"+duplicate.id+":"+duplicate.organization_id;
+													if(duplicate.current_organization=="Y"){
+														buttonRow[duplicate.organization_name]= "BUTTON2:"+duplicate.id;
+													} else {
+														buttonRow[duplicate.organization_name]= "BUTTON:"+duplicate.id+":"+duplicate.organization_id;
+													}
 												});
 
 												self.duplicatesColumns (header);
 
 
-												self.duplicatesDataProvider(new ArrayDataProvider([nameRow,addressRow,postcodeRow,emailRow,phoneRow,buttonRow],{ keyAttributes: 'field' }));
+												self.duplicatesDataProvider(new ArrayDataProvider([nameRow,addressRow,postcodeRow,emailRow,phoneRow,buttonRow]));
 
 
 												self.disableSaveButton(false);

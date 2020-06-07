@@ -1,0 +1,48 @@
+  <div id="detail-container">
+    <oj-toolbar
+      id="myToolbar"
+      aria-label="Editing Toolbar"
+      aria-controls="controlled"
+      class="oj-toolbar-bottom-border"
+    >
+      <oj-button on-click="[[handleBack]]">
+        <span>Back to List</span>
+      </oj-button>
+      <span
+        role="separator"
+        aria-orientation="vertical"
+        class="oj-toolbar-separator"
+      ></span>
+
+      <oj-button on-click="[[handlePrevious]]"
+        ><span>&lt; Previous</span></oj-button
+      >
+      <oj-button on-click="[[handleNext]]"><span>Next &gt;</span></oj-button>
+    </oj-toolbar>
+
+    <h4>Client: <oj-bind-text value="[[record().name]]"></oj-bind-text></h4>
+
+    <div class="oj-panel">
+      <oj-form-layout>
+        <oj-input-text
+          id="control1"
+          label-hint="Name"
+          required
+          readonly="[[!isEdit()]]"
+          value="{{ record().name }}"
+        ></oj-input-text>
+      </oj-form-layout>
+      <oj-toolbar
+        id="myToolbar2"
+        aria-label="Editing Toolbar"
+        aria-controls="controlled"
+      >
+        <oj-button disabled="[[isEdit]]" on-click="[[handleEdit]]"
+          >Edit</oj-button
+        >
+        <oj-button disabled="[[!isEdit()]]" on-click="[[handleSave]]"
+          >Save</oj-button
+        >
+      </oj-toolbar>
+    </div>
+  </div>

@@ -81,12 +81,18 @@
 															  <oj-bind-if test="[[cell.data === 'Match']]">
 																   <span style="color:green"><oj-bind-text value="[[cell.data]]"></oj-bind-text></span>
 																</oj-bind-if>
+															  <oj-bind-if test="[[cell.data.startsWith('Match:')]]">
+																   <span style="color:green"><oj-bind-text value="[[cell.data.substring(7)]]"></oj-bind-text></span>
+																</oj-bind-if>
 															  <oj-bind-if test="[[cell.data === 'No Match']]">
 																   <span style="color:red"><oj-bind-text value="[[cell.data]]"></oj-bind-text></span>
 																</oj-bind-if>
-															  <oj-bind-if test="[[cell.data.startsWith('BUTTON')]]">
+															  <oj-bind-if test="[[cell.data.startsWith('No Match:')]]">
+																   <span style="color:red"><oj-bind-text value="[[cell.data.substring(10)]]"></oj-bind-text></span>
+																</oj-bind-if>
+															  <oj-bind-if test="[[cell.data.startsWith('BUTTON:')]]">
 															  <span :id="[[cell.data.substring(7)]]">
-															  <a href="#" onClick="
+															  <button type="button" onClick="
 															  var id=this.parentNode.id.split(':')[0];
 															  var organization_id=this.parentNode.id.split(':')[1];
 															  responseJson = {
@@ -113,10 +119,42 @@
                                 console.log(responseJson);
 
 															      return false;
-																">click here</a>
+																">Request access</button>
 															  </span>
 																</oj-bind-if>
-															  <oj-bind-if test="[[cell.data != 'Match'&&cell.data != 'No Match' &&!cell.data.startsWith('BUTTON')]]">
+																<oj-bind-if test="[[cell.data.startsWith('BUTTON2:')]]">
+															  <span :id="[[cell.data.substring(7)]]">
+															  <button type="button" onClick="
+															  var id=this.parentNode.id.split(':')[0];
+															  var organization_id=this.parentNode.id.split(':')[1];
+															  responseJson = {
+                                    id: id,
+                                    organization_id: organization_id,
+                                    name: $('#inputEditName')[0].value,
+                                    address: $('#textareaEditAddress')[0].value,
+                                    postcode: $('#inputEditPostcode')[0].value,
+                                    phone: $('#inputEditPhone')[0].value,
+                                    email: $('#inputEditEmail')[0].value,
+                                    notes: $('#textareaEditClientNotes')[0].value
+                                };
+
+								$.ajax({type: 'POST'
+								,url:`/rest/clients/duplicate_request`
+								,data:JSON.stringify(responseJson)
+								,contentType: 'application/json'
+								,dataType: 'json'
+								,success:function(data){
+									document.getElementById('duplicatesDialog').close();
+								}
+								});
+
+                                console.log(responseJson);
+
+															      return false;
+																">View</button>
+															  </span>
+																</oj-bind-if>
+															  <oj-bind-if test="[[!cell.data.startsWith('Match')&&!cell.data.startsWith('No Match') &&!cell.data.startsWith('BUTTON')]]">
 																   <span><oj-bind-text value="[[cell.data]]"></oj-bind-text></span>
 																</oj-bind-if>
 															</template>
