@@ -1,45 +1,40 @@
 /**
  * @license
- * Copyright (c) 2014, 2019, Oracle and/or its affiliates.
+ * Copyright (c) 2014, 2020, Oracle and/or its affiliates.
  * The Universal Permissive License (UPL), Version 1.0
  * @ignore
  */
 /*
  * Your application specific code will go here
  */
-define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojconfig', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils', 'restClient', 'restUtils','utils',
-    'ojs/ojmodule-element', 'ojs/ojknockout'],
-        function (ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, Config, ArrayDataProvider, KnockoutTemplateUtils, restClient, restUtils,utils) {
-            function ControllerViewModel() {
-                var self = this;
+define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojrouter', 'ojs/ojarraydataprovider', 'ojs/ojknockouttemplateutils','restClient', 'restUtils','utils',
+'ojs/ojmodule-element', 'ojs/ojknockout'],
+  function(ko, moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, Router, ArrayDataProvider, KnockoutTemplateUtils, restClient, restUtils,utils) {
+     function ControllerViewModel() {
+        var self = this;
 
-                self.KnockoutTemplateUtils = KnockoutTemplateUtils;
-                self.moduleConfig = ko.observable();
-                self.sysModuleConfig = ko.observable();
-                self.navData;
-                self.routerConfig = {};
-                // Handle announcements sent when pages change, for Accessibility.
-                self.manner = ko.observable('polite');
-                self.message = ko.observable();
-                // User role
-                self.userRole = ko.observable("user");
-                document.getElementById('globalBody').addEventListener('announce', announcementHandler, false);
+        self.KnockoutTemplateUtils = KnockoutTemplateUtils;
+        self.navData;
 
-                function announcementHandler(event) {
-                    setTimeout(function () {
-                        self.message(event.detail.message);
-                        self.manner(event.detail.manner);
-                    }, 200);
-                };
+        // Handle announcements sent when pages change, for Accessibility.
+        self.manner = ko.observable('polite');
+        self.message = ko.observable();
+        document.getElementById('globalBody').addEventListener('announce', announcementHandler, false);
 
-                // Media queries for responsive layouts
-                var smQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.SM_ONLY);
-                self.smScreen = ResponsiveKnockoutUtils.createMediaQueryObservable(smQuery);
+        function announcementHandler(event) {
+          setTimeout(function() {
+            self.message(event.detail.message);
+            self.manner(event.detail.manner);
+          }, 200);
+        };
 
+      // Media queries for repsonsive layouts
+      var smQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.SM_ONLY);
+      self.smScreen = ResponsiveKnockoutUtils.createMediaQueryObservable(smQuery);
 
                 // Header
                 // Application Name used in Branding Area
-                self.appName = ko.observable();
+                self.appName = ko.observable("Reading Charity Connect");
                 // User Info used in Global Navigation area
                 self.userLogin = ko.observable();
                 self.currentOrganization = ko.observable();
@@ -102,40 +97,27 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                     }
                 };
 
-                // Router setup
-                self.router = Router.rootInstance;
-
-                self.appName("Reading Charity Connect");
-
+       // Router setup
+       self.router = Router.rootInstance;
                 self.routerConfig = {
                     'requests': {label: 'Requests', isDefault: true},
                     'offers': {label: 'Offers'},
                     'clients': {label: 'Clients'},
                     'client/{clientId}': {label: 'Client'}
                 };
-                self.router.configure(self.routerConfig);
+      Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
+                                    self.router.configure(self.routerConfig);
 
-                self.navData = [
-                    {name: 'Requests', id: 'requests',
-                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},
-                    {name: 'Offers', id: 'offers',
-                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
-                    {name: 'Clients', id: 'clients',
-                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
-                ];
-
-                Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
-
-                self.navChange = function (event) {
-                    var name = event.detail.value;
-                    var viewPath = 'views/' + name + '.html';
-                    var modelPath = 'viewModels/' + name;
-                    self.moduleConfig(moduleUtils.createConfig({viewPath: viewPath,
-                        viewModelPath: modelPath, params: {parentRouter: self.router}})
-                    );
-                    self.router.go(name);
-
-                }
+	// Navigation setup
+			   self.navData = [
+				  {name: 'Requests', id: 'requests',
+					  iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},
+				  {name: 'Offers', id: 'offers',
+					  iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
+				  {name: 'Clients', id: 'clients',
+					  iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
+			  ];
+		self.navDataProvider = new ArrayDataProvider(self.navData, {keyAttributes: 'id'});
 
 
                 self.getOrgAdminDetails = function () {
@@ -159,8 +141,6 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                     });
 
                 }
-
-
                 self.getAdminUserDetails = function () {
                     return $.ajax({
                             type: 'GET',
@@ -186,39 +166,31 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 
                 }
 
-                self.loadModule = function () {
-                    var name = self.router.moduleConfig.name();
-                    var viewPath = 'views/' + name + '.html';
-                    var modelPath = 'viewModels/' + name;
-                    self.moduleConfig(moduleUtils.createConfig({viewPath: viewPath, viewModelPath: modelPath, params: {parentRouter: self.router}})
-                    );
-                    self.router.go(name);
 
-                    //addition to set locale
-                    var newLang = "en-GB";
-                    self.setLang = function (event) {
-                        Config.setLocale(newLang,
-                            function () {
-                                document.getElementsByTagName('html')[0].setAttribute('lang', newLang);
-                            }
-                        );
-                    }();
-                };
+      self.loadModule = function () {
+        self.moduleConfig = ko.pureComputed(function () {
+          var name = self.router.moduleConfig.name();
+          var viewPath = 'views/' + name + '.html';
+          var modelPath = 'viewModels/' + name;
+          return moduleUtils.createConfig({ viewPath: viewPath,
+            viewModelPath: modelPath, params: { parentRouter: self.router } });
+        });
+      };
 
-                self.navDataProvider = new ArrayDataProvider(self.navData, {keyAttributes: 'id'});
 
-                // Footer
-                function footerLink(name, id, linkTarget) {
-                    this.name = name;
-                    this.linkId = id;
-                    this.linkTarget = linkTarget;
-                }
+
+      // Footer
+      function footerLink(name, id, linkTarget) {
+        this.name = name;
+        this.linkId = id;
+        this.linkTarget = linkTarget;
+      }
                 self.footerLinks = ko.observableArray([
                     new footerLink('About Reading Connect', 'aboutOracle', '/about'),
                     new footerLink('Contact Us', 'contactUs', 'http://www.oracle.com/us/corporate/contact/index.html'),
                 ]);
-            }
+     }
 
-            return new ControllerViewModel();
-        }
-        );
+     return new ControllerViewModel();
+  }
+);

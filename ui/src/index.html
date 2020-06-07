@@ -94,15 +94,13 @@
           </div>
         </div>
         <div role="navigation" class="oj-web-applayout-max-width oj-web-applayout-navbar">
-
-
-
-            <oj-navigation-list id="navList" data="[[navDataProvider]]"
+          <oj-navigation-list id="navList" data="[[navDataProvider]]"
                               :class="[[{'oj-md-condense oj-md-justify-content-flex-end': !smScreen()}]]"
-                              display="[[smScreen() ? 'icons' : 'all']]" edge="top" on-selection-changed="[[navChange]]"
+                              display="[[smScreen() ? 'icons' : 'all']]"
+                              edge="top"
                               item.renderer="[[KnockoutTemplateUtils.getRenderer('navTemplate', true)]]"
                               selection="{{router.stateId}}">
-            </oj-navigation-list>
+          </oj-navigation-list>
         </div>
       </header>
 

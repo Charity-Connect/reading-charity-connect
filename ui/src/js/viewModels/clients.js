@@ -59,6 +59,10 @@ define(['ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 
                     self.addClientButtonSelected = ko.observableArray([]);
                     self.clientRowSelected = ko.observableArray();
                     self.clientSelected = ko.observable("");
+                    self.addClient=function(event){
+						router.go('client/new');
+
+					}
                     self.showPanel = ko.computed(function () {
                         if (self.addClientButtonSelected().length) {
                             self.selectedRowDisplay("clientFormFields");
@@ -87,10 +91,10 @@ define(['ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 
                                 };
                                 var client=searchNodes(event.target.currentRow.rowKey, self.clientsValues());
 
-                                //router.go('client/' + client.id);
-                                self.clientSelected(searchNodes(event.target.currentRow.rowKey, self.clientsValues()));
-                                console.log(self.clientSelected());
-                                self.getClientNeedsAjax(self.clientSelected().id);
+                                router.go('client/' + client.id);
+                                //self.clientSelected(searchNodes(event.target.currentRow.rowKey, self.clientsValues()));
+                                //console.log(self.clientSelected());
+                                //self.getClientNeedsAjax(self.clientSelected().id);
                             }
                         };
                         self.getClientNeedsAjax = function(clientId) {
