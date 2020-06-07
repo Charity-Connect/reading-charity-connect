@@ -241,9 +241,66 @@ define(['ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 
 							);
 						}
 
+						self.requestAccessButton = function (event) {
+							var id=event.target.id.split(":")[1];
+							var organization_id=event.target.id.split(":")[2];
+							console.log(organization_id);
+								responseJson = {
+									id: id,
+									organization_id: organization_id,
+									name: $('#inputEditName')[0].value,
+									address: $('#textareaEditAddress')[0].value,
+									postcode: $('#inputEditPostcode')[0].value,
+									phone: $('#inputEditPhone')[0].value,
+									email: $('#inputEditEmail')[0].value,
+									notes: $('#textareaEditClientNotes')[0].value
+								};
+console.log(responseJson);
+								$.ajax({type: 'POST'
+									,url:`/rest/clients/duplicate_request`
+									,data:JSON.stringify(responseJson)
+									,contentType: 'application/json'
+									,dataType: 'json'
+									,success:function(data){
+										document.getElementById('duplicatesDialog').close();
+									}
+								});
+
+						}
+						self.viewClientButton = function (event) {
+							        clientId= event.target.id.split(":")[1];
+							        self.getClient();
+						}
 						self.cancelButton = function (event) {
 							        router.go('clients');
 						}
+
+
+						self.getClient= function (){
+							console.log("getting clinet "+clientId);
+							self.clientsLoaded(false);
+								if(clientId=="new"){
+									self.clientRowSelected([]);
+									self.clientSelected("");
+								} else {
+									$.when(restClient.doGet('/rest/clients/'+clientId))
+										.then(
+											success = function (response) {
+												console.log(response.clients);
+												self.clientSelected(response);
+												self.clientsValid(true);
+											},
+											error = function (response) {
+												console.log("Clients not loaded");
+												self.clientsValid(false);
+											}
+										).then(function () {
+											self.clientsLoaded(true);
+										});
+
+								}
+						}
+
 
                         self.saveButton = function (event) {
                             //locale "en-GB" - change UTC to YYYY-MM-DD
@@ -299,21 +356,21 @@ define(['ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 
 												var buttonRow= new Object();
 												buttonRow.field="Action";
 												data.duplicates.forEach(function(duplicate){
-													header.push({ headerText: duplicate.organization_name,field: duplicate.organization_name, footerTemplate:'requestFooterTemplate' });
-													nameRow[duplicate.organization_name]= duplicate.name;
-													addressRow[duplicate.organization_name]= duplicate.address;
-													postcodeRow[duplicate.organization_name]= duplicate.postcode;
-													emailRow[duplicate.organization_name]= duplicate.email;
-													phoneRow[duplicate.organization_name]= duplicate.phone;
+													header.push({ headerText: duplicate.organization_name,field: duplicate.organization_id+":"+duplicate.id, footerTemplate:'requestFooterTemplate' });
+													nameRow[duplicate.organization_id+":"+duplicate.id]= duplicate.name;
+													addressRow[duplicate.organization_id+":"+duplicate.id]= duplicate.address;
+													postcodeRow[duplicate.organization_id+":"+duplicate.id]= duplicate.postcode;
+													emailRow[duplicate.organization_id+":"+duplicate.id]= duplicate.email;
+													phoneRow[duplicate.organization_id+":"+duplicate.id]= duplicate.phone;
 													if(duplicate.current_organization=="Y"){
-														buttonRow[duplicate.organization_name]= "BUTTON2:"+duplicate.id;
+														buttonRow[duplicate.organization_id+":"+duplicate.id]= "BUTTON2:"+duplicate.id+":"+duplicate.organization_id;
 													} else {
-														buttonRow[duplicate.organization_name]= "BUTTON:"+duplicate.id+":"+duplicate.organization_id;
+														buttonRow[duplicate.organization_id+":"+duplicate.id]= "BUTTON:"+duplicate.id+":"+duplicate.organization_id;
 													}
 												});
 
 												self.duplicatesColumns (header);
-
+console.log(buttonRow);
 
 												self.duplicatesDataProvider(new ArrayDataProvider([nameRow,addressRow,postcodeRow,emailRow,phoneRow,buttonRow]));
 
