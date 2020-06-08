@@ -7,11 +7,15 @@
 /*
  * Your organization ViewModel code goes here
  */
-define(['utils','ojs/ojcore', 'knockout', 'jquery','accUtils','ojs/ojmodule-element-utils','ojs/ojnavigationlist'],
- function(utils,oj, ko, $,accUtils,moduleUtils) {
+define(['appController','utils','ojs/ojcore', 'knockout', 'jquery','accUtils','ojs/ojmodule-element-utils','ojs/ojnavigationlist'],
+ function(app,utils,oj, ko, $,accUtils,moduleUtils) {
 
     function OrganizationViewModel() {
       var self = this;
+	  if(app.userDetails.admin!="Y"){
+		return;
+	}
+
       self.sysModuleConfig = ko.observable(moduleUtils.createConfig(utils.appConstants.sysModuleConfig));
       self.selectedItem = ko.observable('systemAdminOrganizations');
 

@@ -7,13 +7,18 @@
 /*
  * Your admin ViewModel code goes here
  */
-define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
+define(['appController','utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset','ojs/ojformlayout'],
-        function (utils,oj, ko, $, accUtils, restClient,KnockoutTemplateUtils,ArrayDataProvider) {
+        function (app,utils,oj, ko, $, accUtils, restClient,KnockoutTemplateUtils,ArrayDataProvider) {
 
             function AdminViewModel() {
                 var self = this;
+
+				if(app.currentOrg.organization_admin!="Y"){
+					return;
+				}
+
                 self.postTextColor = ko.observable();
                 self.postText = ko.observable();
                 self.fileContentPosted = ko.observable(true);
@@ -48,6 +53,9 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                     self.userNeedApprover = ko.observableArray([]);
                     self.userApprover = ko.observableArray([]);
                     self.userConfirmed = ko.observableArray([]);
+                    self.userManageClients = ko.observableArray([]);
+                    self.userClientShareApprover = ko.observableArray([]);
+                    self.userManageOffers = ko.observableArray([]);
 
 
 
@@ -77,6 +85,18 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                         self.userApprover([]);
                         if (params.user_approver === "Y") {
                             self.userApprover(["user_approver"]);
+                        }
+                        self.userManageClients([]);
+                        if (params.manage_clients === "Y") {
+                            self.userManageClients(["manage_clients"]);
+                        }
+                        self.userManageOffers([]);
+                        if (params.manage_offers === "Y") {
+                            self.userManageOffers(["manage_offers"]);
+                        }
+                        self.userClientShareApprover([]);
+                        if (params.client_share_approver === "Y") {
+                            self.userClientShareApprover(["client_share_approver"]);
                         }
                         self.userConfirmed([]);
                         if (params.confirmed === "Y") {
@@ -152,6 +172,9 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                                 "admin": (self.userAdmin().length > 0) ? "Y" : "N",
                                 "need_approver": (self.userNeedApprover().length > 0) ? "Y" : "N",
                                 "user_approver": (self.userApprover().length > 0) ? "Y" : "N",
+                                "manage_clients": (self.userManageClients().length > 0) ? "Y" : "N",
+                                "manage_offers": (self.userManageOffers().length > 0) ? "Y" : "N",
+                                "client_share_approver": (self.userClientShareApprover().length > 0) ? "Y" : "N",
                                 "confirmed": (self.userConfirmed().length > 0) ? "Y" : "N"
                             };
                         return $.when(restClient.doPost('/rest/users', userData)

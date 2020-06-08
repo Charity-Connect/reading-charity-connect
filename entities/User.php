@@ -17,6 +17,7 @@ class User{
     public $confirmed;
     private $confirmation_string;
     private $force_read=false;
+    public $admin;
     public $organization_name;
     public $organization_id;
     public $user_organizations=array();
@@ -101,6 +102,7 @@ class User{
         $this->email=$row['email'];
         $this->phone=$row['phone'];
         $this->confirmed=$row['confirmed'];
+        $this->admin=is_null($row['admin'])?"N":"Y";
         $this->organization_id=$row['organization_id'];
         $this->organization_name=$row['organization_name'];
         if(isset($row['confirmation_string'])){
@@ -118,9 +120,11 @@ class User{
 					"user_id" => $user_id,
 					"organization_id" => $organization_id,
 					"organization_name" => $organization_name,
-					"admin" => $admin,
+					"organization_admin" => $admin,
 					"user_approver" => $user_approver,
 					"need_approver" => $need_approver,
+					"manage_offers" => $manage_offers,
+					"manage_clients" => $manage_clients,
 					"confirmed" => $confirmed
 					);
 			        array_push($this->user_organizations,$user_organization);
@@ -130,25 +134,25 @@ class User{
 
     public function readOne($id){
         	if(is_admin()||$this->force_read==true){
-	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name from users u, user_organizations uo, organizations org where u.id=uo.user_id and org.id=uo.organization_id and u.id=:id order by if(org.id=:organization_id,-1,u.id)";
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name, role.role_id as admin from users u left join user_roles role on role.user_id=u.id and role.role_id=1, user_organizations uo, organizations org where u.id=uo.user_id and org.id=uo.organization_id and u.id=:id order by if(org.id=:organization_id,-1,u.id)";
 	        	$stmt = $this->connection->prepare($query);
 	        	$stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
 	        } else if(is_org_admin()){
-				$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name
-				from users u, user_organizations uo, organizations org
+				$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name , role.role_id as admin
+				from users u left join user_roles role on role.user_id=u.id and role.role_id=1, user_organizations uo, organizations org
 				where u.id=uo.user_id
 				and org.id=uo.organization_id and
 				uo.organization_id=:organization_id
 				and u.id=:id
-				UNION (SELECT u.id,u.display_name,u.email,u.phone ,u.confirmed, org.id as organization_id, org.name as organization_name
-				from users u, user_organizations uo, organizations org
+				UNION (SELECT u.id,u.display_name,u.email,u.phone ,u.confirmed, org.id as organization_id, org.name as organization_name, role.role_id as admin
+				from users u left join user_roles role on role.user_id=u.id and role.role_id=1, user_organizations uo, organizations org
 				where
 				u.id=:id2 and u.id=:id
 				and org.id=uo.organization_id and u.id=uo.user_id)";
 				$stmt = $this->connection->prepare($query);
 				$stmt->execute(['organization_id'=>$_SESSION["organization_id"],'id'=>$id,'id2'=>$_SESSION["id"]]);
 	        } else {
-	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name from users u left join organizations org on org.id=:organization_id where u.id=:id ";
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name, role.role_id as admin from users u left join organizations org on org.id=:organization_id left join user_roles role on role.user_id=u.id and role.role_id=1 where u.id=:id ";
 	        	$stmt = $this->connection->prepare($query);
 		        $stmt->execute(['id'=>$_SESSION["id"],'organization_id'=>$_SESSION["organization_id"]]);
         }

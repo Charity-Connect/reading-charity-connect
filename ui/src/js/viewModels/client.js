@@ -7,24 +7,24 @@
 /*
  * Your clients ViewModel code goes here
  */
-define(['ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
+define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
+        function (app,Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
 
-            function ClientsViewModel() {
+            function ClientViewModel() {
                 var self = this;
+
+                if(app.currentOrg.manage_clients!="Y"){
+					return;
+				}
 			    var router = Router.rootInstance;
 			    var stateParams = router.observableModuleConfig().params.ojRouter.parameters;
 			    var clientId=stateParams.clientId();
-			    console.log(clientId);
-
 
                 self.connected = function () {
                     accUtils.announce('Client page loaded.');
                     document.title = "Client";
-
-                    self.clientsValues = ko.observableArray();
                     self.clientsDataProvider = ko.observable();
 
                     self.clientNeedsValues = ko.observableArray();
@@ -54,18 +54,19 @@ define(['ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 
 
                     self.selectedRowDisplay = ko.observable("clientNeeds");
                     self.addClientButtonSelected = ko.observableArray([]);
-                    self.clientRowSelected = ko.observableArray();
                     self.clientSelected = ko.observable("");
 
                     var primaryHandlerLogic = function() {
 
                         self.getClientNeedsAjax = function(clientId) {
                             self.clientNeedsValues([]);
+                            if(clientId=="new"){
+								return;
+							}
                             //GET /rest/clients/{client id}/client_needs - REST
                             return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${clientId}/client_needs`)
                                 .then(
                                     success = function (response) {
-                                        console.log(response.client_needs);
                                         $.each(response.client_needs, function(index, item) {
                                             var dateNeededCleansed;
                                             var dateNeededCleansedLocale;
@@ -119,7 +120,6 @@ define(['ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 
                             return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES)}/${code}/offer_types`)
                                 .then(
                                     success = function (response) {
-                                        console.log(response.offer_types);
                                         self.offerTypesValues(response.offer_types);
                                     },
                                     error = function (response) {
@@ -210,7 +210,7 @@ define(['ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 
 
 							postAddress = restUtils.constructUrl(restUtils.EntityUrl.CLIENTS);
 							responseJson = {
-								id: self.clientRowSelected().length ? self.clientSelected().id : null,
+								id: $('#clientId')[0].value,
 								name: $('#inputEditName')[0].value,
 								address: $('#textareaEditAddress')[0].value,
 								postcode: $('#inputEditPostcode')[0].value,
@@ -219,14 +219,17 @@ define(['ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 
 								notes: $('#textareaEditClientNotes')[0].value
 							};
 
-							return $.when(restClient.doPost(postAddress, responseJson)
+							return $.when(restClient.doPostJson(postAddress, responseJson)
 							.then(
 								success = function (response) {
 									self.postTextColor("green");
 										self.postText("You have succesfully saved the client.");
 										console.log("client data posted");
+										self.clientSelected(response);
+										clientId=response.id;
+										console.log(clientId);
 										//update clientsTable
-										self.getClientsAjax();
+										//self.getClientsAjax();
 								},
 								error = function (response) {
 									self.postTextColor("red");
@@ -255,7 +258,6 @@ define(['ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 
 									email: $('#inputEditEmail')[0].value,
 									notes: $('#textareaEditClientNotes')[0].value
 								};
-console.log(responseJson);
 								$.ajax({type: 'POST'
 									,url:`/rest/clients/duplicate_request`
 									,data:JSON.stringify(responseJson)
@@ -277,16 +279,14 @@ console.log(responseJson);
 
 
 						self.getClient= function (){
-							console.log("getting clinet "+clientId);
+							console.log("getting client "+clientId);
 							self.clientsLoaded(false);
 								if(clientId=="new"){
-									self.clientRowSelected([]);
 									self.clientSelected("");
 								} else {
 									$.when(restClient.doGet('/rest/clients/'+clientId))
 										.then(
 											success = function (response) {
-												console.log(response.clients);
 												self.clientSelected(response);
 												self.clientsValid(true);
 											},
@@ -316,7 +316,7 @@ console.log(responseJson);
                             var responseJson;
                             if (event.target.id === "saveButton") {
                                 responseJson = {
-                                    id: self.clientRowSelected().length ? self.clientSelected().id : null,
+                                    id: $('#clientId')[0].value,
                                     name: $('#inputEditName')[0].value,
                                     address: $('#textareaEditAddress')[0].value,
                                     postcode: $('#inputEditPostcode')[0].value,
@@ -346,7 +346,11 @@ console.log(responseJson);
 												var nameRow= new Object();
 												nameRow.field="Name: "+$('#inputEditName')[0].value;
 												var addressRow= new Object();
-												addressRow.field="Address: "+($('#textareaEditAddress')[0].value).split('\n')[0];
+												if($('#textareaEditAddress')[0].value!=null){
+													addressRow.field="Address: "+($('#textareaEditAddress')[0].value).split('\n')[0];
+												} else {
+													addressRow.field="Address: ";
+												}
 												var postcodeRow= new Object();
 												postcodeRow.field="Postcode: "+(($('#inputEditPostcode')[0].value==null)?"":$('#inputEditPostcode')[0].value);
 												var emailRow= new Object();
@@ -370,8 +374,6 @@ console.log(responseJson);
 												});
 
 												self.duplicatesColumns (header);
-console.log(buttonRow);
-
 												self.duplicatesDataProvider(new ArrayDataProvider([nameRow,addressRow,postcodeRow,emailRow,phoneRow,buttonRow]));
 
 
@@ -435,44 +437,30 @@ console.log(buttonRow);
                             self.clientsLoaded = ko.observable();
                             self.clientsValid = ko.observable();
 
-                            self.clientsValues([]);
-                            //GET /rest/clients - REST
-                            self.clientsLoaded(false);
-                            return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.CLIENTS))
-                                .then(
-                                    success = function (response) {
-                                        console.log(response.clients);
-                                        self.clientsValues(response.clients);
-                                        self.clientsValid(true);
-                                    },
-                                    error = function (response) {
-                                        console.log("Clients not loaded");
-                                        self.clientsValid(false);
-                                }).then(function () {
-                                    var sortCriteria = {key: 'name', direction: 'ascending'};
-                                    var arrayDataSource = new oj.ArrayTableDataSource(self.clientsValues(), {idAttribute: 'id'});
-                                    arrayDataSource.sort(sortCriteria);
-                                    self.clientsDataProvider(new oj.PagingTableDataSource(arrayDataSource));
-                                }).then(function () {
-									if(clientId=="new"){
-										                            self.clientRowSelected([]);
-										                            self.clientSelected("");
+							if(clientId=="new"){
+								self.clientSelected("");
+								self.clientsValid(true);
+								self.clientsLoaded(true);
+							} else {
 
-									} else {
-									                                function searchNodes(nameKey, myArray){
-									                                    for (var i=0; i < myArray.length; i++) {
-									                                        if (myArray[i].id === nameKey) {
-									                                            return myArray[i];
-									                                        }
-									                                    }
-									                                };
 
-									                                self.clientSelected(searchNodes(clientId, self.clientsValues()));
-																}
+								//GET /rest/clients - REST
+								self.clientsLoaded(false);
+								return $.when(restClient.doGetJson("/rest/clients/"+clientId)
+									.then(
+										success = function (response) {
+											console.log(response);
+											self.clientSelected(response);
+											self.clientsValid(true);
+											self.clientsLoaded(true);
+										},
+										error = function (response) {
+											console.log("Client not loaded");
+											self.clientsValid(false);
+									})
+								);
 
-                                    self.clientsLoaded(true);
-                                })
-                            );
+							}
                         };
 
                         function getOfferTypesCategoriesAjax() {
@@ -521,6 +509,6 @@ console.log(buttonRow);
                 };
             }
 
-            return ClientsViewModel;
+            return ClientViewModel;
         }
 );
