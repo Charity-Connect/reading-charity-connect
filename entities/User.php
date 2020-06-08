@@ -32,12 +32,19 @@ class User{
         $sql = "INSERT INTO users ( password,display_name,email,phone,confirmation_string,created_by,updated_by) values (:password,:display_name,:email,:phone,:confirmation_string,:user_id,:user_id)";
         $this->confirmation_string=generate_string(60);
         $stmt= $this->connection->prepare($sql);
+
+        $uid=-1;
+		if(isset($_SESSION['id'])){
+			$uid=$_SESSION['id'];
+		}
+
+
         if( $stmt->execute(['password'=>$this->password
         ,'display_name'=>$this->display_name
         ,'email'=>$this->email
         ,'phone'=>$this->phone
         ,'confirmation_string'=>$this->confirmation_string
-        ,'user_id'=>$_SESSION['id']
+        ,'user_id'=>$uid
         ])){
             $this->id=$this->connection->lastInsertId();
 			$organization_user = new UserOrganization($this->connection);
@@ -46,6 +53,9 @@ class User{
 			$organization_user->admin='N';
 			$organization_user->user_approver='N';
 			$organization_user->need_approver='N';
+			$organization_user->manage_offers='Y';
+			$organization_user->manage_clients='Y';
+			$organization_user->client_share_approver='N';
 			if(isset($_SESSION['id'])){
 				$organization_user->confirmed='Y';
 			} else {
