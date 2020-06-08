@@ -12,7 +12,7 @@ $key=$_GET['key'];
 $user_organization->id=$id;
 $user_organization->read();
 if($user_organization->confirmUserOrganization($key)){
-    echo "<p>User organization membership confirmed. Click <a href='/'>here</a> to log in</p>";
+    echo "<p>User organization membership confirmed. Click <a href='/'>here</a> to continue.</p>";
 } else {
     echo "Error confirming user organization membership";
 }
