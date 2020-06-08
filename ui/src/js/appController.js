@@ -15,10 +15,12 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 
         self.KnockoutTemplateUtils = KnockoutTemplateUtils;
         self.navData;
-
+		self.currentOrg={"manage_offers":"N"};
         // Handle announcements sent when pages change, for Accessibility.
         self.manner = ko.observable('polite');
         self.message = ko.observable();
+        self.navDataProvider=ko.observableArray([]);
+        self.organizationList=ko.observableArray([]);
         document.getElementById('globalBody').addEventListener('announce', announcementHandler, false);
 
         function announcementHandler(event) {
@@ -39,12 +41,53 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 self.userLogin = ko.observable();
                 self.currentOrganization = ko.observable();
 
+
+                self.setMenuEntries= function(organization_id){
+					self.currentOrg=self.userDetails.user_organizations.find(element=> element.organization_id==organization_id);
+					// Navigation setup
+					self.navData = [
+						  {name: 'Requests', id: 'requests',
+							  iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'}
+					  ];
+
+					if(self.currentOrg.manage_offers=='Y'){
+						self.navData.push(
+						  {name: 'Offers', id: 'offers',
+							  iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'}
+						);
+					}
+
+					if(self.currentOrg.manage_clients=='Y'){
+						self.navData.push(
+						  {name: 'Clients', id: 'clients',
+							  iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
+						);
+					}
+					if(self.currentOrg.organization_admin=='Y'){
+						self.appName("Charity Connect - Admin");
+						self.navData.push(
+							{name: 'Org Admin', id: 'orgAdmin',
+								iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-library-icon-24'}
+						);
+					}
+					if(self.userDetails.admin=='Y'){
+						self.appName("Charity Connect - System Admin");
+						self.navData.push(
+						{name: 'Admin', id: 'admin',
+						iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-library-icon-24'}
+						);
+					}
+					self.navDataProvider(new ArrayDataProvider(self.navData, {keyAttributes: 'id'}));
+
+				}
+
                 //log-in logic
                 getUser = function() {
                     //GET /rest/users/current - REST
                     return $.when(restClient.doGetJson(`${restUtils.constructUrl(restUtils.EntityUrl.USERS)}/current`)
                         .then(
                             success = function(response) {
+								self.userDetails=response;
                                 self.userLogin(response.email);
                                 utils.appConstants.users.organizationId = response.organization_id;
                                 self.currentOrganization(response.organization_name);
@@ -56,12 +99,20 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 									alert("You are not a confirmed member of any organization yet."); // please add a proper way to display the message.
 								}
 
+								if(response.admin=="Y"){
+									utils.appConstants.sysModuleConfig = {viewPath: 'views/systemAdminOrganizations.html'
+									, viewModelPath: 'viewModels/systemAdminOrganizations'
+									, params: {parentRouter: self.router}} ;
+								}
+
 								if(user_confirmed_organizations.length>1){
 									user_confirmed_organizations.forEach(function(org) {
-										$("#orgMenu").append("<oj-option id=\"org_"+org.organization_id+"\" value=\""+org.organization_id+"\">"+org.organization_name+"</oj-option>");
+										self.organizationList.push({"id":org.organization_id,"name":org.organization_name});
 									});
-
 								}
+
+								self.setMenuEntries(response.organization_id);
+
                             },
                             error = function() {
                                 window.location.href = "/rest/logout?redirect=/index.html?redirect=" + window.location.pathname;
@@ -69,20 +120,18 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         )
                     )
                 }();
+
+
                 //switch org logic
                 self.orgMenuItemAction = function(event) {
+					console.log(event);
 
 					$.when(restClient.doGet('/rest/set_organization?id='+event.target.value)
                         .then(
                             success = function(response) {
                                 self.currentOrganization(response.organization_name);
                                 utils.appConstants.users.organizationId = response.organization_id;
-                                if (self.router.currentState().id === "orgAdmin") {
-                                    self.moduleConfig(moduleUtils.createConfig({viewPath: 'views/orgAdmin.html',
-                                        viewModelPath: 'viewModels/orgAdmin', params: {parentRouter: self.router}})
-                                    );
-                                    self.router.go("orgAdmin");
-                                }
+                                self.setMenuEntries(response.organization_id);
                             },
                             error = function() {
                                 alert("err");
@@ -98,73 +147,24 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 };
 
        // Router setup
-       self.router = Router.rootInstance;
-                self.routerConfig = {
-                    'requests': {label: 'Requests', isDefault: true},
-                    'offers': {label: 'Offers'},
-                    'clients': {label: 'Clients'},
-                    'client/{clientId}': {label: 'Client'}
-                };
-      Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
-                                    self.router.configure(self.routerConfig);
+		self.router = Router.rootInstance;
+		self.routerConfig = {
+			'requests': {label: 'Requests', isDefault: true},
+			'offers': {label: 'Offers'},
+			'clients': {label: 'Clients'},
+			'client/{clientId}': {label: 'Client'},
+			'orgAdmin': {label: 'Org Admin'},
+			'admin': {label: 'Admin'}
+		};
+		Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
+        self.router.configure(self.routerConfig);
 
 	// Navigation setup
-			   self.navData = [
-				  {name: 'Requests', id: 'requests',
-					  iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'},
-				  {name: 'Offers', id: 'offers',
-					  iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-info-icon-24'},
-				  {name: 'Clients', id: 'clients',
-					  iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-people-icon-24'}
-			  ];
-		self.navDataProvider = new ArrayDataProvider(self.navData, {keyAttributes: 'id'});
-
-
-                self.getOrgAdminDetails = function () {
-                    return $.ajax({
-                        type: 'GET',
-                        contentType: 'application/json',
-                        url: '/rest/org_admin_check',
-                        success: function (response) {
-                            if (response == "true") {
-                                self.appName("Charity Connect - Admin");
-
-                                self.routerConfig.orgAdmin = {label: 'Org Admin'};
-                                self.router.configure(self.routerConfig);
-
-                                self.navData.push(
-                                    {name: 'Org Admin', id: 'orgAdmin',
-                                        iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-library-icon-24'}
-                                );
-                            }
-                        }
-                    });
-
-                }
-                self.getAdminUserDetails = function () {
-                    return $.ajax({
-                            type: 'GET',
-                            contentType: 'application/json',
-                            url: '/rest/admin_check',
-                            success: function (response) {
-                                if (response == "true") {
-                                    utils.appConstants.sysModuleConfig = {viewPath: 'views/systemAdminOrganizations.html',
-                                        viewModelPath: 'viewModels/systemAdminOrganizations' , params: {parentRouter: self.router}}
-                                    ;
-                                    self.appName("Charity Connect - System Admin");
-
-                                    self.routerConfig.admin = {label: 'Admin'};
-                                    self.router.configure(self.routerConfig);
-
-                                    self.navData.push(
-                                        {name: 'Admin', id: 'admin',
-                                            iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-library-icon-24'}
-                                    );
-                                }
-                            }
-                        });
-
-                }
+	   self.navData = [
+		  {name: 'Requests', id: 'requests',
+			  iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'}
+	  ];
+		self.navDataProvider(new ArrayDataProvider(self.navData, {keyAttributes: 'id'}));
 
 
       self.loadModule = function () {

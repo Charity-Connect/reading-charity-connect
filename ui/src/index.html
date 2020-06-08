@@ -74,6 +74,15 @@
                 <span><oj-bind-text value="[[currentOrganization]]"></oj-bind-text></span>
                 <span slot="endIcon" :class="[[{'oj-icon demo-appheader-avatar': smScreen(), 'oj-component-icon oj-button-menu-dropdown-icon': !smScreen()}]]"></span>
                 <oj-menu id="orgMenu" slot="menu" style="display:none" on-oj-action="[[orgMenuItemAction]]">
+    <oj-bind-for-each data="[[organizationList]]">
+        <template>
+            <oj-option :id="[[$current.data.id]]" :value="[[$current.data.id]]" >
+                <span>
+                    <oj-bind-text value="[[$current.data.name]]"></oj-bind-text>
+                </span>
+            </oj-option>
+        </template>
+    </oj-bind-for-each>
                 </oj-menu>
               </oj-menu-button>
           </div>

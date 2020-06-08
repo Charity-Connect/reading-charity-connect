@@ -8,7 +8,7 @@
         <oj-progress id="progressBar" value="-1"></oj-progress>
     </oj-bind-if>
     <oj-bind-if test="[[userOrgLoaded() == true]]">
-        
+
 
         <oj-bind-if test="[[userOrgValid() == true]]">
             <div class="spacer-sm">
@@ -19,9 +19,9 @@
             </div>
 
             <div class="spacer-sm">
-                <div class="oj-panel oj-panel-alt2"> 
+                <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
-                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
+                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">
                             <h2>
                                 <oj-bind-text  value='[[userOrgName]]'> </oj-bind-text>
                             </h2>
@@ -92,13 +92,13 @@
                     </div>
                 </td>
             </script>
-            
+
             <oj-bind-if test="[[showPanel()]]">
                 <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
-                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
+                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">
                             <h3>Edit User</h3>
-                        </div>                    
+                        </div>
                         <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">
                                 <oj-button id="saveButton" class="oj-sm-float-end"
@@ -191,6 +191,44 @@
                                      </oj-checkboxset>
                                  </div>
                              </div>
+
+							  <div class="oj-flex oj-padding" >
+								  <div class="oj-flex-item oj-padding-end">
+
+								  </div>
+								  <div class="oj-flex-item">
+									  <oj-checkboxset id="selectEditManageClients"
+													  value="{{userManageClients}}">
+										  <oj-option id="manage_clients" value="manage_clients">Manage Clients</oj-option>
+									  </oj-checkboxset>
+								  </div>
+							  </div>
+
+
+							  <div class="oj-flex oj-padding" >
+								  <div class="oj-flex-item oj-padding-end">
+
+								  </div>
+								  <div class="oj-flex-item">
+									  <oj-checkboxset id="selectEditManageOffers"
+													  value="{{userManageOffers}}">
+										  <oj-option id="manage_offers" value="manage_offers">Manage Offers</oj-option>
+									  </oj-checkboxset>
+								  </div>
+							  </div>
+
+							  <div class="oj-flex oj-padding" >
+								  <div class="oj-flex-item oj-padding-end">
+
+								  </div>
+								  <div class="oj-flex-item">
+									  <oj-checkboxset id="selectEditClientShareApprover"
+													  value="{{userClientShareApprover}}">
+										  <oj-option id="client_share_approver" value="client_share_approver">Client Share Approver</oj-option>
+									  </oj-checkboxset>
+								  </div>
+							  </div>
+
 
                              <div class="oj-flex oj-padding" >
                                  <div class="oj-flex-item oj-padding-end">

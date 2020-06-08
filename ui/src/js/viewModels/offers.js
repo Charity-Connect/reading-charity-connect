@@ -7,14 +7,17 @@
 /*
  * Your offers ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
+define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
+        function (app,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
 
             function OffersViewModel() {
                 var self = this;
 
+                if(app.currentOrg.manage_offers!="Y"){
+					return;
+				}
                 self.connected = function () {
                     accUtils.announce('Offers page loaded.');
                     document.title = "Offers";

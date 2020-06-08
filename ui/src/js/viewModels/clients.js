@@ -7,13 +7,16 @@
 /*
  * Your clients ViewModel code goes here
  */
-define(['ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
+define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
+        function (app,Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
 
             function ClientsViewModel() {
                 var self = this;
+                if(app.currentOrg.manage_clients!="Y"){
+					return;
+				}
 			    var router = Router.rootInstance;
 
                 self.connected = function () {
