@@ -22,11 +22,11 @@ function initRest(){
 				header("Content-Type: application/json; charset=UTF-8");
 				return $connection;
 			} else {
-				header("location: /index.html");
+				header("location: /index.html?redirect=".urlencode(basename($_SERVER['REQUEST_URI'])));
 				exit;
 			}
 		} else {
-				header("location: /index.html");
+				header("location: /index.html?redirect=".urlencode(basename($_SERVER['REQUEST_URI'])));
 				exit;
 		}
 
@@ -54,7 +54,7 @@ session_start();
 
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: /index.html");
+    header("location: /index.html?redirect=".urlencode(basename($_SERVER['REQUEST_URI'])));
     exit;
 }
 
@@ -159,10 +159,10 @@ function get_string($code,$tokens=array()){
 
 function sendHtmlMail($to,$subject,$body){
 // Always set content-type when sending HTML email
-$headers = "MIME-Version: 1.0" . "\r\n";
-$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+$headers = "MIME-Version: 1.0"."\r\n";
+$headers .= "Content-type:text/html;charset=UTF-8\r\n";
 
-	mail($to,$subject,$body,$headers);
+	mail($to,$subject,$body,$headers, '-f noreply@rdg-connect.org -F "Reading Connect"');
 
 }
 
