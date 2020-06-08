@@ -22,11 +22,11 @@ function initRest(){
 				header("Content-Type: application/json; charset=UTF-8");
 				return $connection;
 			} else {
-				header("location: /index.html");
+				header("location: /index.html?redirect=".urlencode(basename($_SERVER['REQUEST_URI'])));
 				exit;
 			}
 		} else {
-				header("location: /index.html");
+				header("location: /index.html?redirect=".urlencode(basename($_SERVER['REQUEST_URI'])));
 				exit;
 		}
 
@@ -54,7 +54,7 @@ session_start();
 
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: /index.html");
+    header("location: /index.html?redirect=".urlencode(basename($_SERVER['REQUEST_URI'])));
     exit;
 }
 

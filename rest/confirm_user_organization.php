@@ -2,7 +2,7 @@
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
 
-$connection=initRest();
+$connection=initWeb();
 
 $user_organization = new UserOrganization($connection);
 
@@ -12,7 +12,7 @@ $key=$_GET['key'];
 $user_organization->id=$id;
 $user_organization->read();
 if($user_organization->confirmUserOrganization($key)){
-    echo "User organization membership confirmed";
+    echo "<p>User organization membership confirmed. Click <a href='/'>here</a> to log in</p>";
 } else {
     echo "Error confirming user organization membership";
 }
