@@ -159,11 +159,10 @@ function get_string($code,$tokens=array()){
 
 function sendHtmlMail($to,$subject,$body){
 // Always set content-type when sending HTML email
-$headers  = 'FROM: "Reading Connect" <noreply@readingconnect.org>\r\n';
-$headers .= 'MIME-Version: 1.0\r\n';
-$headers .= 'Content-type:text/html;charset=UTF-8\r\n';
+$headers = "MIME-Version: 1.0"."\r\n";
+$headers .= "Content-type:text/html;charset=UTF-8\r\n";
 
-	mail($to,$subject,$body,$headers);
+	mail($to,$subject,$body,$headers, '-f noreply@rdg-connect.org -F "Reading Connect"');
 
 }
 
