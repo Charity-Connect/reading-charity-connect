@@ -1,5 +1,6 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/User.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Organization.php';
 class UserOrganization{
 
     private $connection;
@@ -181,16 +182,29 @@ class UserOrganization{
 
     }
 
-	public function confirmUserOrganization($confirmation_string){
+	public function confirmUserOrganization($id,$confirmation_string){
+		global $site_address;
+		$this->id=$id;
+		$this->read();
+
 		if($confirmation_string==$this->confirmation_string){
 			$sql = "UPDATE user_organizations SET confirmed='Y',updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id
-			,'updated_by'=>$_SESSION['id']
-			]);
-		} else {
-			return false;
+			if( $stmt->execute(['id'=>$id,'updated_by'=>$_SESSION['id']])) {
+
+            	$user= new User($this->connection);
+				$user->forceRead($this->user_id);
+            	$organization= new Organization($this->connection);
+				$organization->id=$this->organization_id;
+				$organization->read();
+            	$messageBody=get_string("new_org_confirmed_body",array("%NAME%"=>$user->display_name,"%ORGANIZATION_NAME%"=>$organization->name,"%LINK%"=>$site_address));
+            	$messageSubject=get_string("new_org_confirmed_subject",array("%NAME%"=>$user->display_name,"%ORGANIZATION_NAME%"=>$organization->name,"%LINK%"=>$site_address));
+            	sendHtmlMail($user->email,$messageSubject,$messageBody);
+            	return true;
+			}
 		}
+		return false;
+
 	}
 
 }

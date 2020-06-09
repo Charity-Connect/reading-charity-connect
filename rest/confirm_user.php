@@ -1,4 +1,5 @@
 <?php
+include $_SERVER['DOCUMENT_ROOT'] .'/header.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/User.php';
 
@@ -19,3 +20,4 @@ if($user->confirmUser($id,$key)){
 } else {
     echo "Error confirming user account";
 }
+include $_SERVER['DOCUMENT_ROOT'] .'/footer.php';

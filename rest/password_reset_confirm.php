@@ -1,5 +1,6 @@
 <?php
 
+include $_SERVER['DOCUMENT_ROOT'] .'/header.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
 
@@ -14,7 +15,8 @@ if($password!=$password2){
 	return "no match";
 }
 if(password_reset_confirm($email,$key,$password)){
- 	echo "Password reset";
+ 	echo "<p>Password reset. Click <a href='/'>here</a> to log in.</p>";
 } else {
-	echo "We could not reset your password";
+	echo "Error: we could not reset your password";
 }
+include $_SERVER['DOCUMENT_ROOT'] .'/footer.php';
