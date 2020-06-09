@@ -81,8 +81,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
         $id=$user->create($organization_id);
         if($id>0){
-                // Redirect to login page
-                header("location: /index.html");
+                echo "You will shortly receive an e-mail asking you to confirm your account. Click on the link to confirm and log in";
 
         }else{
                 echo "Something went wrong. Please try again later.";
