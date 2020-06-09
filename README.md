@@ -2,7 +2,7 @@
 
 Deployment Status
 
-![Publish Website](https://github.com/mmillmor/charity-connect/workflows/Publish%20Website/badge.svg)
+![Publish Website](https://github.com/Charity-Connect/reading-charity-connect/workflows/Publish%20Website/badge.svg)
 
 ## Available Services
 

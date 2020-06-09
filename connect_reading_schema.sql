@@ -9,6 +9,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+
 -- --------------------------------------------------------
 
 --
@@ -153,6 +154,17 @@ CREATE TABLE `offer_types` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `offer_types`
+--
+
+INSERT INTO `offer_types` (`type`, `name`, `category`, `default_text`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+('company', 'Companionship visit', 'company', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('cooking', 'Help with cooking', 'food', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('food_parcel', 'Food Parcel', 'food', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('prescription_collection', 'Prescription Collection', 'medical', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('readifood', 'ReadiFood Referral', 'food', 'Please complete the following fields so that we can submit the request automatically. Fields with a * next to them must be completed. Any optional fields not completed will be set to No.\n\n* Reason for food parcel request: \n\nHome Delivery (Y/N):\n\nFood Preferences\nNo Cooking Facilities (Y/N):\nVegetarian (Y/N):\nHalal (Y/N):\nDiabetic (Y/N):\nGluten Free (Y/N):\nOther:\n\n* Number of weeks (1-4):\n\nAdditional Items\nNappies (Y/N):\nNappy Size:\nBaby Toiletries (Y/N):\nBaby Food 4-6m (Y/N):\nBaby Food 7-12m (Y/N):\nOther:\n\n* Number of Adults (0-5):\n* Number of Children (0-5):\nAge and gender of Children: ', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -186,6 +198,13 @@ CREATE TABLE `roles` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `roles`
+--
+
+INSERT INTO `roles` (`id`, `name`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+(1, 'admin', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -205,7 +224,7 @@ CREATE TABLE `strings` (
 -- Dumping data for table `strings`
 --
 
-REPLACE INTO `strings` (`code`, `string`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+INSERT INTO `strings` (`code`, `string`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
 ('new_org_user_confirmation', '<p>A new user has registered for your organization on RDG Connect;</p>\r\n<p>Name: %NAME%</p>\r\n<p>Email: %EMAIL%</p>\r\n<p>If you want to add this user to your organization, click <a href=\"%LINK%\">here</a>. If you do not recognize this user, simply ignore this e-mail.</p> ', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('new_org_user_subject', 'New User Registered at RDG Connect', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('new_user_confirmation', '<p>%NAME%,</p>\r\n\r\n<p>welcome to RDG Connect. To confirm your account, click <a href=\"%LINK%\">here</a>. If you did not sign up for an account, please ignore this e-mail.</p>', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
@@ -231,6 +250,15 @@ CREATE TABLE `type_categories` (
   `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `type_categories`
+--
+
+INSERT INTO `type_categories` (`code`, `name`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+('food', 'Food', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('medical', 'Medical', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('company', 'Company and visits', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
 
 -- --------------------------------------------------------
 
@@ -438,7 +466,7 @@ ALTER TABLE `organizations`
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
