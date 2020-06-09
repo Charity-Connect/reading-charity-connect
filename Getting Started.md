@@ -7,14 +7,16 @@
 ## ojet
 1. install ojet using npm;
 
-    cd ui
-    npm install --save-dev @oracle/ojet-cli  
-    ojet restore  
-    ojet build  --release
+```
+cd ui
+npm install --save-dev @oracle/ojet-cli  
+ojet restore  
+ojet build  --release
+```
 
 2. Start the ojet server as follows;
 
-    ojet serve
+``ojet serve``
 
 Note, we aren't going to actually run from that server, but having it active means the deployment gets rebuilt every time we edit a file.
 
