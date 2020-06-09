@@ -1,6 +1,5 @@
 <?php
 
-include $_SERVER['DOCUMENT_ROOT'] .'/header.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
 
@@ -8,6 +7,7 @@ $dbclass = new DBClass();
 $connection = $dbclass->getConnection();
 
 $email=$_POST["email"];
+include $_SERVER['DOCUMENT_ROOT'] .'/header.php';
 if(password_reset_request($email)){
  	echo "<p>Password reset e-mail sent. <a href=\"/\">Home</a></p>";
 } else {
