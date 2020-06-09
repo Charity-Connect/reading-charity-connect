@@ -1,6 +1,7 @@
 .gitignore
 LICENSE
 README.md
+*.md
 ui/scripts
 ui/src
 ui/.gitignore
