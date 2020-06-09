@@ -16,7 +16,7 @@ $id=$_GET['id'];
 $key=$_GET['key'];
 
 if($user->confirmUser($id,$key)){
-    echo "<p>User account confirmed. Click <a href='/'>here</a> to login.</p>";
+    echo "<p>User account confirmed. You will receive an e-mail asking you to confirm your account. When you have confirmed your account, you can login <a href='/'>here</a>.</p>";
 } else {
     echo "Error confirming user account";
 }
