@@ -146,7 +146,11 @@ class User{
         	if(is_admin()||$this->force_read==true){
 	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name, role.role_id as admin from users u left join user_roles role on role.user_id=u.id and role.role_id=1, user_organizations uo, organizations org where u.id=uo.user_id and org.id=uo.organization_id and u.id=:id order by if(org.id=:organization_id,-1,u.id)";
 	        	$stmt = $this->connection->prepare($query);
-	        	$stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
+	        	$organization_id=-1;
+	        	if(isset($_SESSION["organization_id"])){
+	        		$organization_id=$_SESSION["organization_id"];
+	        	}
+	        	$stmt->execute(['id'=>$id,'organization_id'=>$organization_id]);
 	        } else if(is_org_admin()){
 				$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name , role.role_id as admin
 				from users u left join user_roles role on role.user_id=u.id and role.role_id=1, user_organizations uo, organizations org

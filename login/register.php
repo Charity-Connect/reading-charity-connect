@@ -12,6 +12,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
 $dbclass = new DBClass();
 $connection = $dbclass->getConnection();
 $organization = new Organization($connection);
+$registered=false;
 
 
 // Define variables and initialize with empty values
@@ -81,7 +82,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
         $id=$user->create($organization_id);
         if($id>0){
-                echo "You will shortly receive an e-mail asking you to confirm your account. Click on the link to confirm and log in";
+        	$registered=true;
 
         }else{
                 echo "Something went wrong. Please try again later.";
@@ -110,6 +111,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <div class="wrapper">
             <h2 class="oj-sm-only-hide oj-web-applayout-header-title" title="Application Name"><img src="/images/handshake.png" alt="logo"/>
 Reading Charity Connect - Sign Up</h2>
+<?php if($registered) : ?>
+<div id="confirmMessage" >
+<h2>Thanks for creating your account. You will shortly receive an e-mail asking you to confirm your account. Click on the link to confirm and log in.</h2>
+</div>
+<?php else : ?>
+<div id="signupForm">
         <p>Please fill this form to create an account.</p>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="loginFields">
             <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
@@ -153,6 +160,8 @@ Reading Charity Connect - Sign Up</h2>
             </div>
             <p>Already have an account? <a href="/index.html">Login here</a>.</p>
         </form>
+        </div>
+<?php endif; ?>
     </div>
 </body>
 </html>
