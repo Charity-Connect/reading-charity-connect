@@ -1,6 +1,7 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
 
 $connection=initWeb();
 
