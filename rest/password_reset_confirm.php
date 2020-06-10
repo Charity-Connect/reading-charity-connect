@@ -10,11 +10,14 @@ $email=$_POST["email"];
 $key=$_POST["key"];
 $password=$_POST["password"];
 $password2=$_POST["password2"];
+include $_SERVER['DOCUMENT_ROOT'] .'/header.php';
+
 if($password!=$password2){
-	return "no match";
+	echo "<p>The passwords did not match</p>";
 }
 if(password_reset_confirm($email,$key,$password)){
- 	echo "Password reset";
+ 	echo "<p>Password reset. Click <a href='/'>here</a> to log in.</p>";
 } else {
-	echo "We could not reset your password";
+	echo "Error: we could not reset your password";
 }
+include $_SERVER['DOCUMENT_ROOT'] .'/footer.php';

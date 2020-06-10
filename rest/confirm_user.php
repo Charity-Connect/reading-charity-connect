@@ -6,6 +6,8 @@ global $connection;
 // Initialize the session
 session_start();
 
+include $_SERVER['DOCUMENT_ROOT'] .'/header.php';
+
 include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
 $dbclass = new DBClass();
 $connection = $dbclass->getConnection();
@@ -19,3 +21,4 @@ if($user->confirmUser($id,$key)){
 } else {
     echo "Error confirming user account";
 }
+include $_SERVER['DOCUMENT_ROOT'] .'/footer.php';

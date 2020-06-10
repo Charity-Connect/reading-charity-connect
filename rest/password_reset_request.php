@@ -7,8 +7,10 @@ $dbclass = new DBClass();
 $connection = $dbclass->getConnection();
 
 $email=$_POST["email"];
+include $_SERVER['DOCUMENT_ROOT'] .'/header.php';
 if(password_reset_request($email)){
- 	echo "Password reset e-mail sent. <a href=\"/index.html\">Login</a>";
+ 	echo "<p>Password reset e-mail sent. <a href=\"/\">Home</a></p>";
 } else {
-	echo "We could not find an account with that e-mail address. <a href=\"javascript:history.back()\">Back</a>";
+	echo "<p>We could not find an account with that e-mail address. <a href=\"javascript:history.back()\">Back</a></p>";
 }
+include $_SERVER['DOCUMENT_ROOT'] .'/footer.php';
