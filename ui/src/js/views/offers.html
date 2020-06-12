@@ -55,13 +55,44 @@
             
             <oj-bind-if test="[[showPanel()]]">
                 <div class="oj-panel oj-panel-alt2">
-                    <oj-bind-if test="[[addOfferButtonSelected().length]]">
-                        <h3>Add offer</h3>
-                    </oj-bind-if>
-                    <oj-bind-if test="[[offerRowSelected().length]]">
-                        <h3>Edit offer</h3>
-                    </oj-bind-if>                            
-                    <hr />                    
+                    <div class="oj-flex sm-1x-row">
+                        <div class="oj-sm-padding-1x-horizontal oj-flex-item">
+                            <oj-bind-if test="[[addOfferButtonSelected().length]]">
+                                <h3>Add offer</h3>
+                            </oj-bind-if>
+                            <oj-bind-if test="[[offerRowSelected().length]]">
+                                <h3>Edit offer</h3>
+                            </oj-bind-if> 
+                        </div>
+                        <div class="oj-sm-padding-1x-horizontal oj-flex-item">
+                            <div class="oj-helper-clearfix">
+                                <div class="oj-flex sm-1x-row oj-sm-float-end">
+                                    <div class="oj-sm-padding-1x-horizontal">
+                                        <oj-button id="saveButton" on-oj-action='[[saveButton]]'
+                                            disabled="[[disableSaveButton]]">
+                                            <span>Save</span>
+                                        </oj-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="statusBar" class="oj-flex-bar sm-1x-row">
+                        <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex-item">
+                        </div>
+                        <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex-item oj-flex oj-sm-flex-direction-column">
+                            <oj-bind-if test="[[fileContentPosted() !== true]]">
+                                <span class="oj-helper-text-align-right">Posting...</span>
+                                <oj-progress id="progressBar" value="-1"></oj-progress>
+                            </oj-bind-if>
+                            <oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="saveButton"
+                                      :style.color="[[postTextColor]]">
+                                <oj-bind-text value='[[postText]]'></oj-bind-text>
+                            </oj-label>
+                        </div>
+                    </div>
+                    <hr />
+                           
                     <div class="oj-flex sm-1x-row">                                                               
                         <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                             <oj-label id="editNameLabel"><strong>Offer Name:</strong></oj-label>
@@ -153,26 +184,7 @@
                         placeholder="Input offer notes"
                         title="Edit offer notes textarea"
                         rows="5">                                
-                    </oj-text-area>
-                    <hr />
-                    <div class="oj-flex-bar sm-1x-row">
-                        <div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
-                            <oj-bind-if test="[[fileContentPosted() !== true]]">
-                                <span class="oj-helper-text-align-right">Posting...</span>
-                                <oj-progress id="progressBar" value="-1"></oj-progress>
-                            </oj-bind-if>
-                            <oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="saveButton"
-                                :style.color="[[postTextColor]]">
-                                <oj-bind-text value='[[postText]]'></oj-bind-text>
-                            </oj-label>
-                        </div>
-                        <div class="oj-sm-padding-1x-horizontal oj-flex">
-                            <oj-button id="saveButton" on-oj-action='[[saveButton]]'
-                                disabled="[[disableSaveButton]]">
-                                <span>Save</span>
-                            </oj-button>
-                        </div>
-                    </div>
+                    </oj-text-area>                    
                 </div>
             </oj-bind-if>
         </oj-bind-if>            
