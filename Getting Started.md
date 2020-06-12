@@ -4,6 +4,8 @@
 ## Git
 1. Clone the git repository locally, and switch to the integration branch to work
 
+Note, when working from MacOS cloning will default to the user profile folder ``"/Users/<username>"``. In order to avoid file access permissions issues with Apache, clone the repository into the "Shared" folder ``"/Users/Shared"`` instead.
+
 ## ojet
 1. install ojet using npm;
 
