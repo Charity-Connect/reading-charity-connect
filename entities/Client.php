@@ -58,7 +58,7 @@ class Client{
 
     }
     public function readAll(){
-        if(is_admin()){
+        if(is_admin()&&$_SESSION["organization_id"]==-99){
         	$query = "SELECT id,name,address,postcode,phone,email,notes from clients ORDER BY id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute();
@@ -92,7 +92,7 @@ class Client{
    }
 
     public function readOne($id){
-        if(is_admin()||$this->force_read==true){
+        if((is_admin()&&$_SESSION["organization_id"]==-99)||$this->force_read==true){
         	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes from clients c where c.id=:id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$id]);

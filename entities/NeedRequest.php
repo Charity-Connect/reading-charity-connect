@@ -49,6 +49,7 @@ class NeedRequest{
 	        	, offer_types types
 	        	, organizations org
 	        	where request.client_need_id=client_need.id
+	        	and request.fulfilled_elsewhere='N'
 	        	and client_need.client_id=client.id
 	        	and client_need.type=types.type
 	        	and org.id=client_need.requesting_organization_id ";
@@ -86,7 +87,7 @@ class NeedRequest{
     }
     public function readAll(){
 
-        if(is_admin()){
+        if(is_admin()&&$_SESSION["organization_id"]==-99){
         	$query =$this->base_query." ORDER BY request.id";
 			$stmt = $this->connection->prepare($query);
         	$stmt->execute();
@@ -114,7 +115,7 @@ class NeedRequest{
         } else if ($completed==="N")  {
           $where_clause=$where_clause." and complete='N' ";
         }
-        if(is_admin()){
+        if(is_admin()&&$_SESSION["organization_id"]==-99){
         	$query =$this->base_query.$where_clause." ORDER BY request.id";
 			$stmt = $this->connection->prepare($query);
         	$stmt->execute();
@@ -147,7 +148,7 @@ class NeedRequest{
    }
 
     public function readOne($id){
-        if(is_admin()){
+        if(is_admin()&&$_SESSION["organization_id"]==-99){
             $query =$this->base_query." and request.id=:id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$id]);
@@ -169,7 +170,9 @@ class NeedRequest{
 
 			$row = $stmt->fetch(PDO::FETCH_ASSOC);
 			$orig_agreed=$row['agreed'];
+			$orig_complete=$row['complete'];
 			$offer_id=$row['offer_id'];
+			$client_need_id=$row['client_need_id'];
 
 	        $sql = "UPDATE need_requests SET agreed=:agreed,complete=:complete,target_date=:target_date,notes=:notes,updated_by=:updated_by WHERE id=:id";
 
@@ -180,17 +183,57 @@ class NeedRequest{
 				,'target_date'=>$this->target_date
 				,'notes'=>$this->request_response_notes
 				,'updated_by'=>$_SESSION['id']
-]);
+			]);
+			if(!$result){return false;}
 
+			if($this->agreed!=$orig_agreed && $this->agreed=='Y'){
+				// lock the agreement
+				$sql= "update client_needs set fulfilling_need_request_id=:id where id=:client_need_id and fulfilling_need_request_id is null";
+				$stmt= $this->connection->prepare($sql);
+	        	$result= $stmt->execute(['id'=>$this->id, 'client_need_id'=>$client_need_id]);
+				if(!$result){return false;}
+				if($stmt->rowCount()==0){
+					// someone else has already agreed
+					$this->agreed='N';
+					$sql = "UPDATE need_requests SET agreed='N',target_date=null,updated_by=:updated_by WHERE id=:id";
+					$stmt= $this->connection->prepare($sql);
+	        		$result= $stmt->execute(['id'=>$this->id]);
+					if(!$result){return false;}
+				} else {
+					$sql= "update need_requests set fulfilled_elsewhere='Y' where client_need_id=:client_need_id and id!=:id";
+					$stmt= $this->connection->prepare($sql);
+		        	$result= $stmt->execute(['id'=>$this->id, 'client_need_id'=>$client_need_id]);
+					if(!$result){return false;}
+				}
+			} else if ($this->agreed!=$orig_agreed && $this->agreed=='N' && $orig_agreed=='Y'){
+				// revoking the agreement, so set things back as they were
+				$sql= "update client_needs set fulfilling_need_request_id=null where id=:client_need_id and fulfilling_need_request_id =:id";
+				$stmt= $this->connection->prepare($sql);
+	        	$result= $stmt->execute(['id'=>$this->id, 'client_need_id'=>$client_need_id]);
+				if(!$result){return false;}
+				$sql= "update need_requests set fulfilled_elsewhere='N' where client_need_id=:client_need_id";
+				$stmt= $this->connection->prepare($sql);
+				$result= $stmt->execute(['client_need_id'=>$client_need_id]);
+				if(!$result){return false;}
+			}
 
+			if($this->complete=$orig_complete){
+				$sql= "update client_needs set need_met=:complete where id=:client_need_id";
+				$stmt= $this->connection->prepare($sql);
+				$result= $stmt->execute(['complete'=>$this->complete, 'client_need_id'=>$client_need_id]);
+				if(!$result){return false;}
+			}
+
+			// update the remaining count
 			if($this->agreed!=$orig_agreed){
 	        	$sql = "UPDATE offers o SET o.quantity_taken=(select count(*) from need_requests nr where nr.offer_id=o.id and nr.agreed='Y'),updated_by=:updated_by WHERE o.id=:offer_id";
 				$stmt= $this->connection->prepare($sql);
 	        	$result= $stmt->execute(['offer_id'=>$offer_id
 	        					,'updated_by'=>$_SESSION['id']
-]);
+				]);
+				if(!$result){return false;}
 	        }
-	        return $result;
+	        return $this;
 
 		} else {
 			return false;
