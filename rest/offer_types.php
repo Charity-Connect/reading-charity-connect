@@ -68,7 +68,11 @@ if(isset($data)) {
                 "name" => $name,
                 "type" => $type,
                 "category" => $category,
-                "default_text" => $default_text
+                "default_text" => $default_text,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($offer_types["offer_types"], $offer_type);
@@ -99,7 +103,11 @@ if(isset($data)) {
                 $offer_type  = array(
                 "name" => $name,
                 "type" => $type,
-                "default_text" => $default_text
+                "default_text" => $default_text,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($offer_types["offer_types"], $offer_type);
@@ -133,7 +141,11 @@ if(isset($data)) {
                 "type" => $type,
                 "category" => $category,
                 "default_text" => $default_text,
-                "active" => $active
+                "active" => $active,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($offer_types["offer_types"], $offer_type);

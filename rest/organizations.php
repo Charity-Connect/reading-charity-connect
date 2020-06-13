@@ -82,7 +82,11 @@ if(isset($data)) {
                 "id" => $id,
                 "name" => $name,
                 "address" => $address,
-                "phone" => $phone
+                "phone" => $phone,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($organizations["organizations"], $organization);

@@ -101,7 +101,11 @@ if(isset($data)) {
                 "manage_offers" => $manage_offers,
                 "manage_clients" => $manage_clients,
                 "client_share_approver" => $client_share_approver,
-                "confirmed" => $confirmed
+                "confirmed" => $confirmed,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($user_organizations["user_organizations"], $user_organization);
@@ -140,7 +144,11 @@ if(isset($data)) {
                 "manage_offers" => $manage_offers,
                 "manage_clients" => $manage_clients,
                 "client_share_approver" => $client_share_approver,
-                "confirmed" => $confirmed
+                "confirmed" => $confirmed,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($user_organizations["user_organizations"], $user_organization);
@@ -178,7 +186,11 @@ if(isset($data)) {
                 "manage_offers" => $manage_offers,
                 "manage_clients" => $manage_clients,
                 "client_share_approver" => $client_share_approver,
-                "confirmed" => $confirmed
+                "confirmed" => $confirmed,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($user_organizations["user_organizations"], $user_organization);

@@ -1,43 +1,51 @@
 <?php
 class ClientShareRequest{
 
-    private $connection;
+	private $connection;
 
-    public $id;
-    public $organization_id;
-    public $organization_name;
-    public $requesting_organization_id;
-    public $requesting_organization_name;
-    public $client_id;
-    public $client_name;
-    public $approved;
-    public $notes;
+	public $id;
+	public $organization_id;
+	public $organization_name;
+	public $requesting_organization_id;
+	public $requesting_organization_name;
+	public $client_id;
+	public $client_name;
+	public $approved;
+	public $notes;
+	public $creation_date;
+	public $created_by;
+	public $update_date;
+	public $updated_by;
 
-    public function __construct($connection){
-        $this->connection = $connection;
-    }
+	public function __construct($connection){
+		$this->connection = $connection;
+	}
 
-        private $base_query = "SELECT c.id
-        ,c.organization_id
-        ,org2.name as organization_name
-        ,c.requesting_organization_id
-        ,org.name as requesting_organization_name
-        ,c.client_id
-        ,clients.name as client_name
-        ,clients.address as client_address
-        ,clients.postcode as client_postcode
-        ,c.approved
-        ,c.notes
-        from client_share_requests c
-        , organizations org
-        , organizations org2
-        , clients clients
-        where c.organization_id = org2.id
-        and c.requesting_organization_id = org.id
-        and clients.id=c.client_id ";
+		private $base_query = "SELECT c.id
+		,c.organization_id
+		,org2.name as organization_name
+		,c.requesting_organization_id
+		,org.name as requesting_organization_name
+		,c.client_id
+		,clients.name as client_name
+		,clients.address as client_address
+		,clients.postcode as client_postcode
+		,c.approved
+		,c.notes
+		,c.creation_date
+		,c.created_by
+		,c.update_date
+		,c.updated_by
+		from client_share_requests c
+		, organizations org
+		, organizations org2
+		, clients clients
+		where c.organization_id = org2.id
+		and c.requesting_organization_id = org.id
+		and clients.id=c.client_id ";
 
 
-    public function create(){
+	public function create(){
 
 		$sql = "INSERT INTO client_share_requests (organization_id,requesting_organization_id,client_id,notes,approved,created_by,updated_by) values
 (:organization_id,:requesting_organization_id,:client_id,:notes,:approved,:user_id,:user_id)";
@@ -55,19 +63,19 @@ class ClientShareRequest{
 			return -1;
 		}
 
-    }
-    public function readAll(){
-        if(is_admin()&&$_SESSION["organization_id"]==-99){
-            $query = $this->base_query." ORDER BY c.id";
-       		$stmt = $this->connection->prepare($query);
-       		$stmt->execute();
-        } else {
-	        $query = $this->base_query." and c.organization_id=:organization_id ORDER BY c.id";
+	}
+	public function readAll(){
+		if(is_admin()&&$_SESSION["organization_id"]==-99){
+			$query = $this->base_query." ORDER BY c.id";
+	   		$stmt = $this->connection->prepare($query);
+	   		$stmt->execute();
+		} else {
+			$query = $this->base_query." and c.organization_id=:organization_id ORDER BY c.id";
 			$stmt = $this->connection->prepare($query);
-	        $stmt->execute(['organization_id'=>$_SESSION["organization_id"]]);
-        }
-        return $stmt;
-    }
+			$stmt->execute(['organization_id'=>$_SESSION["organization_id"]]);
+		}
+		return $stmt;
+	}
 
 	public function readFiltered($approved=""){
 
@@ -95,37 +103,41 @@ class ClientShareRequest{
 	}
 
 
-    public function read(){
-        $stmt=$this->readOne($this->id);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        $this->organization_id=$row['organization_id'];
-        $this->organization_name=$row['organization_name'];
-        $this->requesting_organization_id=$row['requesting_organization_id'];
-        $this->requesting_organization_name=$row['requesting_organization_name'];
-        $this->client_id=$row['client_id'];
-        $this->client_name=$row['client_name'];
-        $this->client_address=$row['client_address'];
-        $this->client_postcode=$row['client_postcode'];
-        $this->notes=$row['notes'];
-        $this->approved=$row['approved'];
+	public function read(){
+		$stmt=$this->readOne($this->id);
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		$this->organization_id=$row['organization_id'];
+		$this->organization_name=$row['organization_name'];
+		$this->requesting_organization_id=$row['requesting_organization_id'];
+		$this->requesting_organization_name=$row['requesting_organization_name'];
+		$this->client_id=$row['client_id'];
+		$this->client_name=$row['client_name'];
+		$this->client_address=$row['client_address'];
+		$this->client_postcode=$row['client_postcode'];
+		$this->notes=$row['notes'];
+		$this->approved=$row['approved'];
+		$this->creation_date=$row['creation_date'];
+		$this->created_by=$row['created_by'];
+		$this->update_date=$row['update_date'];
+		$this->updated_by=$row['updated_by'];
   }
 
-    public function readOne($id){
-        if(is_admin()&&$_SESSION["organization_id"]==-99){
-	        $query = $this->base_query." and c.id=:id";
+	public function readOne($id){
+		if(is_admin()&&$_SESSION["organization_id"]==-99){
+			$query = $this->base_query." and c.id=:id";
 			$stmt = $this->connection->prepare($query);
-	        $stmt->execute(['id'=>$id]);
-	    } else {
-	        $query = $this->base_query." and c.organization_id=:organization_id and c.id=:id";
-	        $stmt = $this->connection->prepare($query);
-	        $stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
-	    }
-	        return $stmt;
+			$stmt->execute(['id'=>$id]);
+		} else {
+			$query = $this->base_query." and c.organization_id=:organization_id and c.id=:id";
+			$stmt = $this->connection->prepare($query);
+			$stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
+		}
+			return $stmt;
 	}
 
-    public function update(){
+	public function update(){
 
-    	$stmt=$this->readOne($this->id);
+		$stmt=$this->readOne($this->id);
 
 		if($stmt->rowCount()==1){
 			if($this->approved=='Y'){
@@ -138,27 +150,27 @@ class ClientShareRequest{
 				$stmt->execute(['id'=>$this->id]);
 			}
 
-        	$sql = "UPDATE client_share_requests SET approved=:approved,updated_by=:updated_by WHERE id=:id";
-        	$stmt= $this->connection->prepare($sql);
-        	return $stmt->execute(['id'=>$this->id
-        		,'approved'=>$this->approved
+			$sql = "UPDATE client_share_requests SET approved=:approved,updated_by=:updated_by WHERE id=:id";
+			$stmt= $this->connection->prepare($sql);
+			return $stmt->execute(['id'=>$this->id
+				,'approved'=>$this->approved
 				,'updated_by'=>$_SESSION['id']
 
 			]);
-        } else {
-        	return false;
-        }
-    }
+		} else {
+			return false;
+		}
+	}
 
-    public function delete(){
-    	$stmt=readOne($this->id);
+	public function delete(){
+		$stmt=readOne($this->id);
 		if($stmt->rowCount()==1){
-	        $sql = "DELETE FROM client_share_requests WHERE id=:id";
-        	$stmt= $this->connection->prepare($sql);
-        	return $stmt->execute(['id'=>$this->id]);
-        } else {
-        	return false;
-        }
+			$sql = "DELETE FROM client_share_requests WHERE id=:id";
+			$stmt= $this->connection->prepare($sql);
+			return $stmt->execute(['id'=>$this->id]);
+		} else {
+			return false;
+		}
 
-    }
+	}
 }
