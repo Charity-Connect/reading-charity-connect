@@ -60,7 +60,11 @@ class Offer{
     	$this->organization_id=$_SESSION["organization_id"];
 		if(isset($this->postcode)&&$this->postcode!=""){
 			list($latitude,$longitude)=getGeocode($this->postcode);
+		} else {
+			$latitude=null;
+			$longitude=null;
 		}
+
 		$sql = "INSERT INTO offers (organization_id,name,type,details,quantity,date_available,date_end,postcode,latitude,longitude,distance,created_by,updated_by) values
 (:organization_id,:name,:type,:details,:quantity,:date_available,:date_end,:postcode,:latitude,:longitude,:distance,:user_id,:user_id)";
 		$stmt= $this->connection->prepare($sql);
@@ -85,7 +89,7 @@ class Offer{
 
     }
     public function readAll(){
-        if(is_admin()){
+        if(is_admin()&&$_SESSION["organization_id"]==-99){
             $query = $this->base_query." ORDER BY o.id";
        		$stmt = $this->connection->prepare($query);
        		$stmt->execute();
@@ -122,7 +126,7 @@ class Offer{
   }
 
     public function readOne($id){
-        if(is_admin()){
+        if(is_admin()&&$_SESSION["organization_id"]==-99){
 	        $query = $this->base_query." and o.id=:id";
 			$stmt = $this->connection->prepare($query);
 	        $stmt->execute(['id'=>$id]);

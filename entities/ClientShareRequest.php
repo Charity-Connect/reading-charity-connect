@@ -65,7 +65,7 @@ class ClientShareRequest{
 
     }
     public function readAll(){
-        if(is_admin()){
+        if(is_admin()&&$_SESSION["organization_id"]==-99){
             $query = $this->base_query." ORDER BY c.id";
        		$stmt = $this->connection->prepare($query);
        		$stmt->execute();
@@ -123,7 +123,7 @@ class ClientShareRequest{
   }
 
     public function readOne($id){
-        if(is_admin()){
+        if(is_admin()&&$_SESSION["organization_id"]==-99){
 	        $query = $this->base_query." and c.id=:id";
 			$stmt = $this->connection->prepare($query);
 	        $stmt->execute(['id'=>$id]);

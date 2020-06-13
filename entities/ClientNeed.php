@@ -19,11 +19,16 @@ class ClientNeed{
     public $date_needed;
     public $need_met;
     public $notes;
+<<<<<<< HEAD
 	public $type_name;
 	public $creation_date;
     public $created_by;
     public $update_date;
     public $updated_by;
+=======
+    public $type_name;
+    public $fulfilling_need_request_id;
+>>>>>>> 5b23f8c6ba208b57aa4a0e7f88680650e1eb86b2
 
     public function __construct($connection){
         $this->connection = $connection;
@@ -129,11 +134,13 @@ class ClientNeed{
     public function readAll($client_id){
         if(is_admin()){
         	$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type, types.name type_name,cn.date_needed,cn.need_met,cn.notes,cn.creation_date,cn.created_by,cn.update_date,cn.updated_by from client_needs cn,offer_types types where types.type=cn.type and cn.client_id = :client_id ORDER BY cn.id";
+        	$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type, types.name type_name,cn.date_needed,cn.need_met,cn.fulfilling_need_request_id,cn.notes from client_needs cn,offer_types types where types.type=cn.type and cn.client_id = :client_id ORDER BY cn.id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['client_id'=>$client_id]);
         	return $stmt;
         } else {
         	$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type, types.name type_name,cn.date_needed,cn.need_met,cn.notes,cn.creation_date,cn.created_by,cn.update_date,cn.updated_by from client_needs cn, client_links l,offer_types types where types.type=cn.type and cn.client_id=:client_id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
+        	$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type, types.name type_name,cn.date_needed,cn.need_met,cn.fulfilling_need_request_id,cn.notes from client_needs cn, client_links l,offer_types types where types.type=cn.type and cn.client_id=:client_id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['organization_id'=>$_SESSION["organization_id"],'client_id'=>$client_id]);
         	return $stmt;
@@ -147,6 +154,7 @@ class ClientNeed{
         $this->type=$row['type'];
         $this->date_needed=$row['date_needed'];
         $this->need_met=$row['need_met'];
+        $this->fulfilling_need_request_id=$row['fulfilling_need_request_id'];
         $this->notes=$row['notes'];
 		$this->type_name=$row['type_name'];
 		$this->creation_date=$row['creation_date'];
@@ -157,12 +165,20 @@ class ClientNeed{
 
     public function readOne($client_id,$id){
         if(is_admin()){
+<<<<<<< HEAD
         	$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.notes,cn.creation_date,cn.created_by,cn.update_date,cn.updated_by from client_needs cn,offer_types types where types.type=cn.type and cn.id=:id and cn.client_id=:client_id";
+=======
+        	$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.fulfilling_need_request_id,cn.notes from client_needs cn,offer_types types where types.type=cn.type and cn.id=:id and cn.client_id=:client_id";
+>>>>>>> 5b23f8c6ba208b57aa4a0e7f88680650e1eb86b2
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$id,'client_id'=>$client_id]);
         	return $stmt;
         } else {
+<<<<<<< HEAD
         	$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.notes,cn.creation_date,cn.created_by,cn.update_date,cn.updated_by from client_needs cn, client_links l,offer_types types where cn.client_id=:client_id and cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
+=======
+        	$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.fulfilling_need_request_id,cn.notes from client_needs cn, client_links l,offer_types types where cn.client_id=:client_id and cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
+>>>>>>> 5b23f8c6ba208b57aa4a0e7f88680650e1eb86b2
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['client_id'=>$client_id,'id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
         	return $stmt;
@@ -174,9 +190,9 @@ class ClientNeed{
 
     	$stmt=readOne($this->client_id,$this->id);
 		if($stmt->rowCount()==1){
-	        $sql = "UPDATE client_needs SET client_id=:client_id, type=:type, date_needed=:date_needed, need_met=:need_met notes=:notes,updated_by=:updated_by WHERE id=:id";
+	        $sql = "UPDATE client_needs SET client_id=:client_id, type=:type, date_needed=:date_needed, need_met=:need_met,fulfilling_need_request_id=:fulfilling_need_request_id, notes=:notes,updated_by=:updated_by WHERE id=:id";
 	        $stmt= $this->connection->prepare($sql);
-	        return $stmt->execute(['id'=>$this->id,'client_id'=>$this->client_id,'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'notes'=>$this->notes
+	        return $stmt->execute(['id'=>$this->id,'client_id'=>$this->client_id,'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'fulfilling_need_request_id'=>$this->fulfilling_need_request_id,'notes'=>$this->notes
 	        ,'updated_by'=>$_SESSION['id']
 ]);
 		} else {

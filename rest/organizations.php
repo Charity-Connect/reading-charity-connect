@@ -16,8 +16,12 @@ if(isset($data)) {
 
 
     $organization->name = $data['name'];
-    $organization->address = $data['address'];
-    $organization->phone = $data['phone'];
+    if(isset($data['address'])){
+    	$organization->address = $data['address'];
+    }
+    if(isset($data['phone'])){
+    	$organization->phone = $data['phone'];
+    }
 
     if(isset($data['id'])){
         $organization->id = $data['id'];
