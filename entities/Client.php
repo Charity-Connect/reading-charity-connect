@@ -44,7 +44,7 @@ class Client{
         	,'email'=>$this->email
         	,'notes'=>$this->notes
         	,'user_id'=>$_SESSION['id']
-])){
+		])){
             $this->id=$this->connection->lastInsertId();
 
 			$user = new User($this->connection);
@@ -62,12 +62,6 @@ class Client{
 
     }
     public function readAll(){
-        if(is_admin()){
-			$query = "SELECT id,name,address,postcode,phone,email,notes,creation_date,created_by,update_date,updated_by from clients ORDER BY id";
-			$stmt = $this->connection->prepare($query);
-        	$stmt->execute();
-        	return $stmt;
-		}
 		if(is_admin()&&$_SESSION["organization_id"]==-99){
         	$query = "SELECT id,name,address,postcode,phone,email,notes,creation_date,created_by,update_date,updated_by from clients ORDER BY id";
         	$stmt = $this->connection->prepare($query);
@@ -106,12 +100,6 @@ class Client{
    }
 
     public function readOne($id){
-        if(is_admin()||$this->force_read==true){
-			$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes,c.creation_date,c.created_by,c.update_date,c.updated_by from clients c where c.id=:id";
-			$stmt = $this->connection->prepare($query);
-        	$stmt->execute(['id'=>$id]);
-        	return $stmt;
-		}
 		if((is_admin()&&$_SESSION["organization_id"]==-99)||$this->force_read==true){
         	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes,c.creation_date,c.created_by,c.update_date,c.updated_by from clients c where c.id=:id";
         	$stmt = $this->connection->prepare($query);
@@ -155,7 +143,7 @@ class Client{
 				,'longitude'=>($latitude==-1) ? null:$longitude
 				,'phone'=>$this->phone,'email'=>$this->email,'notes'=>$this->notes
 				,'updated_by'=>$_SESSION['id']
-]);
+			]);
 			return $result;
 		} else {
 			return false;
