@@ -11,7 +11,11 @@ class ClientShareRequest{
     public $client_id;
     public $client_name;
     public $approved;
-    public $notes;
+	public $notes;
+	public $creation_date;
+    public $created_by;
+    public $update_date;
+    public $updated_by;
 
     public function __construct($connection){
         $this->connection = $connection;
@@ -28,6 +32,10 @@ class ClientShareRequest{
         ,clients.postcode as client_postcode
         ,c.approved
         ,c.notes
+		,c.creation_date
+		,c.created_by
+		,c.update_date
+		,c.updated_by
         from client_share_requests c
         , organizations org
         , organizations org2
@@ -107,7 +115,11 @@ class ClientShareRequest{
         $this->client_address=$row['client_address'];
         $this->client_postcode=$row['client_postcode'];
         $this->notes=$row['notes'];
-        $this->approved=$row['approved'];
+		$this->approved=$row['approved'];
+		$this->creation_date=$row['creation_date'];
+        $this->created_by=$row['created_by'];
+        $this->update_date=$row['update_date'];
+        $this->updated_by=$row['updated_by'];
   }
 
     public function readOne($id){

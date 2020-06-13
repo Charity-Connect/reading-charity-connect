@@ -19,6 +19,10 @@ class Offer{
     private $latitude;
     private $longitude;
     public $distance;
+    public $creation_date;
+	public $created_by;
+	public $update_date;
+	public $updated_by;
 
     public function __construct($connection){
         $this->connection = $connection;
@@ -40,6 +44,10 @@ class Offer{
         ,o.latitude
         ,o.longitude
         ,o.distance
+        ,o.creation_date
+        ,o.created_by
+        ,o.update_date
+        ,o.updated_by
         from offers o
         ,offer_types t
         ,organizations org
@@ -107,6 +115,10 @@ class Offer{
         $this->latitude=$row['latitude'];
         $this->longitude=$row['longitude'];
         $this->distance=$row['distance'];
+        $this->creation_date=$row['creation_date'];
+		$this->created_by=$row['created_by'];
+		$this->update_date=$row['update_date'];
+		$this->updated_by=$row['updated_by'];
   }
 
     public function readOne($id){

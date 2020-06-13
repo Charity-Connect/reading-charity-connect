@@ -7,6 +7,10 @@ class TypeCategory{
     // table columns
     public $code;
     public $name;
+    public $creation_date;
+	public $created_by;
+	public $update_date;
+	public $updated_by;
 
     public function __construct($connection){
         $this->connection = $connection;
@@ -27,7 +31,7 @@ class TypeCategory{
 
     }
     public function readAll(){
-        $query = "SELECT code,name from type_categories ORDER BY code";
+        $query = "SELECT code,name,creation_date,created_by,update_date,updated_by from type_categories ORDER BY code";
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -38,10 +42,14 @@ class TypeCategory{
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $this->name=$row['name'];
         $this->code=$row['code'];
+        $this->creation_date=$row['creation_date'];
+		$this->created_by=$row['created_by'];
+		$this->update_date=$row['update_date'];
+		$this->updated_by=$row['updated_by'];
    }
 
     public function readOne($code){
-	        $query = "SELECT code,name from type_categories where code=:code";
+	        $query = "SELECT code,name,creation_date,created_by,update_date,updated_by from type_categories where code=:code";
 	        $stmt = $this->connection->prepare($query);
 	        $stmt->execute(['code'=>$code]);
 	        return $stmt;

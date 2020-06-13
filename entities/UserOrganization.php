@@ -17,7 +17,11 @@ class UserOrganization{
     public $manage_clients;
     public $client_share_approver;
     public $confirmed='N';
-    private $confirmation_string;
+	private $confirmation_string;
+	public $creation_date;
+	public $created_by;
+	public $update_date;
+	public $updated_by;
 
     public function __construct($connection){
         $this->connection = $connection;
@@ -57,17 +61,17 @@ class UserOrganization{
     }
     public function readAll(){
         if(is_admin()){
-			$query = "SELECT uo.id,uo.user_id,uo.organization_id,uo.admin,uo.user_approver,uo.need_approver,uo.manage_offers,uo.manage_clients,uo.client_share_approver,uo.confirmed, org.name as organization_name from user_organizations uo, organization org where uo.organization_id=org.id ORDER BY uo.id";
+			$query = "SELECT uo.id,uo.user_id,uo.organization_id,uo.admin,uo.user_approver,uo.need_approver,uo.manage_offers,uo.manage_clients,uo.client_share_approver,uo.confirmed,uo.creation_date,uo.created_by,uo.update_date,uo.updated_by, org.name as organization_name from user_organizations uo, organizations org where uo.organization_id=org.id ORDER BY uo.id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute();
 	    } else if(is_org_admin()){
 	       	$organization_id=$_SESSION["organization_id"];
-			$query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,manage_offers,manage_clients,client_share_approver,confirmed from user_organizations where organization_id=:organization_id ORDER BY id";
+			$query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,manage_offers,manage_clients,client_share_approver,confirmed,creation_date,created_by,update_date,updated_by from user_organizations where organization_id=:organization_id ORDER BY id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['organization_id'=>$organization_id]);
 		} else {
 			$user_id=$_SESSION["id"];
-			$query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,manage_offers,manage_clients,client_share_approver,confirmed from user_organizations where user_id=:user_id ORDER BY id";
+			$query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,manage_offers,manage_clients,client_share_approver,confirmed,creation_date,created_by,update_date,updated_by from user_organizations where user_id=:user_id ORDER BY id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['user_id'=>$user_id]);
 		}
@@ -75,14 +79,14 @@ class UserOrganization{
     }
 
     public function readAllOrganization($organization_id){
-        $query = "SELECT uo.id,uo.user_id,uo.organization_id,uo.admin,uo.user_approver,uo.need_approver,uo.manage_offers,uo.manage_clients,uo.client_share_approver,uo.confirmed from user_organizations uo where organization_id=:organization_id ORDER BY uo.id";
+        $query = "SELECT uo.id,uo.user_id,uo.organization_id,uo.admin,uo.user_approver,uo.need_approver,uo.manage_offers,uo.manage_clients,uo.client_share_approver,uo.confirmed,uo.creation_date,uo.created_by,uo.update_date,uo.updated_by from user_organizations uo where organization_id=:organization_id ORDER BY uo.id";
         $stmt = $this->connection->prepare($query);
         $stmt->execute(['organization_id'=>$organization_id]);
         return $stmt;
     }
 
     public function readAllUser($user_id){
-        $query = "SELECT uo.id,uo.user_id,uo.organization_id,uo.admin,uo.user_approver,uo.need_approver,uo.manage_offers,uo.manage_clients,uo.client_share_approver,uo.confirmed, org.name as organization_name from user_organizations uo, organizations org where org.id=uo.organization_id and user_id=:id ORDER BY uo.id";
+        $query = "SELECT uo.id,uo.user_id,uo.organization_id,uo.admin,uo.user_approver,uo.need_approver,uo.manage_offers,uo.manage_clients,uo.client_share_approver,uo.confirmed,uo.creation_date,uo.created_by,uo.update_date,uo.updated_by, org.name as organization_name from user_organizations uo, organizations org where org.id=uo.organization_id and user_id=:id ORDER BY uo.id";
         $stmt = $this->connection->prepare($query);
         $stmt->execute(['id'=>$user_id]);
         return $stmt;
@@ -120,22 +124,26 @@ class UserOrganization{
         $this->manage_clients=$row['manage_clients'];
         $this->client_share_approver=$row['client_share_approver'];
         $this->confirmed=$row['confirmed'];
-        $this->confirmation_string=$row['confirmation_string'];
+		$this->confirmation_string=$row['confirmation_string'];
+		$this->creation_date=$row['creation_date'];
+		$this->created_by=$row['created_by'];
+		$this->update_date=$row['update_date'];
+		$this->updated_by=$row['updated_by'];
    }
 
     public function readOne($id){
         if(is_admin()){
-	        $query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,manage_offers,manage_clients,client_share_approver,confirmed,confirmation_string from user_organizations where id=:id";
+	        $query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,manage_offers,manage_clients,client_share_approver,confirmed,confirmation_string,creation_date,created_by,update_date,updated_by from user_organizations where id=:id";
 	        $stmt = $this->connection->prepare($query);
 	        $stmt->execute(['id'=>$id]);
 	    } else if(is_org_admin()){
 	       	$organization_id=$_SESSION["organization_id"];
-	        $query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,manage_offers,manage_clients,client_share_approver,confirmed,confirmation_string from user_organizations where organization_id=:organization_id and id=:id";
+	        $query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,manage_offers,manage_clients,client_share_approver,confirmed,confirmation_string,creation_date,created_by,update_date,updated_by from user_organizations where organization_id=:organization_id and id=:id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['organization_id'=>$organization_id,'id'=>$id]);
 	    } else {
 			$user_id=$_SESSION["id"];
-	        $query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,manage_offers,manage_clients,client_share_approver,confirmed,confirmation_string from user_organizations where user_id=:user_id and id=:id";
+	        $query = "SELECT id,user_id,organization_id,admin,user_approver,need_approver,manage_offers,manage_clients,client_share_approver,confirmed,confirmation_string,creation_date,created_by,update_date,updated_by from user_organizations where user_id=:user_id and id=:id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['user_id'=>$user_id,'id'=>$id]);
 	    }

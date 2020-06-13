@@ -101,7 +101,11 @@ if(isset($data)) {
                 "target_date" => $target_date,
                 "request_response_notes" => $request_response_notes,
                 "need_notes" => $need_notes,
-                "source_organization_name"=>$source_organization_name
+                "source_organization_name"=>$source_organization_name,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($need_requests["need_request"], $need_request);

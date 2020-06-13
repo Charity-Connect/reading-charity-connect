@@ -15,7 +15,11 @@ class User{
     public $email;
     public $phone;
     public $confirmed;
-    private $confirmation_string;
+	private $confirmation_string;
+	public $creation_date;
+	public $created_by;
+	public $update_date;
+	public $updated_by;
     private $force_read=false;
     public $admin;
     public $organization_name;
@@ -82,17 +86,17 @@ class User{
     public function readAll(){
 
     	if(is_admin()){
-        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u ORDER BY u.id";
+        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.creation_date,u.created_by,u.update_date,u.updated_by from users u ORDER BY u.id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute();
         } else if(is_org_admin()){
         	$organization_id=$_SESSION["organization_id"];
-        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u, user_organizations o where u.id=o.user_id and o.organization_id=:organization_id ORDER BY u.id";
+        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.creation_date,u.created_by,u.update_date,u.updated_by from users u, user_organizations o where u.id=o.user_id and o.organization_id=:organization_id ORDER BY u.id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['organization_id'=>$organization_id]);
         } else {
 			$userId=$_SESSION["id"];
-        	$query = "SELECT u.id,u.display_name,u.email,u.phone from users u where u.id=:id";
+        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.creation_date,u.created_by,u.update_date,u.updated_by from users u where u.id=:id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$userId]);
         }
@@ -111,7 +115,11 @@ class User{
         $this->id=$row['id'];
         $this->email=$row['email'];
         $this->phone=$row['phone'];
-        $this->confirmed=$row['confirmed'];
+		$this->creation_date=$row['creation_date'];
+		$this->created_by=$row['created_by'];
+		$this->update_date=$row['update_date'];
+		$this->updated_by=$row['updated_by'];
+		$this->confirmed=$row['confirmed'];
         $this->admin=is_null($row['admin'])?"N":"Y";
         $this->organization_id=$row['organization_id'];
         $this->organization_name=$row['organization_name'];
@@ -135,7 +143,12 @@ class User{
 					"need_approver" => $need_approver,
 					"manage_offers" => $manage_offers,
 					"manage_clients" => $manage_clients,
-					"confirmed" => $confirmed
+					"confirmed" => $confirmed,
+					"creation_date" => $creation_date,
+					"created_by" => $created_by,
+					"update_date" => $update_date,
+					"updated_by" => $updated_by
+
 					);
 			        array_push($this->user_organizations,$user_organization);
 			}
@@ -144,7 +157,7 @@ class User{
 
     public function readOne($id){
         	if(is_admin()||$this->force_read==true){
-	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name, role.role_id as admin from users u left join user_roles role on role.user_id=u.id and role.role_id=1, user_organizations uo, organizations org where u.id=uo.user_id and org.id=uo.organization_id and u.id=:id order by if(org.id=:organization_id,-1,u.id)";
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed,u.creation_date,u.created_by,u.update_date,u.updated_by, org.id as organization_id, org.name as organization_name, role.role_id as admin from users u left join user_roles role on role.user_id=u.id and role.role_id=1, user_organizations uo, organizations org where u.id=uo.user_id and org.id=uo.organization_id and u.id=:id order by if(org.id=:organization_id,-1,u.id)";
 	        	$stmt = $this->connection->prepare($query);
 	        	$organization_id=-1;
 	        	if(isset($_SESSION["organization_id"])){
@@ -152,13 +165,13 @@ class User{
 	        	}
 	        	$stmt->execute(['id'=>$id,'organization_id'=>$organization_id]);
 	        } else if(is_org_admin()){
-				$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name , role.role_id as admin
+				$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed,u.creation_date,u.created_by,u.update_date,u.updated_by, org.id as organization_id, org.name as organization_name , role.role_id as admin
 				from users u left join user_roles role on role.user_id=u.id and role.role_id=1, user_organizations uo, organizations org
 				where u.id=uo.user_id
 				and org.id=uo.organization_id and
 				uo.organization_id=:organization_id
 				and u.id=:id
-				UNION (SELECT u.id,u.display_name,u.email,u.phone ,u.confirmed, org.id as organization_id, org.name as organization_name, role.role_id as admin
+				UNION (SELECT u.id,u.display_name,u.email,u.phone ,u.confirmed, org.id as organization_id,u.creation_date,u.created_by,u.update_date,u.updated_by, org.name as organization_name, role.role_id as admin
 				from users u left join user_roles role on role.user_id=u.id and role.role_id=1, user_organizations uo, organizations org
 				where
 				u.id=:id2 and u.id=:id
@@ -166,7 +179,7 @@ class User{
 				$stmt = $this->connection->prepare($query);
 				$stmt->execute(['organization_id'=>$_SESSION["organization_id"],'id'=>$id,'id2'=>$_SESSION["id"]]);
 	        } else {
-	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id, org.name as organization_name, role.role_id as admin from users u left join organizations org on org.id=:organization_id left join user_roles role on role.user_id=u.id and role.role_id=1 where u.id=:id ";
+	        	$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed, org.id as organization_id,u.creation_date,u.created_by,u.update_date,u.updated_by, org.name as organization_name, role.role_id as admin from users u left join organizations org on org.id=:organization_id left join user_roles role on role.user_id=u.id and role.role_id=1 where u.id=:id ";
 	        	$stmt = $this->connection->prepare($query);
 		        $stmt->execute(['id'=>$_SESSION["id"],'organization_id'=>$_SESSION["organization_id"]]);
         }

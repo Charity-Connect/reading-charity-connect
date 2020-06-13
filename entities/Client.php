@@ -17,7 +17,11 @@ class Client{
     public $phone;
     public $email;
     public $notes;
-    private $force_read=false;
+	private $force_read=false;
+	public $creation_date;
+    public $created_by;
+    public $update_date;
+    public $updated_by;
 
     public function __construct($connection){
         $this->connection = $connection;
@@ -59,12 +63,12 @@ class Client{
     }
     public function readAll(){
         if(is_admin()){
-        	$query = "SELECT id,name,address,postcode,phone,email,notes from clients ORDER BY id";
+        	$query = "SELECT id,name,address,postcode,phone,email,notes,creation_date,created_by,update_date,updated_by from clients ORDER BY id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute();
         	return $stmt;
         } else {
-        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.phone,c.email,c.notes from clients c, client_links l where c.id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id  ORDER BY c.id";
+        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.phone,c.email,c.notes,c.creation_date,c.created_by,c.update_date,c.updated_by from clients c, client_links l where c.id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id  ORDER BY c.id";
 			$stmt = $this->connection->prepare($query);
         	$stmt->execute(['organization_id'=>$_SESSION["organization_id"]]);
         	return $stmt;
@@ -88,17 +92,21 @@ class Client{
         $this->longitude=$row['longitude'];
         $this->phone=$row['phone'];
         $this->email=$row['email'];
-        $this->notes=$row['notes'];
+		$this->notes=$row['notes'];
+		$this->creation_date=$row['creation_date'];
+		$this->created_by=$row['created_by'];
+		$this->update_date=$row['update_date'];
+		$this->updated_by=$row['updated_by'];
    }
 
     public function readOne($id){
         if(is_admin()||$this->force_read==true){
-        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes from clients c where c.id=:id";
+        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes,c.creation_date,c.created_by,c.update_date,c.updated_by from clients c where c.id=:id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$id]);
         	return $stmt;
         } else {
-        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes from clients c, client_links l where c.id=:id and c.id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY c.id";
+        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes,c.creation_date,c.created_by,c.update_date,c.updated_by from clients c, client_links l where c.id=:id and c.id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY c.id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
         	return $stmt;

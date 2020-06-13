@@ -21,6 +21,10 @@ class NeedRequest{
     public $need_notes;
     public $source_organization_name;
     public $offer_id;
+    public $creation_date;
+    public $created_by;
+    public $update_date;
+    public $updated_by;
 
     public function __construct($connection){
         $this->connection = $connection;
@@ -36,7 +40,11 @@ class NeedRequest{
 	        	,request.complete
 	        	,request.confirmation_code
 	        	,request.notes request_response_notes
-	        	,client_need.notes need_notes
+            ,request.creation_date
+            ,request.created_by
+            ,request.update_date
+            ,request.updated_by
+            ,client_need.notes need_notes
 	        	,client.name as client_name
 	        	,client.postcode as client_postcode
 	        	,types.type
@@ -144,6 +152,10 @@ class NeedRequest{
         $this->target_date=$row['target_date'];
         $this->request_response_notes=$row['request_response_notes'];
         $this->need_notes=$row['need_notes'];
+        $this->creation_date=$row['creation_date'];
+        $this->created_by=$row['created_by'];
+        $this->update_date=$row['update_date'];
+        $this->updated_by=$row['updated_by'];
    }
 
     public function readOne($id){

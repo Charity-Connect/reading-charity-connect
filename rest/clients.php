@@ -110,7 +110,11 @@ if(isset($data)) {
                 "postcode" => $postcode,
                 "phone" => $phone,
                 "email" => $email,
-                "notes" => $notes
+                "notes" => $notes,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($clients["clients"], $client);

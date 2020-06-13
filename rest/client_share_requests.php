@@ -68,7 +68,11 @@ if(isset($data)) {
                 "organization_name" => $organization_name,
                 "requesting_organization_id" => $requesting_organization_id,
                 "requesting_organization_name" => $requesting_organization_name,
-                "approved" => $approved
+                "approved" => $approved,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($client_share_requests["client_share_request"], $client_share_request);
