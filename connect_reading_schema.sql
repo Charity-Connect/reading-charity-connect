@@ -3,18 +3,11 @@ SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
-
--- --------------------------------------------------------
-
---
--- Table structure for table `clients`
---
 
 CREATE TABLE `clients` (
   `id` int(11) NOT NULL,
@@ -32,12 +25,6 @@ CREATE TABLE `clients` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `client_links`
---
-
 CREATE TABLE `client_links` (
   `id` int(11) NOT NULL,
   `client_id` int(11) NOT NULL,
@@ -48,12 +35,6 @@ CREATE TABLE `client_links` (
   `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `client_needs`
---
 
 CREATE TABLE `client_needs` (
   `id` int(11) NOT NULL,
@@ -70,12 +51,6 @@ CREATE TABLE `client_needs` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `client_share_requests`
---
-
 CREATE TABLE `client_share_requests` (
   `id` int(11) NOT NULL,
   `organization_id` int(11) NOT NULL,
@@ -88,12 +63,6 @@ CREATE TABLE `client_share_requests` (
   `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `need_requests`
---
 
 CREATE TABLE `need_requests` (
   `id` int(11) NOT NULL,
@@ -111,12 +80,6 @@ CREATE TABLE `need_requests` (
   `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `offers`
---
 
 CREATE TABLE `offers` (
   `id` int(11) NOT NULL,
@@ -138,12 +101,6 @@ CREATE TABLE `offers` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `offer_types`
---
-
 CREATE TABLE `offer_types` (
   `type` varchar(30) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -156,22 +113,12 @@ CREATE TABLE `offer_types` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `offer_types`
---
-
 REPLACE INTO `offer_types` (`type`, `name`, `category`, `default_text`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
 ('company', 'Companionship visit', 'company', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('cooking', 'Help with cooking', 'food', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('food_parcel', 'Food Parcel', 'food', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('prescription_collection', 'Prescription Collection', 'medical', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('readifood', 'ReadiFood Referral', 'food', 'Please complete the following fields so that we can submit the request automatically. Fields with a * next to them must be completed. Any optional fields not completed will be set to No.\n\n* Reason for food parcel request: \n\nHome Delivery (Y/N):\n\nFood Preferences\nNo Cooking Facilities (Y/N):\nVegetarian (Y/N):\nHalal (Y/N):\nDiabetic (Y/N):\nGluten Free (Y/N):\nOther:\n\n* Number of weeks (1-4):\n\nAdditional Items\nNappies (Y/N):\nNappy Size:\nBaby Toiletries (Y/N):\nBaby Food 4-6m (Y/N):\nBaby Food 7-12m (Y/N):\nOther:\n\n* Number of Adults (0-5):\n* Number of Children (0-5):\nAge and gender of Children: ', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `organizations`
---
 
 CREATE TABLE `organizations` (
   `id` int(11) NOT NULL,
@@ -185,12 +132,6 @@ CREATE TABLE `organizations` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `roles`
---
-
 CREATE TABLE `roles` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
@@ -200,11 +141,8 @@ CREATE TABLE `roles` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `strings`
---
+REPLACE INTO `roles` (`id`, `name`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+(1, 'admin', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
 
 CREATE TABLE `strings` (
   `code` varchar(30) NOT NULL,
@@ -214,10 +152,6 @@ CREATE TABLE `strings` (
   `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `strings`
---
 
 REPLACE INTO `strings` (`code`, `string`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
 ('new_org_user_confirmation', '<p>A new user has registered for your organization on RDG Connect;</p>\r\n<p>Name: %NAME%</p>\r\n<p>Email: %EMAIL%</p>\r\n<p>If you want to add this user to your organization, click <a href=\"%LINK%\">here</a>. If you do not recognize this user, simply ignore this e-mail.</p> ', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
@@ -233,12 +167,6 @@ REPLACE INTO `strings` (`code`, `string`, `creation_date`, `created_by`, `update
 ('new_org_confirmed_subject', 'Connect Reading: %ORGANIZATION_NAME% membership confirmed ', '2020-06-09 19:06:37', NULL, '2020-06-09 19:06:37', NULL),
 ('new_org_confirmed_body', '<p>Dear %NAME%,</p>\r\n<p>Your request to join the %ORGANIZATION_NAME% team at Connect Reading has been confirmed. You can now log in at <a href=\"%LINK%\">%LINK%</a> to access this organization. If you are a member of multiple organisations, you may need to switch between organisations using the dropdown list at the top of the page.</p>', '2020-06-09 19:06:37', NULL, '2020-06-09 19:06:37', NULL);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `type_categories`
---
-
 CREATE TABLE `type_categories` (
   `code` varchar(30) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -248,20 +176,10 @@ CREATE TABLE `type_categories` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `type_categories`
---
-
 REPLACE INTO `type_categories` (`code`, `name`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
 ('food', 'Food', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('medical', 'Medical', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('company', 'Company and visits', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
@@ -277,12 +195,6 @@ CREATE TABLE `users` (
   `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `user_organizations`
---
 
 CREATE TABLE `user_organizations` (
   `id` int(11) NOT NULL,
@@ -302,12 +214,6 @@ CREATE TABLE `user_organizations` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `user_roles`
---
-
 CREATE TABLE `user_roles` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
@@ -318,169 +224,88 @@ CREATE TABLE `user_roles` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Indexes for dumped tables
---
 
---
--- Indexes for table `clients`
---
 ALTER TABLE `clients`
   ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `client_links`
---
 ALTER TABLE `client_links`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_link` (`link_id`,`link_type`,`client_id`),
   ADD KEY `client_id` (`client_id`);
 
---
--- Indexes for table `client_needs`
---
 ALTER TABLE `client_needs`
   ADD PRIMARY KEY (`id`),
   ADD KEY `client_id` (`client_id`);
 
---
--- Indexes for table `client_share_requests`
---
 ALTER TABLE `client_share_requests`
   ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `need_requests`
---
 ALTER TABLE `need_requests`
   ADD PRIMARY KEY (`id`),
   ADD KEY `client_need_id` (`client_need_id`);
 
---
--- Indexes for table `offers`
---
 ALTER TABLE `offers`
   ADD PRIMARY KEY (`id`),
   ADD KEY `offer_organization` (`organization_id`);
 
---
--- Indexes for table `offer_types`
---
 ALTER TABLE `offer_types`
   ADD PRIMARY KEY (`type`);
 
---
--- Indexes for table `organizations`
---
 ALTER TABLE `organizations`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`);
 
---
--- Indexes for table `roles`
---
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `strings`
---
 ALTER TABLE `strings`
   ADD PRIMARY KEY (`code`);
 
---
--- Indexes for table `type_categories`
---
 ALTER TABLE `type_categories`
   ADD PRIMARY KEY (`code`);
 
---
--- Indexes for table `users`
---
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `user_organizations`
---
 ALTER TABLE `user_organizations`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_orgs` (`user_id`) USING BTREE,
   ADD KEY `org_users` (`organization_id`) USING BTREE;
 
---
--- Indexes for table `user_roles`
---
 ALTER TABLE `user_roles`
   ADD PRIMARY KEY (`id`);
 
---
--- AUTO_INCREMENT for dumped tables
---
 
---
--- AUTO_INCREMENT for table `clients`
---
 ALTER TABLE `clients`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `client_links`
---
 ALTER TABLE `client_links`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `client_needs`
---
 ALTER TABLE `client_needs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `client_share_requests`
---
 ALTER TABLE `client_share_requests`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `need_requests`
---
 ALTER TABLE `need_requests`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `offers`
---
 ALTER TABLE `offers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `organizations`
---
 ALTER TABLE `organizations`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `roles`
---
 ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
---
--- AUTO_INCREMENT for table `users`
---
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `user_organizations`
---
 ALTER TABLE `user_organizations`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `user_roles`
---
 ALTER TABLE `user_roles`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
