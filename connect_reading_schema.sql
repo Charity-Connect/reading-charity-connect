@@ -9,6 +9,9 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+--
+-- Database: `iaoo4tce_connect_reading`
+--
 
 -- --------------------------------------------------------
 
@@ -63,6 +66,7 @@ CREATE TABLE `client_needs` (
   `date_needed` date DEFAULT NULL,
   `notes` varchar(2000) DEFAULT NULL,
   `need_met` varchar(1) NOT NULL DEFAULT 'N',
+  `fulfilling_need_request_id` int(11) DEFAULT NULL,
   `creation_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` int(11) DEFAULT NULL,
   `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -101,6 +105,7 @@ CREATE TABLE `need_requests` (
   `offer_id` int(11) DEFAULT NULL,
   `confirmation_code` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
   `agreed` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fulfilled_elsewhere` char(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N',
   `complete` char(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N',
   `target_date` date DEFAULT NULL,
   `notes` varchar(2000) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -158,7 +163,7 @@ CREATE TABLE `offer_types` (
 -- Dumping data for table `offer_types`
 --
 
-INSERT INTO `offer_types` (`type`, `name`, `category`, `default_text`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+REPLACE INTO `offer_types` (`type`, `name`, `category`, `default_text`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
 ('company', 'Companionship visit', 'company', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('cooking', 'Help with cooking', 'food', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('food_parcel', 'Food Parcel', 'food', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
@@ -198,13 +203,6 @@ CREATE TABLE `roles` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `roles`
---
-
-INSERT INTO `roles` (`id`, `name`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
-(1, 'admin', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -224,7 +222,7 @@ CREATE TABLE `strings` (
 -- Dumping data for table `strings`
 --
 
-INSERT INTO `strings` (`code`, `string`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+REPLACE INTO `strings` (`code`, `string`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
 ('new_org_user_confirmation', '<p>A new user has registered for your organization on RDG Connect;</p>\r\n<p>Name: %NAME%</p>\r\n<p>Email: %EMAIL%</p>\r\n<p>If you want to add this user to your organization, click <a href=\"%LINK%\">here</a>. If you do not recognize this user, simply ignore this e-mail.</p> ', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('new_org_user_subject', 'New User Registered at RDG Connect', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('new_user_confirmation', '<p>%NAME%,</p>\r\n\r\n<p>welcome to RDG Connect. To confirm your account, click <a href=\"%LINK%\">here</a>. If you did not sign up for an account, please ignore this e-mail.</p>', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
@@ -234,8 +232,10 @@ INSERT INTO `strings` (`code`, `string`, `creation_date`, `created_by`, `update_
 ('need_request_subject', 'Request for help from RDG Connect', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('need_request_body', '<p>%USER_NAME%,</p>\r\n<p>A request has come in from %SOURCE_ORG_NAME% to help %CLIENT_NAME%, which we believe %TARGET_ORG_NAME% can provide. The details of the request are;</p>\r\n<p>Name: %CLIENT_NAME%<br/>\r\nAddress:<br/>\r\n%CLIENT_ADDRESS%<br/>\r\n%CLIENT_POSTCODE%<br>\r\n<br/>\r\nRequest Type:%REQUEST_TYPE%<br/>\r\nDate Needed:%DATE_NEEDED%<br/>\r\nNotes:<br/>\r\n%NOTES%</p>\r\n<p>If you can confirm that you can provide this, please click here;</p>\r\n<p><a href=\"%LINK%\">%LINK%</a></p>\r\n<p>Thanks for your help</p>', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('client_share_subject', 'Reading Charity Connect Client Share Request (%CLIENT_NAME%)', '2020-06-06 22:04:23', NULL, '2020-06-06 22:04:23', NULL),
-('client_share_body', '<p>Another Reading Charity Connect organisation, %SOURCE_ORGANISATION%, has requested permission to jointly manage one of your clients. %CLIENT_NAME%. This helps to makes sure that different organisations don\'t create duplicate requests for help for %CLIENT_NAME%, and allows them to have a full picture of their support. However, it does allow them to view and manage the name, address, phone number, e-mail address and notes about %CLIENT_NAME%, so you should only share the information if you are happy that it is appropriate.</p>\r\n\r\n<p>Visit <a href=\"%LINK%\">%LINK%</a> to accept or reject this request.</p>', '2020-06-06 22:04:23', NULL, '2020-06-06 22:04:23', NULL)
-('new_org_confirmed_subject', 'Connect Reading: %ORGANIZATION_NAME% membership confirmed ', current_timestamp(), NULL, current_timestamp(), NULL), ('new_org_confirmed_body', '<p>Dear %NAME%,</p>\r\n<p>Your request to join the %ORGANIZATION_NAME% team at Connect Reading has been confirmed. You can now log in at <a href=\"%LINK%\">%LINK%</a> to access this organization. If you are a member of multiple organisations, you may need to switch between organisations using the dropdown list at the top of the page.</p>', current_timestamp(), NULL, current_timestamp(), NULL);
+('client_share_body', '<p>Another Reading Charity Connect organisation, %SOURCE_ORGANISATION%, has requested permission to jointly manage one of your clients. %CLIENT_NAME%. This helps to makes sure that different organisations don\'t create duplicate requests for help for %CLIENT_NAME%, and allows them to have a full picture of their support. However, it does allow them to view and manage the name, address, phone number, e-mail address and notes about %CLIENT_NAME%, so you should only share the information if you are happy that it is appropriate.</p>\r\n\r\n<p>Visit <a href=\"%LINK%\">%LINK%</a> to accept or reject this request.</p>', '2020-06-06 22:04:23', NULL, '2020-06-06 22:04:23', NULL),
+('new_org_confirmed_subject', 'Connect Reading: %ORGANIZATION_NAME% membership confirmed ', '2020-06-09 19:06:37', NULL, '2020-06-09 19:06:37', NULL),
+('new_org_confirmed_body', '<p>Dear %NAME%,</p>\r\n<p>Your request to join the %ORGANIZATION_NAME% team at Connect Reading has been confirmed. You can now log in at <a href=\"%LINK%\">%LINK%</a> to access this organization. If you are a member of multiple organisations, you may need to switch between organisations using the dropdown list at the top of the page.</p>', '2020-06-09 19:06:37', NULL, '2020-06-09 19:06:37', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -255,7 +255,7 @@ CREATE TABLE `type_categories` (
 -- Dumping data for table `type_categories`
 --
 
-INSERT INTO `type_categories` (`code`, `name`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+REPLACE INTO `type_categories` (`code`, `name`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
 ('food', 'Food', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('medical', 'Medical', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('company', 'Company and visits', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
@@ -356,7 +356,8 @@ ALTER TABLE `client_share_requests`
 -- Indexes for table `need_requests`
 --
 ALTER TABLE `need_requests`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `client_need_id` (`client_need_id`);
 
 --
 -- Indexes for table `offers`
@@ -466,7 +467,7 @@ ALTER TABLE `organizations`
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
