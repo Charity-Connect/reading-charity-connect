@@ -113,7 +113,7 @@ class Client{
         	return $stmt;
 		}
 		if((is_admin()&&$_SESSION["organization_id"]==-99)||$this->force_read==true){
-        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes from clients c where c.id=:id";
+        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes,c.creation_date,c.created_by,c.update_date,c.updated_by from clients c where c.id=:id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$id]);
         	return $stmt;
