@@ -63,9 +63,13 @@ class Client{
     }
     public function readAll(){
         if(is_admin()){
+			$query = "SELECT id,name,address,postcode,phone,email,notes,creation_date,created_by,update_date,updated_by from clients ORDER BY id";
+			$stmt = $this->connection->prepare($query);
+        	$stmt->execute();
+        	return $stmt;
+		}
+		if(is_admin()&&$_SESSION["organization_id"]==-99){
         	$query = "SELECT id,name,address,postcode,phone,email,notes,creation_date,created_by,update_date,updated_by from clients ORDER BY id";
-        if(is_admin()&&$_SESSION["organization_id"]==-99){
-        	$query = "SELECT id,name,address,postcode,phone,email,notes from clients ORDER BY id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute();
         	return $stmt;
@@ -103,8 +107,12 @@ class Client{
 
     public function readOne($id){
         if(is_admin()||$this->force_read==true){
-        	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes,c.creation_date,c.created_by,c.update_date,c.updated_by from clients c where c.id=:id";
-        if((is_admin()&&$_SESSION["organization_id"]==-99)||$this->force_read==true){
+			$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes,c.creation_date,c.created_by,c.update_date,c.updated_by from clients c where c.id=:id";
+			$stmt = $this->connection->prepare($query);
+        	$stmt->execute(['id'=>$id]);
+        	return $stmt;
+		}
+		if((is_admin()&&$_SESSION["organization_id"]==-99)||$this->force_read==true){
         	$query = "SELECT c.id,c.name,c.address,c.postcode,c.latitude,c.longitude,c.phone,c.email,c.notes from clients c where c.id=:id";
         	$stmt = $this->connection->prepare($query);
         	$stmt->execute(['id'=>$id]);
