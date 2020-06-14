@@ -108,7 +108,7 @@ class NeedRequest{
 		}
 	}
 
-	public function readFiltered($agreed="",$completed=""){
+	public function readFiltered($agreed="",$completed="",$overdue=FALSE){
 
 		$where_clause="";
 		if($agreed==="Y"){
@@ -122,6 +122,9 @@ class NeedRequest{
 		  $where_clause=$where_clause." and complete='Y' ";
 		} else if ($completed==="N")  {
 		  $where_clause=$where_clause." and complete='N' ";
+		}
+		if($overdue){
+			$where_clause=$where_clause." and target_date<CURDATE() ";
 		}
 		if(is_admin()&&$_SESSION["organization_id"]==-99){
 			$query =$this->base_query.$where_clause." ORDER BY request.id";
