@@ -22,7 +22,11 @@ if($count > 0){
 
 		$organization  = array(
 		"id" => $id,
-		"name" => $name
+		"name" => $name,
+		"creation_date" => $creation_date,
+		"created_by" => $created_by,
+		"update_date" => $update_date,
+		"updated_by" => $updated_by
 		);
 
 		array_push($organizations["organizations"], $organization);

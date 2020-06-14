@@ -16,8 +16,12 @@ if(isset($data)) {
 
 
     $organization->name = $data['name'];
-    $organization->address = $data['address'];
-    $organization->phone = $data['phone'];
+    if(isset($data['address'])){
+    	$organization->address = $data['address'];
+    }
+    if(isset($data['phone'])){
+    	$organization->phone = $data['phone'];
+    }
 
     if(isset($data['id'])){
         $organization->id = $data['id'];
@@ -78,7 +82,11 @@ if(isset($data)) {
                 "id" => $id,
                 "name" => $name,
                 "address" => $address,
-                "phone" => $phone
+                "phone" => $phone,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($organizations["organizations"], $organization);

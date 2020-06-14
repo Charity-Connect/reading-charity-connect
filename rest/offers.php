@@ -99,7 +99,11 @@ if(isset($data)) {
                 "date_available" => $date_available,
                 "date_end" => $date_end,
                 "postcode" => $postcode,
-                "distance" => $distance
+                "distance" => $distance,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
               );
 
                 array_push($offers["offers"], $offer);
