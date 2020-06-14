@@ -49,5 +49,7 @@ while ($orgRow = $orgStmt->fetch(PDO::FETCH_ASSOC)){
 
     }
 }
+
+logout();
         
 
