@@ -64,6 +64,17 @@ CREATE TABLE `client_share_requests` (
   `updated_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `crontab` (
+  `id` int(11) NOT NULL,
+  `cron` varchar(40) NOT NULL,
+  `command` varchar(4000) NOT NULL,
+  `last_run` datetime DEFAULT NULL,
+  `shell` varchar(1) NOT NULL DEFAULT 'N'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+REPLACE INTO `crontab` (`id`, `cron`, `command`, `last_run`, `shell`) VALUES
+(1, '0 8 * * *', 'overdue_email.php', NULL, 'N');
+
 CREATE TABLE `need_requests` (
   `id` int(11) NOT NULL,
   `client_need_id` int(11) NOT NULL,
@@ -165,7 +176,9 @@ REPLACE INTO `strings` (`code`, `string`, `creation_date`, `created_by`, `update
 ('client_share_subject', 'Reading Charity Connect Client Share Request (%CLIENT_NAME%)', '2020-06-06 22:04:23', NULL, '2020-06-06 22:04:23', NULL),
 ('client_share_body', '<p>Another Reading Charity Connect organisation, %SOURCE_ORGANISATION%, has requested permission to jointly manage one of your clients. %CLIENT_NAME%. This helps to makes sure that different organisations don\'t create duplicate requests for help for %CLIENT_NAME%, and allows them to have a full picture of their support. However, it does allow them to view and manage the name, address, phone number, e-mail address and notes about %CLIENT_NAME%, so you should only share the information if you are happy that it is appropriate.</p>\r\n\r\n<p>Visit <a href=\"%LINK%\">%LINK%</a> to accept or reject this request.</p>', '2020-06-06 22:04:23', NULL, '2020-06-06 22:04:23', NULL),
 ('new_org_confirmed_subject', 'Connect Reading: %ORGANIZATION_NAME% membership confirmed ', '2020-06-09 19:06:37', NULL, '2020-06-09 19:06:37', NULL),
-('new_org_confirmed_body', '<p>Dear %NAME%,</p>\r\n<p>Your request to join the %ORGANIZATION_NAME% team at Connect Reading has been confirmed. You can now log in at <a href=\"%LINK%\">%LINK%</a> to access this organization. If you are a member of multiple organisations, you may need to switch between organisations using the dropdown list at the top of the page.</p>', '2020-06-09 19:06:37', NULL, '2020-06-09 19:06:37', NULL);
+('new_org_confirmed_body', '<p>Dear %NAME%,</p>\r\n<p>Your request to join the %ORGANIZATION_NAME% team at Connect Reading has been confirmed. You can now log in at <a href=\"%LINK%\">%LINK%</a> to access this organization. If you are a member of multiple organisations, you may need to switch between organisations using the dropdown list at the top of the page.</p>', '2020-06-09 19:06:37', NULL, '2020-06-09 19:06:37', NULL),
+('overdue_subject', 'Connect Reading: Overdue actions for %ORGANIZATION_NAME%', '2020-06-14 09:07:10', NULL, '2020-06-14 09:07:10', NULL),
+('overdue_body', '<p>%USER_NAME%,<p>\r\n<p>There are overdue actions for %ORGANIZATION_NAME% at Connect Reading. Hopefully you have already completed these actions but not yet updated the system. If you have finished them, please mark them as completed. If you still need to take some action, please complete that ASAP.<p>\r\n<p>%ACTION_TABLE%</p>', '2020-06-14 09:07:10', NULL, '2020-06-14 09:07:10', NULL);
 
 CREATE TABLE `type_categories` (
   `code` varchar(30) NOT NULL,
@@ -240,6 +253,9 @@ ALTER TABLE `client_needs`
 ALTER TABLE `client_share_requests`
   ADD PRIMARY KEY (`id`);
 
+ALTER TABLE `crontab`
+  ADD PRIMARY KEY (`id`);
+
 ALTER TABLE `need_requests`
   ADD PRIMARY KEY (`id`),
   ADD KEY `client_need_id` (`client_need_id`);
@@ -287,6 +303,9 @@ ALTER TABLE `client_needs`
 
 ALTER TABLE `client_share_requests`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `crontab`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 ALTER TABLE `need_requests`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;

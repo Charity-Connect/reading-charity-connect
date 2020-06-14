@@ -40,7 +40,7 @@ function initBotRest(){
 	session_start();
 	$_SESSION["bot"]=true;
 
-	include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+	include_once __DIR__ .'/../config/dbclass.php';
 	$dbclass = new DBClass();
 	$connection = $dbclass->getConnection();
 		header("Content-Type: application/json; charset=UTF-8");
@@ -65,7 +65,7 @@ function initBotWeb(){
 	session_start();
 	$_SESSION["bot"]=true;
 	
-	include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+	include_once __DIR__ .'/../config/dbclass.php';
 	$dbclass = new DBClass();
 	$connection = $dbclass->getConnection();
 	

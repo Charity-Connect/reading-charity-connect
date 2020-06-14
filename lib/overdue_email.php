@@ -1,10 +1,10 @@
 <?php
 
-include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/NeedRequest.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Organization.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
+require_once 'common.php';
+require_once __DIR__.'/../config/dbclass.php';
+require_once __DIR__.'/../entities/NeedRequest.php';
+require_once __DIR__.'/../entities/Organization.php';
+require_once __DIR__.'/../entities/UserOrganization.php';
 global $site_address;
 global $ui_root;
 

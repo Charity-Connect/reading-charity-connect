@@ -1,7 +1,7 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
-require_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
-require_once $_SERVER['DOCUMENT_ROOT'] ."/lib/Cron/CronExpression.php";
+require_once 'common.php';
+require_once '../config/dbclass.php';
+require_once 'Cron/CronExpression.php';
 date_default_timezone_set("Europe/London");
 
 $connection=initBotWeb();
