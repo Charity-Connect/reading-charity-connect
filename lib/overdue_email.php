@@ -1,6 +1,7 @@
 <?php
 
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/NeedRequest.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Organization.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
@@ -38,7 +39,12 @@ while ($orgRow = $orgStmt->fetch(PDO::FETCH_ASSOC)){
         $overdueSubject=get_string("overdue_subject",array("%ORGANIZATION_NAME%"=>$orgRow["name"]));
         while ($userRow = $userStmt->fetch(PDO::FETCH_ASSOC)){
             $overdueBody=get_string("overdue_body",array("%ORGANIZATION_NAME%"=>$orgRow["name"],"%USER_NAME%"=>(is_null($userRow["user_name"])?$userRow["email"]:$userRow["user_name"]),"%ACTION_TABLE%"=>$overdueTable));
-            echo "<p>sending mail ".$overdueBody." to ".$userRow["email"]."</p>";
+            if(isset($_GET["test"])&&$_GET["test"]=="Y"){
+                echo "<p>sending mail to ".$userRow["email"]."</p>".$overdueBody;
+            } else {
+                sendHtmlMail($userRow["email"],$overdueSubject,$overdueBody);
+                echo "<p>sending mail to ".$userRow["email"]."</p>";
+            }
         }
 
     }
