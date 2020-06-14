@@ -1,6 +1,6 @@
 <?php
 require_once 'common.php';
-require_once '../config/dbclass.php';
+require_once __DIR__.'../config/dbclass.php';
 require_once 'Cron/CronExpression.php';
 date_default_timezone_set("Europe/London");
 
