@@ -1,6 +1,7 @@
 <?php
 $force_login=true;
 $site_address="http://localhost";
+$ui_root="/ui/web/";
 
 class DBClass {
 

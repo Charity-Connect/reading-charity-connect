@@ -5,7 +5,6 @@ $connection;
 function initRest(){
 
 	global $connection;
-	global $force_login;
 	// Initialize the session
 	session_start();
 
@@ -35,6 +34,19 @@ function initRest(){
 	return $connection;
 }
 
+function initBotRest(){
+
+	global $connection;
+	session_start();
+	$_SESSION["bot"]=true;
+
+	include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+	$dbclass = new DBClass();
+	$connection = $dbclass->getConnection();
+		header("Content-Type: application/json; charset=UTF-8");
+		return $connection;
+}
+
 function initPublicRest(){
 
 	global $connection;
@@ -46,6 +58,20 @@ function initPublicRest(){
 		header("Content-Type: application/json; charset=UTF-8");
 		return $connection;
 }
+
+function initBotWeb(){
+	global $connection;
+	// Initialize the session
+	session_start();
+	$_SESSION["bot"]=true;
+	
+	include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+	$dbclass = new DBClass();
+	$connection = $dbclass->getConnection();
+	
+	
+	return $connection;
+	}
 
 function initWeb(){
 global $connection;
@@ -91,13 +117,17 @@ function is_admin(){
 function is_org_admin(){
 	global $connection;
 
+	if(isset($_SESSION["bot"]) && $_SESSION["bot"] === true){
+		return true;
+	}
+
 	if(!isset($connection)){
 		include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
 		$dbclass = new DBClass();
 		$connection = $dbclass->getConnection();
 	}
 
-  if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
+	if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
 
 	$userId=$_SESSION["id"];
 	if(isset($_SESSION["organization_id"])){
