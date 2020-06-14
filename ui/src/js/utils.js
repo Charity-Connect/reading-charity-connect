@@ -2,8 +2,8 @@
  * Copyright (c) 2014, 2016, Oracle and/or its affiliates.
  * The Universal Permissive License (UPL), Version 1.0
  */
-define(['ojs/ojcore', 'knockout'],
-    function (oj, ko) {
+define(['ojs/ojcore', 'knockout', 'ojs/ojconfig'],
+    function (oj, ko, Config) {
         var self = this;
         var appConstants = {
             sysModuleConfig: {},
@@ -11,6 +11,21 @@ define(['ojs/ojcore', 'knockout'],
                 organizationId: ""
             }
         }
+        
+        // OLI NOTE: addition to get browser locale; set OJET locale
+        getSetLanguage = function () {
+            function getLang() {
+              return (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.language;
+            }
+            const newLang = getLang();
+            self.setLang = (function() {
+              Config.setLocale(newLang,
+                () => {
+                  document.getElementsByTagName('html')[0].setAttribute('lang', newLang);
+                }
+              );
+            }());             
+        };
 
         sortAlphabetically = function (valueArray, property) {
             valueArray.sort(function(a, b){
@@ -31,6 +46,7 @@ define(['ojs/ojcore', 'knockout'],
 
         return {
             appConstants: appConstants,
+            getSetLanguage: getSetLanguage,
             sortAlphabetically: sortAlphabetically,
             showErrorMessage: showErrorMessage
         };

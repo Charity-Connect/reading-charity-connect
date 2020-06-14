@@ -14,6 +14,8 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
 
             function AdminViewModel() {
                 var self = this;
+                utils.getSetLanguage();
+                
                 self.postTextColor = ko.observable();
                 self.postText = ko.observable();
                 self.fileContentPosted = ko.observable(true);

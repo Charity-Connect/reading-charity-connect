@@ -222,6 +222,7 @@
                                                        keyboard-edit='disabled'
                                                        date-picker.footer-layout=''
                                                        value="{{targetDateConvertor}}"
+                                                       min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                                       
                                                        on-value-changed="[[handleTargetDateChanged]]"
                                                        placeholder="Input target date"
                                                        title="Pick target date">
@@ -366,6 +367,7 @@
                                 <oj-input-date id="datepickerEditTargetDate" labelled-by="editTargetDateLabel"
                                                keyboard-edit='disabled'
                                                date-picker.footer-layout=''
+                                               min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                               
                                                value="[[targetDateConvertor]]"
                                                placeholder="[[targetDatePlaceholder]]"
                                                title="Displays target date"
@@ -377,6 +379,7 @@
                                 <oj-input-date id="datepickerEditDateNeeded" labelled-by="editDateNeededLabel"
                                                keyboard-edit='disabled'
                                                date-picker.footer-layout=''
+                                               min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                                                                              
                                                value="[[dateNeededConvertor]]"
                                                placeholder="Display date needed"
                                                title="Displays date needed"
