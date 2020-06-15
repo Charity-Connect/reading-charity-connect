@@ -49,7 +49,7 @@ class NeedRequest{
 			,request.update_date
 			,request.updated_by
 			,client_need.notes need_notes
-            ,if(STRCMP(request.agreed,'Y') = 0 ,client.name,IF(INSTR(client.name,' ')>0,LEFT(client.name,INSTR(client.name,' ')),client.name) )as client_name
+            ,if(STRCMP(request.agreed,'Y') = 0 ,client.name,IF(INSTR(client.name,' ')>0,LEFT(client.name,INSTR(client.name,' ')+1),client.name) )as client_name
 			,if(STRCMP(request.agreed,'Y') = 0 ,client.address,'') as client_address
 			,if(STRCMP(request.agreed,'Y') = 0 ,client.postcode,'') as client_postcode
 			,if(STRCMP(request.agreed,'Y') = 0 ,client.phone,'') as client_phone
