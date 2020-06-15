@@ -116,7 +116,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 
                             },
                             error = function() {
-                                window.location.href = "/rest/logout?redirect=/index.html?redirect=" + window.location.pathname;
+                                window.location.href = "/rest/logout?redirect=/index.html?redirect=" + encodeURI(window.location.pathname+ window.location.search);
                             }
                         )
                     )
