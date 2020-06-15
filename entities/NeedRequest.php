@@ -9,7 +9,10 @@ class NeedRequest{
 	public $client_need_id;
 	public $request_organization_id;
 	public $client_name;
+	public $client_address;
 	public $client_postcode;
+	public $client_phone;
+	public $client_email;
 	public $type;
 	public $type_name;
 	public $date_needed;
@@ -32,37 +35,40 @@ class NeedRequest{
 	}
 
 	private $base_query = "SELECT request.id
-				,request.client_need_id
-				,request.organization_id as request_organization_id
-				,request.offer_id
-				,request.target_date
-				,request.notes request_response_notes
-				,request.agreed
-				,request.complete
-				,request.confirmation_code
-				,request.notes request_response_notes
+			,request.client_need_id
+			,request.organization_id as request_organization_id
+			,request.offer_id
+			,request.target_date
+			,request.notes request_response_notes
+			,request.agreed
+			,request.complete
+			,request.confirmation_code
+			,request.notes request_response_notes
 			,request.creation_date
 			,request.created_by
 			,request.update_date
 			,request.updated_by
 			,client_need.notes need_notes
-				,client.name as client_name
-				,client.postcode as client_postcode
-				,types.type
-				,types.name as type_name
-				,client_need.date_needed
-				,org.name source_organization_name
-				,if(target_date<CURDATE(),'Y','N') as overdue
-				from need_requests request
-				, client_needs client_need
-				, clients client
-				, offer_types types
-				, organizations org
-				where request.client_need_id=client_need.id
-				and request.fulfilled_elsewhere='N'
-				and client_need.client_id=client.id
-				and client_need.type=types.type
-				and org.id=client_need.requesting_organization_id ";
+            ,if(STRCMP(request.agreed,'Y') = 0 ,client.name,IF(INSTR(client.name,' ')>0,LEFT(client.name,INSTR(client.name,' ')),client.name) )as client_name
+			,if(STRCMP(request.agreed,'Y') = 0 ,client.address,'') as client_address
+			,if(STRCMP(request.agreed,'Y') = 0 ,client.postcode,'') as client_postcode
+			,if(STRCMP(request.agreed,'Y') = 0 ,client.phone,'') as client_phone
+			,if(STRCMP(request.agreed,'Y') = 0 ,client.email,'') as client_email
+			,types.type
+			,types.name as type_name
+			,client_need.date_needed
+			,org.name source_organization_name
+			,if(target_date<CURDATE(),'Y','N') as overdue
+			from need_requests request
+			, client_needs client_need
+			, clients client
+			, offer_types types
+			, organizations org
+			where request.client_need_id=client_need.id
+			and request.fulfilled_elsewhere='N'
+			and client_need.client_id=client.id
+			and client_need.type=types.type
+			and org.id=client_need.requesting_organization_id ";
 
 
 	public function create(){
