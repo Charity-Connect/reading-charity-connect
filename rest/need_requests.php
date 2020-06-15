@@ -74,6 +74,8 @@ if(isset($data)) {
         	$stmt = $need_request->readFiltered("Y","Y");
 		}else if($view=="in_progress"){
         	$stmt = $need_request->readFiltered("Y","N");
+		}else if($view=="overdue"){
+        	$stmt = $need_request->readFiltered("Y","N",TRUE);
 		} else {
         	$stmt = $need_request->readAll();
         }
@@ -102,6 +104,7 @@ if(isset($data)) {
                 "request_response_notes" => $request_response_notes,
                 "need_notes" => $need_notes,
                 "source_organization_name"=>$source_organization_name,
+                "overdue"=>$overdue,
                 "creation_date" => $creation_date,
                 "created_by" => $created_by,
                 "update_date" => $update_date,
