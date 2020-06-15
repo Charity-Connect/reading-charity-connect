@@ -36,6 +36,7 @@ class ClientNeed{
 
 		$stmt=$this->client->readOne($this->client_id);
 		global $site_address;
+		global $ui_root;
 
 		if($stmt->rowCount()==1){
 
@@ -99,7 +100,7 @@ class ClientNeed{
 					sendHtmlMail($row['email']
 					,get_string("need_request_subject")
 					,get_string("need_request_body"
-						,array("%LINK%"=>$site_address."/need_confirm.html?need_id=".$need_request->id."&key=".$need_request->getConfirmationCode()
+						,array("%LINK%"=>$site_address.$ui_root."index.html?root=requests%2F".$need_request->id
 										,"%USER_NAME%"=>$row['user_name']
 										,"%CLIENT_NAME%"=>$row['client_name']
 										,"%SOURCE_ORG_NAME%"=>$row['source_org_name']
