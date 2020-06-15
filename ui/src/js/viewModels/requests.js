@@ -7,13 +7,16 @@
 /*
  * Your requests ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils',
+define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojselectcombobox', 'ojs/ojlistview', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider, ResponsiveUtils, ResponsiveKnockoutUtils) {
+        function (app,Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider, ResponsiveUtils, ResponsiveKnockoutUtils) {
 
             function RequestsViewModel() {
                 var self = this;
+			    var router = Router.rootInstance;
+				var stateParams = router.observableModuleConfig().params.ojRouter.parameters;
+				var requestId=stateParams.requestId();
                 utils.getSetLanguage();
 
                 self.connected = function () {
@@ -504,6 +507,19 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                             }
                                         }]);
                                     };
+                                }).then(function () {
+									if(typeof(requestId)!="undefined"){
+										self.requestRowSelected([{
+                                            "startKey": {
+                                              "row": requestId
+                                            }, 
+                                            "endKey": {
+                                              "row": requestId
+                                            }
+                                        }]);
+									}
+									self.handleRequestRowChanged({"detail":{"value":[requestId]},"target":{"id":"requestsTable","currentRow":{"rowKey":requestId}}});
+					
                                 }).then(function () {
                                     self.requestsLoaded(true);
                                 });

@@ -31,7 +31,7 @@ while ($orgRow = $orgStmt->fetch(PDO::FETCH_ASSOC)){
             .date( 'j M Y', strtotime($needRow["date_needed"]))."</td><td>"
             .date( 'j M Y', strtotime($needRow["target_date"]))."</td><td>"
             .round((time()-strtotime($needRow["target_date"]))/(60*60*24))."</td><td>"
-            ."<a href=\"".$site_address.$ui_root."index.html?root=requests&id=".$needRow["id"]."\">View</a></td></tr>";
+            ."<a href=\"".$site_address.$ui_root."index.html?root=requests%2F".$needRow["id"]."\">View</a></td></tr>";
         }
         $overdueTable.="</table>";
         echo $overdueTable."</p>";
