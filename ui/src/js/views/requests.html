@@ -345,16 +345,31 @@
                                 <oj-label id="editNameLabel"><strong>Name:</strong></oj-label>
                                 <oj-input-text id="inputEditName" labelled-by="editNameLabel"
                                                value="[[requestSelected().client_name]]"
-                                               placeholder="Display name"
                                                title="Displays name"
+                                               readonly="true">
+                                </oj-input-text>
+                                <oj-label id="phoneNameLabel"><strong>Phone:</strong></oj-label>
+                                <oj-input-text id="inputEditPhone" labelled-by="phoneNameLabel"
+                                               value="[[requestSelected().client_phone]]"
+                                               title="Displays phone"
+                                               readonly="true">
+                                </oj-input-text>
+                                <oj-label id="emailLabel"><strong>Email address:</strong></oj-label>
+                                <oj-input-text id="inputEditEmail" labelled-by="emailLabel"
+                                               value="[[requestSelected().client_email]]"
+                                               title="Displays email"
                                                readonly="true">
                                 </oj-input-text>
                             </div>
                             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                                <oj-label id="editPostcodeLabel"><strong>Postcode:</strong></oj-label>
-                                <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"
+                                <oj-label id="editAddressLabel"><strong>Address:</strong></oj-label>
+                                <oj-input-text id="inputEditAddress" labelled-by="editAddressLabel"
+                                               value="[[requestSelected().client_address]]"
+                                               title="Displays address"
+                                               readonly="true">
+                                </oj-input-text>
+                                <oj-input-text id="inputEditPostcode" 
                                                value="[[requestSelected().client_postcode]]"
-                                               placeholder="Display postcode"
                                                title="Displays postcode"
                                                readonly="true">
                                 </oj-input-text>
