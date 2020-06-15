@@ -1,14 +1,14 @@
 <?php
 
-include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
+require_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
+require_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
 
 $connection=initRest();
-
+$method = $_SERVER['REQUEST_METHOD'];
 
     $user_organization = new UserOrganization($connection);
 $data = json_decode(file_get_contents('php://input'), true);
-if(isset($data)) {
+if(isset($data)&&$method=="POST") {
     // doing a create or update
     header("Access-Control-Allow-Methods: POST");
     header("Access-Control-Max-Age: 3600");
@@ -60,7 +60,7 @@ if(isset($data)) {
         }
     }
 
-} else {
+} else if ($method=="GET") {
 
     // querying
 
@@ -205,5 +205,13 @@ if(isset($data)) {
             echo json_encode($user_organizations);
         }
     }
+} else if ($method=="DELETE"){
+	$user_organization->id=$_GET["id"];
+	if($user_organization->delete()){
+		echo '{"message": "success"}';
+	} else {
+		echo '{"message": "error"}';
+	}
+
 }
 ?>
