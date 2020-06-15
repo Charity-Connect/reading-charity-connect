@@ -159,7 +159,8 @@
                             <oj-label id="editDateAvailableLabel"><strong>Date Available:</strong></oj-label>
                             <oj-input-date id="datepickerEditDateAvailable" labelled-by="editDateAvailableLabel"
                                 keyboard-edit='disabled'
-                                date-picker.footer-layout='' 
+                                date-picker.footer-layout=''
+                                min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                
                                 value="{{dateAvailableConvertor}}"
                                 placeholder="Input date available"                                
                                 title="Pick date available">
@@ -169,7 +170,8 @@
                             <oj-label id="editDateEndLabel"><strong>Date End:</strong></oj-label>
                             <oj-input-date id="datepickerEditDateEnd" labelled-by="editDateEndLabel"
                                 keyboard-edit='disabled'
-                                date-picker.footer-layout='' 
+                                date-picker.footer-layout=''
+                                min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                
                                 value="{{dateEndConvertor}}"
                                 placeholder="Input date end"                                
                                 title="Pick date end">

@@ -12,7 +12,9 @@ define(['appController','utils','ojs/ojcore', 'knockout', 'jquery','accUtils','o
 
     function OrganizationViewModel() {
       var self = this;
-	  if(app.userDetails.admin!="Y"){
+      utils.getSetLanguage();
+        
+        if(app.userDetails.admin!="Y"){
 		return;
 	}
 

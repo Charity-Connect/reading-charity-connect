@@ -14,6 +14,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
             function ClientViewModel() {
                 var self = this;
+                utils.getSetLanguage();
 
                 if(app.currentOrg.manage_clients!="Y"){
 					return;

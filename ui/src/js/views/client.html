@@ -220,6 +220,7 @@
                                 <oj-input-date id="datepickerEditNeedDateNeeded" labelled-by="editNeedDateNeededLabel"
                                                keyboard-edit='disabled'
                                                date-picker.footer-layout=''
+                                               min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                                                                              
                                                value="{{dateNeededConvertor}}"
                                                placeholder="Input date needed"
                                                title="Pick date needed">

@@ -17,6 +17,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 			    var router = Router.rootInstance;
 				var stateParams = router.observableModuleConfig().params.ojRouter.parameters;
 				var requestId=stateParams.requestId();
+                utils.getSetLanguage();
 
                 self.connected = function () {
                     accUtils.announce('Requests page loaded.');
@@ -153,12 +154,12 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 							}
 
                                 if (self.requestSelected().requestTargetDateRaw) {
-                                    self.targetDateConvertor(new Date(self.requestSelected().requestTargetDateRaw).toISOString());
+                                    self.targetDateConvertor(oj.IntlConverterUtils.dateToLocalIso(new Date(self.requestSelected().requestTargetDateRaw)));
                                 } else {
                                     self.targetDateConvertor("");
                                 }
                                 if (self.requestSelected().requestDateNeededRaw) {
-                                    self.dateNeededConvertor(new Date(self.requestSelected().requestDateNeededRaw).toISOString());
+                                    self.dateNeededConvertor(oj.IntlConverterUtils.dateToLocalIso(new Date(self.requestSelected().requestDateNeededRaw)));
                                 } else {
                                     self.dateNeededConvertor("");
                                 }
