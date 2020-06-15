@@ -14,6 +14,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 
             function RequestsViewModel() {
                 var self = this;
+                utils.getSetLanguage();
 
                 self.connected = function () {
                     accUtils.announce('Requests page loaded.');
@@ -150,12 +151,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 							}
 
                                 if (self.requestSelected().requestTargetDateRaw) {
-                                    self.targetDateConvertor(new Date(self.requestSelected().requestTargetDateRaw).toISOString());
+                                    self.targetDateConvertor(oj.IntlConverterUtils.dateToLocalIso(new Date(self.requestSelected().requestTargetDateRaw)));
                                 } else {
                                     self.targetDateConvertor("");
                                 }
                                 if (self.requestSelected().requestDateNeededRaw) {
-                                    self.dateNeededConvertor(new Date(self.requestSelected().requestDateNeededRaw).toISOString());
+                                    self.dateNeededConvertor(oj.IntlConverterUtils.dateToLocalIso(new Date(self.requestSelected().requestDateNeededRaw)));
                                 } else {
                                     self.dateNeededConvertor("");
                                 }

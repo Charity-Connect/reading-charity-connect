@@ -14,10 +14,12 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
 
             function OffersViewModel() {
                 var self = this;
+                utils.getSetLanguage();
 
-                if(app.currentOrg.manage_offers!="Y"){
-					return;
-				}
+                if (app.currentOrg.manage_offers != "Y") {
+                    return;
+                }
+                
                 self.connected = function () {
                     accUtils.announce('Offers page loaded.');
                     document.title = "Offers";
@@ -99,12 +101,12 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
                                 _getOfferCategoryFromTypeAjax(self.offerSelected().type);
 
                                 if (self.offerSelected().offerDateAvailableRaw) {
-                                    self.dateAvailableConvertor(new Date(self.offerSelected().offerDateAvailableRaw).toISOString());
+                                    self.dateAvailableConvertor(oj.IntlConverterUtils.dateToLocalIso(new Date(self.offerSelected().offerDateAvailableRaw)));
                                 } else {
                                     self.dateAvailableConvertor("");
                                 }
                                 if (self.offerSelected().offerDateEndRaw) {
-                                    self.dateEndConvertor(new Date(self.offerSelected().offerDateEndRaw).toISOString());
+                                    self.dateEndConvertor(oj.IntlConverterUtils.dateToLocalIso(new Date(self.offerSelected().offerDateEndRaw)));
                                 } else {
                                     self.dateEndConvertor("");
                                 }

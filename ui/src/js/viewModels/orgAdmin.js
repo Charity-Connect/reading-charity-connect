@@ -14,6 +14,7 @@ define(['appController','utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 
 
             function AdminViewModel() {
                 var self = this;
+                utils.getSetLanguage();
 
 				if(app.currentOrg.organization_admin!="Y"){
 					return;

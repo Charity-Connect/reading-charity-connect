@@ -21,7 +21,7 @@ class DBClass {
 
         try{
             $this->connection = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->database, $this->username, $this->password);
-            $this->connection->exec("set names utf8");
+            $this->connection->exec("set names utf8;SET time_zone = 'Europe/London'");
         }catch(PDOException $exception){
             echo "Error: " . $exception->getMessage();
         }
