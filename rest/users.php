@@ -3,10 +3,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/User.php';
 
 $connection=initRest();
+$method = $_SERVER['REQUEST_METHOD'];
 
 $user = new User($connection);
 $data = json_decode(file_get_contents('php://input'), true);
-if(isset($data)) {
+if(isset($data)&&$method=="POST") {
     // doing a create or update
     header("Access-Control-Allow-Methods: POST");
     header("Access-Control-Max-Age: 3600");
@@ -14,8 +15,12 @@ if(isset($data)) {
 
 
     $user->display_name = $data['display_name'];
-    $user->email = $data['email'];
-    $user->phone = $data['phone'];
+	if(isset($data['email'])){
+		$user->email = $data['email'];
+	} 
+	if(isset($data['phone'])){
+		$user->phone = $data['phone'];
+	}
     $organization_id=$_SESSION['organization_id'];
     if(isset($data['organization_id'])){
     	$organization_id=$data['organization_id'];
@@ -27,30 +32,38 @@ if(isset($data)) {
             $user->read();
             echo json_encode($user);
         }else{
-            echo '{';
-                echo '"message": "Unable to update user."';
-            echo '}';
+            echo '{"error": "Unable to update user."}';
         }
 
     } else {
-	$id=$user->create($organization_id);
-        if($id>0){
-            $user_arr  = array(
-                    "id" => $user->id,
-                    "display_name" => $user->display_name,
-                    "email" => $user->email,
-                    "phone" => $user->phone
-                    );
-            echo json_encode($user_arr);
+		if(is_null($user->email)){
+            echo '{"error": "Email not set."}';
+			http_response_code(400);
+			return;
+		}
+		if(is_null($user->display_name)){
+            echo '{"error": "Name not set."}';
+			http_response_code(400);
+			return;
+		}
+		$id=$user->create($organization_id);
+		if($id>0){
+			$user_arr  = array(
+					"id" => $user->id,
+					"display_name" => $user->display_name,
+					"email" => $user->email,
+					"phone" => $user->phone
+					);
+			echo json_encode($user_arr);
 
-        }else{
-            echo '{';
-                echo '"message": "Unable to create user."';
-            echo '}';
-        }
+		}else{
+			echo '{';
+				echo '"message": "Unable to create user."';
+			echo '}';
+		}
     }
 
-} else {
+} else if ($method=="GET") {
 
     // querying
 
