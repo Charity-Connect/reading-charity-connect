@@ -61,7 +61,11 @@ if(isset($data)) {
 
                 $offer_type_category  = array(
                 "code" => $code,
-                "name" => $name
+                "name" => $name,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($offer_type_categorys["offer_type_categorys"], $offer_type_category);

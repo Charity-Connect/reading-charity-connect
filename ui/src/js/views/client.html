@@ -82,13 +82,12 @@
             <div class="oj-panel oj-panel-alt2">
                 <div class="oj-flex sm-1x-row">
                     <div class="oj-sm-padding-1x-horizontal oj-flex-item">
-<!--                    <oj-bind-if test="[[addClientButtonSelected().length]]">
-                            <h3>Add client</h3>
-                        </oj-bind-if>
-                        <oj-bind-if test="[[clientRowSelected().length]]">
-                            <h3>Edit client</h3>
-                        </oj-bind-if> -->
-                    </div>
+						<div class="oj-flex sm-1x-row oj-sm-float-start">
+							<h3>
+							<span><oj-bind-text value="[[clientSelected().name]]"></oj-bind-text></span>
+						</h3>
+						</div>
+				</div>
                     <div class="oj-sm-padding-1x-horizontal oj-flex-item">
                         <div class="oj-helper-clearfix">
                             <div class="oj-flex sm-1x-row oj-sm-float-end">
@@ -221,6 +220,7 @@
                                 <oj-input-date id="datepickerEditNeedDateNeeded" labelled-by="editNeedDateNeededLabel"
                                                keyboard-edit='disabled'
                                                date-picker.footer-layout=''
+                                               min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                                                                              
                                                value="{{dateNeededConvertor}}"
                                                placeholder="Input date needed"
                                                title="Pick date needed">

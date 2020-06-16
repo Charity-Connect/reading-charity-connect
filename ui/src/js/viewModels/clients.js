@@ -14,10 +14,12 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
             function ClientsViewModel() {
                 var self = this;
-                if(app.currentOrg.manage_clients!="Y"){
-					return;
-				}
-			    var router = Router.rootInstance;
+                utils.getSetLanguage();
+                
+                if (app.currentOrg.manage_clients!="Y") {
+                    return;
+                }
+		var router = Router.rootInstance;
 
                 self.connected = function () {
                     accUtils.announce('Clients page loaded.');

@@ -14,6 +14,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
 
             function AdminViewModel() {
                 var self = this;
+                utils.getSetLanguage();
 
                 var router = Router.rootInstance;
 				if(app.currentOrg.organization_admin!="Y"){

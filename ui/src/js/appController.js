@@ -103,6 +103,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 									utils.appConstants.sysModuleConfig = {viewPath: 'views/systemAdminOrganizations.html'
 									, viewModelPath: 'viewModels/systemAdminOrganizations'
 									, params: {parentRouter: self.router}} ;
+										self.organizationList.push({"id":-99,"name":"View All"});
 								}
 
 								if(user_confirmed_organizations.length>1){
@@ -115,7 +116,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 
                             },
                             error = function() {
-                                window.location.href = "/rest/logout?redirect=/index.html?redirect=" + window.location.pathname;
+                                window.location.href = "/rest/logout?redirect=/index.html?redirect=" + encodeURI(window.location.pathname+ window.location.search);
                             }
                         )
                     )
@@ -149,7 +150,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
        // Router setup
 		self.router = Router.rootInstance;
 		self.routerConfig = {
-			'requests': {label: 'Requests', isDefault: true},
+			'requests/{requestId}': {label: 'Requests', isDefault: true},
 			'offers': {label: 'Offers'},
 			'clients': {label: 'Clients'},
 			'client/{clientId}': {label: 'Client'},

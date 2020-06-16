@@ -74,6 +74,8 @@ if(isset($data)) {
         	$stmt = $need_request->readFiltered("Y","Y");
 		}else if($view=="in_progress"){
         	$stmt = $need_request->readFiltered("Y","N");
+		}else if($view=="overdue"){
+        	$stmt = $need_request->readFiltered("Y","N",TRUE);
 		} else {
         	$stmt = $need_request->readAll();
         }
@@ -91,7 +93,10 @@ if(isset($data)) {
                 "id" => $id,
                 "client_need_id" => $client_need_id,
                 "client_name" => $client_name,
+                "client_address" => $client_address,
                 "client_postcode" => $client_postcode,
+                "client_phone" => $client_phone,
+                "client_email" => $client_email,
                 "type" => $type,
                 "type_name" => $type_name,
                 "date_needed" => $date_needed,
@@ -101,7 +106,12 @@ if(isset($data)) {
                 "target_date" => $target_date,
                 "request_response_notes" => $request_response_notes,
                 "need_notes" => $need_notes,
-                "source_organization_name"=>$source_organization_name
+                "source_organization_name"=>$source_organization_name,
+                "overdue"=>$overdue,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($need_requests["need_request"], $need_request);

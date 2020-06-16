@@ -7,13 +7,17 @@
 /*
  * Your requests ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils',
+define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojselectcombobox', 'ojs/ojlistview', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider, ResponsiveUtils, ResponsiveKnockoutUtils) {
+        function (app,Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider, ResponsiveUtils, ResponsiveKnockoutUtils) {
 
             function RequestsViewModel() {
                 var self = this;
+			    var router = Router.rootInstance;
+				var stateParams = router.observableModuleConfig().params.ojRouter.parameters;
+				var requestId=stateParams.requestId();
+                utils.getSetLanguage();
 
                 self.connected = function () {
                     accUtils.announce('Requests page loaded.');
@@ -150,12 +154,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
 							}
 
                                 if (self.requestSelected().requestTargetDateRaw) {
-                                    self.targetDateConvertor(new Date(self.requestSelected().requestTargetDateRaw).toISOString());
+                                    self.targetDateConvertor(oj.IntlConverterUtils.dateToLocalIso(new Date(self.requestSelected().requestTargetDateRaw)));
                                 } else {
                                     self.targetDateConvertor("");
                                 }
                                 if (self.requestSelected().requestDateNeededRaw) {
-                                    self.dateNeededConvertor(new Date(self.requestSelected().requestDateNeededRaw).toISOString());
+                                    self.dateNeededConvertor(oj.IntlConverterUtils.dateToLocalIso(new Date(self.requestSelected().requestDateNeededRaw)));
                                 } else {
                                     self.dateNeededConvertor("");
                                 }
@@ -429,6 +433,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                                 client_name: this.client_name,
                                                 client_need_id: this.client_need_id,
                                                 client_postcode: this.client_postcode,
+                                                client_phone: this.client_phone,
+                                                client_email: this.client_email,
+                                                client_address: this.client_address,
                                                 id: this.id,
                                                 need_notes: this.need_notes,
                                                 request_organization_id: this.request_organization_id,
@@ -503,6 +510,19 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', '
                                             }
                                         }]);
                                     };
+                                }).then(function () {
+									if(typeof(requestId)!="undefined"){
+										self.requestRowSelected([{
+                                            "startKey": {
+                                              "row": requestId
+                                            }, 
+                                            "endKey": {
+                                              "row": requestId
+                                            }
+                                        }]);
+									}
+									self.handleRequestRowChanged({"detail":{"value":[requestId]},"target":{"id":"requestsTable","currentRow":{"rowKey":requestId}}});
+					
                                 }).then(function () {
                                     self.requestsLoaded(true);
                                 });

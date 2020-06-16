@@ -1,14 +1,14 @@
 <?php
 
-include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
+require_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
+require_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
 
 $connection=initRest();
-
+$method = $_SERVER['REQUEST_METHOD'];
 
     $user_organization = new UserOrganization($connection);
 $data = json_decode(file_get_contents('php://input'), true);
-if(isset($data)) {
+if(isset($data)&&$method=="POST") {
     // doing a create or update
     header("Access-Control-Allow-Methods: POST");
     header("Access-Control-Max-Age: 3600");
@@ -60,7 +60,7 @@ if(isset($data)) {
         }
     }
 
-} else {
+} else if ($method=="GET") {
 
     // querying
 
@@ -70,7 +70,11 @@ if(isset($data)) {
 
     if($view=="one") {
         $user_organization->id=$_GET["id"];
-        $user_organization->read();
+		$user_organization->read();
+		if($user_organization->id==null){
+			http_response_code(404);
+			return;
+		}
         echo json_encode($user_organization);
     } else if($view=="user" || $view=="current_user") {
     	if($view=="current_user"){
@@ -101,7 +105,11 @@ if(isset($data)) {
                 "manage_offers" => $manage_offers,
                 "manage_clients" => $manage_clients,
                 "client_share_approver" => $client_share_approver,
-                "confirmed" => $confirmed
+                "confirmed" => $confirmed,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($user_organizations["user_organizations"], $user_organization);
@@ -140,7 +148,11 @@ if(isset($data)) {
                 "manage_offers" => $manage_offers,
                 "manage_clients" => $manage_clients,
                 "client_share_approver" => $client_share_approver,
-                "confirmed" => $confirmed
+                "confirmed" => $confirmed,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($user_organizations["user_organizations"], $user_organization);
@@ -178,7 +190,11 @@ if(isset($data)) {
                 "manage_offers" => $manage_offers,
                 "manage_clients" => $manage_clients,
                 "client_share_approver" => $client_share_approver,
-                "confirmed" => $confirmed
+                "confirmed" => $confirmed,
+                "creation_date" => $creation_date,
+                "created_by" => $created_by,
+                "update_date" => $update_date,
+                "updated_by" => $updated_by
                 );
 
                 array_push($user_organizations["user_organizations"], $user_organization);
@@ -193,5 +209,20 @@ if(isset($data)) {
             echo json_encode($user_organizations);
         }
     }
+} else if ($method=="DELETE"){
+	if(isset($_GET["id"])){
+		$user_organization->id=$_GET["id"];
+		if($user_organization->delete()){
+			echo '{"message": "success"}';
+		} else {
+			echo '{"message": "error"}';
+			http_response_code(403);
+		}
+	} else {
+		http_response_code(404);
+	}
+
+} else {
+	http_response_code(405);
 }
 ?>
