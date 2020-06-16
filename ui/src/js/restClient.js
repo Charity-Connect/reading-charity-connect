@@ -89,9 +89,27 @@ define(['jquery', 'utils'],
             });
         };
 
+        doDeleteJson = function(url) {
+            return new Promise(function(resolve, reject) {
+                $.ajax({ type: "DELETE",
+                    url: url,
+                    dataType: "json",
+                    success: function (response) {
+                        resolve(response);
+                    },
+                    error: function(event) {
+                        console.error("Error occured in REST client, when sending DELETE to url: " + url);
+                        //  utils.showErrorMessage("REST delete failed", url);
+                        reject(event);
+                    }
+                });
+            });
+        };
+
         return {
             doPost: doPost,
             doPostJson: doPostJson,
+            doDeleteJson: doDeleteJson,
             doGet: doGet,
             doGetJson: doGetJson
         };
