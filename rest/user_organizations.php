@@ -70,7 +70,11 @@ if(isset($data)&&$method=="POST") {
 
     if($view=="one") {
         $user_organization->id=$_GET["id"];
-        $user_organization->read();
+		$user_organization->read();
+		if($user_organization->id==null){
+			http_response_code(404);
+			return;
+		}
         echo json_encode($user_organization);
     } else if($view=="user" || $view=="current_user") {
     	if($view=="current_user"){
@@ -206,12 +210,19 @@ if(isset($data)&&$method=="POST") {
         }
     }
 } else if ($method=="DELETE"){
-	$user_organization->id=$_GET["id"];
-	if($user_organization->delete()){
-		echo '{"message": "success"}';
+	if(isset($_GET["id"])){
+		$user_organization->id=$_GET["id"];
+		if($user_organization->delete()){
+			echo '{"message": "success"}';
+		} else {
+			echo '{"message": "error"}';
+			http_response_code(403);
+		}
 	} else {
-		echo '{"message": "error"}';
+		http_response_code(404);
 	}
 
+} else {
+	http_response_code(405);
 }
 ?>
