@@ -7,14 +7,15 @@
 /*
  * Your admin ViewModel code goes here
  */
-define(['appController','utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
+define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset','ojs/ojformlayout'],
-        function (app,utils,oj, ko, $, accUtils, restClient,KnockoutTemplateUtils,ArrayDataProvider) {
+        function (app,Router,utils,oj, ko, $, accUtils, restClient,KnockoutTemplateUtils,ArrayDataProvider) {
 
             function AdminViewModel() {
                 var self = this;
 
+                var router = Router.rootInstance;
 				if(app.currentOrg.organization_admin!="Y"){
 					return;
 				}
@@ -119,11 +120,17 @@ define(['appController','utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 
                                     }
                                 };
                                 self.userSelected(searchNodes(event.target.currentRow.rowKey, self.userOrgValues()));
-                                populateUserOrgData(self.userSelected());
+                                router.go('user/' + self.userSelected().user_id);
 
                             }
                         };
                     }();
+
+                    self.addUserButton=function(event){
+                        router.go('user/new');
+
+                    }
+
                     self.saveOrgButton = function () {
 
                         var orgData =
@@ -154,7 +161,7 @@ define(['appController','utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 
 
                     }
 
-                    self.saveButton = function () {
+                    self.saveUserButton = function () {
 
                         var userData =
                             {

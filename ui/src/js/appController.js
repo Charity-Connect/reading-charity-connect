@@ -153,6 +153,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 			'offers': {label: 'Offers'},
 			'clients': {label: 'Clients'},
 			'client/{clientId}': {label: 'Client'},
+            'user/{userId}': {label: 'User'},
 			'orgAdmin': {label: 'Org Admin'},
 			'admin': {label: 'Admin'}
 		};
