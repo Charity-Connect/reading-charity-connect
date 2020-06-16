@@ -14,8 +14,13 @@ if(isset($data)&&$method=="POST") {
     header("Access-Control-Max-Age: 3600");
     header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-
-    $user_organization->id = $data['id'];
+	if(isset($data['id'])){
+		$user_organization->id = $data['id'];
+	} else {
+		echo '{"error": "ID not set."}';
+		http_response_code(400);
+		return;
+	}
     $user_organization->admin = $data['admin'];
     $user_organization->user_approver = $data['user_approver'];
     $user_organization->need_approver = $data['need_approver'];
@@ -219,7 +224,9 @@ if(isset($data)&&$method=="POST") {
 			http_response_code(403);
 		}
 	} else {
-		http_response_code(404);
+		echo '{"error": "ID not set."}';
+		http_response_code(400);
+		return;
 	}
 
 } else {
