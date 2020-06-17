@@ -37,9 +37,9 @@ class Client{
 	,c.latitude
 	,c.notes
 	,c.creation_date
-	,create_user.display_name as created_by
+	,COALESCE(create_user.display_name,'System') as created_by
 	,c.update_date
-	,update_user.display_name as updated_by 
+	,COALESCE(update_user.display_name,'System') as updated_by 
 	from clients c
 	left join users create_user on create_user.id=c.created_by
 	left join users update_user on update_user.id=c.updated_by
