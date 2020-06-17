@@ -185,8 +185,16 @@
                               placeholder="Input client notes"
                               title="Edit client notes textarea"
                               rows="5">
-                </oj-text-area>                
+                </oj-text-area>  
+                
+                <!-- // if Edit Creation and Update dates are shown -->                  
+                <div id="datesInformation" class="datesPlaceholders">
+                        <hr />  
+                        <oj-label id="CreationDateLabel"><strong>Created on </strong><oj-bind-text value="{{clientSelected().creation_date}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{clientSelected().created_by}}"></oj-bind-text></oj-label>
+                        <oj-label id="UpdateDateLabel"><strong>Last Update on </strong><oj-bind-text value="{{clientSelected().update_date}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{clientSelected().updated_by}}"></oj-bind-text></oj-label>
+                </div>
             </div>
+            <br>
             <div class="oj-panel oj-panel-alt1">
                 <div class="oj-flex sm-1x-row">
                     <div class="oj-sm-padding-1x-horizontal oj-flex-item">

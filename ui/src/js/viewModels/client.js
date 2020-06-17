@@ -90,7 +90,11 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                                 notes: this.notes,
                                                 requesting_organization_id: this.requesting_organization_id,
                                                 type: this.type,
-                                                type_name: this.type_name
+                                                type_name: this.type_name,
+                                                creation_date: this.creation_date,
+                                                created_by: this.created_by,
+                                                update_date: this.update_date,
+                                                updated_by: this.updated_by
                                             });
                                         });
                                     },

@@ -125,3 +125,14 @@ ul.no-disc {
   height: 1px;
   overflow: hidden;
 }
+
+
+/* -----------------------------------------------
+:: Creation and Update information
+-------------------------------------------------- */
+.datesPlaceholders {
+    text-align: right;
+    font-weight:thin;
+    font-style:italic;
+    font-size: 5px;
+}

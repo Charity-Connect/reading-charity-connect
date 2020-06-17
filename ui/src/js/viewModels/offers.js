@@ -258,7 +258,11 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
                                                 quantityAvailable: this.quantity_available+"/"+this.quantity,
                                                 quantity: this.quantity,
                                                 type: this.type,
-                                                type_name: this.type_name
+                                                type_name: this.type_name,
+                                                creation_date: this.creation_date,
+                                                created_by: this.created_by,
+                                                update_date: this.update_date,
+                                                updated_by: this.updated_by
                                             });
                                         });
 
