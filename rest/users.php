@@ -48,13 +48,8 @@ if(isset($data)&&$method=="POST") {
 		}
 		$id=$user->create($organization_id);
 		if($id>0){
-			$user_arr  = array(
-					"id" => $user->id,
-					"display_name" => $user->display_name,
-					"email" => $user->email,
-					"phone" => $user->phone
-					);
-			echo json_encode($user_arr);
+					$user->read();
+					echo json_encode($user);
 
 		}else{
 			echo '{';

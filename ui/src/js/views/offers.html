@@ -191,8 +191,7 @@
                      <div id="datesInformation" class="datesPlaceholders">
                         <oj-bind-if test="[[offerRowSelected().length]]">
                             <hr />  
-                            <oj-label id="CreationDateLabel"><strong>Created on </strong><oj-bind-text value="{{offerSelected().creation_date}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{offerSelected().created_by}}"></oj-bind-text></oj-label>
-                            <oj-label id="UpdateDateLabel"><strong>Last Update on </strong><oj-bind-text value="{{offerSelected().update_date}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{offerSelected().updated_by}}"></oj-bind-text></oj-label>
+                            <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{offerSelected().update_date}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{offerSelected().updated_by}}"></oj-bind-text></oj-label>
                         </oj-bind-if> 
                     </div>
                 </div>

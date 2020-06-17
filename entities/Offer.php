@@ -45,10 +45,12 @@ class Offer{
 		,o.longitude
 		,o.distance
 		,o.creation_date
-		,o.created_by
+		,COALESCE(create_user.display_name,'System') as created_by
 		,o.update_date
-		,o.updated_by
+		,COALESCE(update_user.display_name,'System') as updated_by 
 		from offers o
+		left join users create_user on create_user.id=o.created_by
+		left join users update_user on update_user.id=o.updated_by
 		,offer_types t
 		,organizations org
 		where o.type=t.type

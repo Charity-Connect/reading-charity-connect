@@ -292,6 +292,12 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 									$.when(restClient.doGet('/rest/clients/'+clientId))
 										.then(
 											success = function (response) {
+												if(response.update_date){
+													updateDt=new Date(response.update_date);
+													response.updateDateDisplay=updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB");
+												} else {
+													response.updateDateDisplay="unknown";
+												}
 												self.clientSelected(response);
 												self.clientsValid(true);
 											},
@@ -455,6 +461,13 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 									.then(
 										success = function (response) {
 											console.log(response);
+											if(response.update_date){
+												updateDt=new Date(response.update_date);
+												response.updateDateDisplay=updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB");
+											} else {
+												response.updateDateDisplay="unknown";
+											}
+
 											self.clientSelected(response);
 											self.clientsValid(true);
 											self.clientsLoaded(true);

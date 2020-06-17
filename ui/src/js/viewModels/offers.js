@@ -242,7 +242,13 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
                                                 //if new entry and nothing selected
                                                 dateEndCleansed = "";
                                                 dateEndCleansedLocale = "";
-                                            }
+											}
+											if(this.update_date){
+												updateDt=new Date(this.update_date);
+												updateDateDisplay=updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB");
+											} else {
+												updateDateDisplay="unknown";
+											}
                                             self.offersValues().push({
                                                 offerDateAvailableRaw: dateAvailableCleansed,
                                                 offerDateAvailable: dateAvailableCleansedLocale,
@@ -261,7 +267,7 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
                                                 type_name: this.type_name,
                                                 creation_date: this.creation_date,
                                                 created_by: this.created_by,
-                                                update_date: this.update_date,
+                                                update_date: updateDateDisplay,
                                                 updated_by: this.updated_by
                                             });
                                         });

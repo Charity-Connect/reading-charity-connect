@@ -17,6 +17,18 @@ class Organization{
 		$this->connection = $connection;
 	}
 
+	private $base_query="SELECT org.id
+	,org.name
+	,org.address
+	,org.phone
+	,org.creation_date
+	,COALESCE(create_user.display_name,'System') as created_by
+	,org.update_date
+	,COALESCE(update_user.display_name,'System') as updated_by 
+	from organizations org
+	left join users create_user on create_user.id=org.created_by
+	left join users update_user on update_user.id=org.updated_by ";
+
 	public function create(){
 		if(is_admin()){
 			$sql = "INSERT INTO organizations ( name,address,phone,created_by,updated_by) values (:name,:address,:phone,:user_id,:user_id)";
@@ -34,7 +46,7 @@ class Organization{
 
 	}
 	public function readAll(){
-		$query = "SELECT id,name,address,phone,creation_date,created_by,update_date,updated_by from organizations ORDER BY id";
+		$query = $this->base_query." ORDER BY org.id";
 		$stmt = $this->connection->prepare($query);
 		$stmt->execute();
 		return $stmt;
@@ -53,7 +65,7 @@ class Organization{
    }
 
 	public function readOne($id){
-			$query = "SELECT id,name,address,phone,creation_date,created_by,update_date,updated_by from organizations where id=:id";
+			$query = $this->base_query." where org.id=:id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['id'=>$id]);
 			return $stmt;

@@ -121,6 +121,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                         var userData =
                             {
                                 "id":self.userId(),
+                                "organization_id":utils.appConstants.users.organizationId,
                                 "display_name": self.userName(),
                                 "email": self.userEmail(),
                                 "phone": self.userPhone()
@@ -130,7 +131,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                             {
                                 "id":self.id(),
                                 "user_id":self.userId(),
-                                "organization_id":self.userOrgId(),
+                                "organization_id":utils.appConstants.users.organizationId,
                                 "admin": (self.userAdmin().length > 0) ? "Y" : "N",
                                 "need_approver": (self.userNeedApprover().length > 0) ? "Y" : "N",
                                 "user_approver": (self.userApprover().length > 0) ? "Y" : "N",
@@ -139,12 +140,16 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                                 "client_share_approver": (self.userClientShareApprover().length > 0) ? "Y" : "N",
                                 "confirmed": (self.userConfirmed().length > 0) ? "Y" : "N"
                             };
-                        return $.when(restClient.doPost('/rest/users', userData)
+                        return $.when(restClient.doPostJson('/rest/users', userData)
                             .then(
                                 success = function (response) {
                                     self.postText("You have succesfully saved user details.");
-                                    self.postTextColor("green");
-                                    return $.when(restClient.doPost('/rest/organizations/' + self.userOrgId() + '/user_organizations', userOrgData)
+									self.postTextColor("green");
+									userOrgData.user_id=response.id;
+									if(userOrgData.id===undefined){
+										userOrgData.id=response.user_organizations[0].id;
+									}
+                                    return $.when(restClient.doPost('/rest/user_organizations/', userOrgData)
                                         .then(
                                             success = function (response) {
                                                 console.log("user data posted");

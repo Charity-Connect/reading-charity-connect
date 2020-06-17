@@ -44,12 +44,13 @@
                              </oj-input-text>
                              <div class="oj-flex oj-padding" >
                                  <div class="oj-flex-item oj-padding-end">
-                                     <oj-label id="editUserNameLabel" class="oj-label-inline">User Name:</oj-label>
+                                     <oj-label id="editUserNameLabel" class="oj-label-inline">User Name:*</oj-label>
                                  </div>
                                  <div class="oj-flex-item">
                                      <oj-input-text  id="inputEditUserName" labelled-by="editUserNameLabel"
                                                      value="{{userName}}"
-                                                     placeholder="Name"
+													 placeholder="Name"
+													 required="true"
                                                      title="Edit Name input">
                                      </oj-input-text>
                                  </div>
@@ -57,12 +58,13 @@
 
                              <div class="oj-flex oj-padding" >
                                  <div class="oj-flex-item oj-padding-end">
-                                     <oj-label id="editEmailLabel" class="oj-label-inline">Email:</oj-label>
+                                     <oj-label id="editEmailLabel" class="oj-label-inline">Email:*</oj-label>
                                  </div>
                                  <div class="oj-flex-item">
                                      <oj-input-text id="inputEditEmail" labelled-by="editEmailLabel"
                                                     value="{{userEmail}}"
-                                                    placeholder="Input email"
+													placeholder="Input email"
+													required="true"
                                                     title="Edit email input">
                                      </oj-input-text>
                                  </div>
