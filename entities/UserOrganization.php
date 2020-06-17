@@ -115,6 +115,7 @@ class UserOrganization{
 	public function read(){
 		$stmt=$this->readOne($this->id);
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		if($row){
 		$this->user_id=$row['user_id'];
 		$this->organization_id=$row['organization_id'];
 		$this->admin=$row['admin'];
@@ -129,6 +130,9 @@ class UserOrganization{
 		$this->created_by=$row['created_by'];
 		$this->update_date=$row['update_date'];
 		$this->updated_by=$row['updated_by'];
+		} else {
+			$this->id=null;
+		}
    }
 
 	public function readOne($id){

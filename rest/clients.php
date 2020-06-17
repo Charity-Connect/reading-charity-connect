@@ -7,8 +7,8 @@ $connection=initRest();
 
 
     $client = new Client($connection);
-$data = json_decode(file_get_contents('php://input'), true);
-if(isset($data)) {
+	$data = json_decode(file_get_contents('php://input'), true);
+	if(isset($data)) {
     // doing a create or update
     header("Access-Control-Allow-Methods: POST");
     header("Access-Control-Max-Age: 3600");

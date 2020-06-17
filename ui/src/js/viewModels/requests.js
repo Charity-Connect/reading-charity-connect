@@ -442,7 +442,11 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                                 request_response_notes: this.request_response_notes,
                                                 source_organization_name: this.source_organization_name,
                                                 type: this.type,
-                                                type_name: this.type_name
+                                                type_name: this.type_name,
+                                                creation_date: this.creation_date,
+                                                created_by: this.created_by,
+                                                update_date: this.update_date,
+                                                updated_by: this.updated_by
                                             });
                                         });
 

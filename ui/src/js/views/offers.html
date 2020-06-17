@@ -186,7 +186,14 @@
                         placeholder="Input offer notes"
                         title="Edit offer notes textarea"
                         rows="5">                                
-                    </oj-text-area>                    
+                    </oj-text-area>  
+                     <!-- // if Edit Creation and Update dates are shown -->                  
+                     <div id="datesInformation" class="datesPlaceholders">
+                        <oj-bind-if test="[[offerRowSelected().length]]">
+                            <hr />  
+                            <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{offerSelected().update_date}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{offerSelected().updated_by}}"></oj-bind-text></oj-label>
+                        </oj-bind-if> 
+                    </div>
                 </div>
             </oj-bind-if>
         </oj-bind-if>            
