@@ -14,8 +14,13 @@ if(isset($data)&&$method=="POST") {
     header("Access-Control-Max-Age: 3600");
     header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-
-    $user_organization->id = $data['id'];
+	if(isset($data['id'])){
+		$user_organization->id = $data['id'];
+	} else {
+		echo '{"error": "ID not set."}';
+		http_response_code(400);
+		return;
+	}
     $user_organization->admin = $data['admin'];
     $user_organization->user_approver = $data['user_approver'];
     $user_organization->need_approver = $data['need_approver'];
@@ -70,7 +75,11 @@ if(isset($data)&&$method=="POST") {
 
     if($view=="one") {
         $user_organization->id=$_GET["id"];
-        $user_organization->read();
+		$user_organization->read();
+		if($user_organization->id==null){
+			http_response_code(404);
+			return;
+		}
         echo json_encode($user_organization);
     } else if($view=="user" || $view=="current_user") {
     	if($view=="current_user"){
@@ -206,12 +215,21 @@ if(isset($data)&&$method=="POST") {
         }
     }
 } else if ($method=="DELETE"){
-	$user_organization->id=$_GET["id"];
-	if($user_organization->delete()){
-		echo '{"message": "success"}';
+	if(isset($_GET["id"])){
+		$user_organization->id=$_GET["id"];
+		if($user_organization->delete()){
+			echo '{"message": "success"}';
+		} else {
+			echo '{"message": "error"}';
+			http_response_code(403);
+		}
 	} else {
-		echo '{"message": "error"}';
+		echo '{"error": "ID not set."}';
+		http_response_code(400);
+		return;
 	}
 
+} else {
+	http_response_code(405);
 }
 ?>
