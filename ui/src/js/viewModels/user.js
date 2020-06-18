@@ -98,7 +98,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                     }
 
                     self.deleteUserButton = function () {
-                        return $.when(restClient.doDeleteJson('/rest/user_organizations/'+ self.userId())
+                        return $.when(restClient.doDeleteJson('/rest/user_organizations/'+ self.id())
                             .then(
                                 success = function (response) {
                                     router.go('orgAdmin');
