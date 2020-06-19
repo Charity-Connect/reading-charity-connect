@@ -312,7 +312,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 										.then(
 											success = function (response) {
 												if(response.update_date){
-													updateDt=new Date(response.update_date);
+                                                    updateDt=new Date(response.update_date.replace(/-/g, '/'));
 													response.updateDateDisplay=updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB");
 												} else {
 													response.updateDateDisplay="unknown";
@@ -481,9 +481,9 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 										success = function (response) {
 											console.log(response);
 											if(response.update_date){
-												updateDt=new Date(response.update_date);
+                                                updateDt=new Date(response.update_date.replace(/-/g, '/'));
 												response.updateDateDisplay=updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB");
-											} else {
+                                            } else {
 												response.updateDateDisplay="unknown";
 											}
 

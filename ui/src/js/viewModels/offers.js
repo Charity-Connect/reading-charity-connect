@@ -244,7 +244,7 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
                                                 dateEndCleansedLocale = "";
 											}
 											if(this.update_date){
-												updateDt=new Date(this.update_date);
+												updateDt=new Date(this.update_date.replace(/-/g, '/'));
 												updateDateDisplay=updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB");
 											} else {
 												updateDateDisplay="unknown";

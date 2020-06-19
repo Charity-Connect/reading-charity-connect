@@ -302,7 +302,7 @@
                                             <oj-bind-text value="[[requestSelected().requestSelectedDecision]]"></oj-bind-text>
                                         </span>
                                     </strong>
-                                </span>
+                                </span> 
                             </div>
                             <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex-item oj-flex oj-sm-flex-direction-column">
                                 <oj-bind-if test="[[fileContentPosted() !== true]]">
@@ -431,6 +431,11 @@
                                       readonly="[[selectedDecisionDisplay()[0] === 'decisionAgreed' ? false : true]]"
                                       rows="5"> 
                         </oj-text-area>
+                        <!-- // if Edit Creation and Update dates are shown -->                  
+                        <div id="datesInformation" class="datesPlaceholders">
+                            <hr />  
+                            <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{requestSelected().update_date}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{requestSelected().updated_by}}"></oj-bind-text></oj-label>
+                        </div>
                     </div>
                 </oj-bind-if>
             </oj-bind-if>
