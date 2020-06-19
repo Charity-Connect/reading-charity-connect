@@ -21,7 +21,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 				}
 			    var router = Router.rootInstance;
 			    var stateParams = router.observableModuleConfig().params.ojRouter.parameters;
-			    var clientId=stateParams.clientId();
+                var clientId=stateParams.clientId();
 
                 self.connected = function () {
                     accUtils.announce('Client page loaded.');
@@ -282,6 +282,25 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 							        router.go('clients');
 						}
 
+                        self.deleteButton = function () {
+                            // on the below line we would want to pass in the user's 'active' orgId as well, such as in a format like "clientId&orgId" eg. 7&2
+                            return $.when(restClient.doDeleteJson('/rest/clients/'+ clientId)
+                                .then(
+                                    success = function (response) {
+                                        router.go('clients');
+                                    },
+                                    error = function (response) {
+                                        self.postText("Error: Client changes not deleted.");
+                                        self.postTextColor("red");
+                                        console.log("client data not deleted");
+                                    }).then(function () {
+                                    self.fileContentPosted(true);
+                                    $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                        //self.disableSaveButton(false);
+                                    });
+                                })
+                            );
+                        }
 
 						self.getClient= function (){
 							console.log("getting client "+clientId);
@@ -293,7 +312,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 										.then(
 											success = function (response) {
 												if(response.update_date){
-													updateDt=new Date(response.update_date);
+                                                    updateDt=new Date(response.update_date.replace(/-/g, '/'));
 													response.updateDateDisplay=updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB");
 												} else {
 													response.updateDateDisplay="unknown";
@@ -462,9 +481,9 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 										success = function (response) {
 											console.log(response);
 											if(response.update_date){
-												updateDt=new Date(response.update_date);
+                                                updateDt=new Date(response.update_date.replace(/-/g, '/'));
 												response.updateDateDisplay=updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB");
-											} else {
+                                            } else {
 												response.updateDateDisplay="unknown";
 											}
 

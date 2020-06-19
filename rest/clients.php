@@ -4,11 +4,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Client.php';
 
 $connection=initRest();
-
+$method = $_SERVER['REQUEST_METHOD'];
 
     $client = new Client($connection);
 	$data = json_decode(file_get_contents('php://input'), true);
-	if(isset($data)) {
+  if(isset($data)&&$method=="POST") {
     // doing a create or update
     header("Access-Control-Allow-Methods: POST");
     header("Access-Control-Max-Age: 3600");
@@ -79,7 +79,7 @@ $connection=initRest();
 
     }
 
-} else {
+} else if ($method=="GET") {
     // querying
 
     $view = "";
@@ -129,6 +129,23 @@ $connection=initRest();
             echo json_encode($clients);
         }
     }
+} else if ($method=="DELETE"){
+  // if orgId is passed in in client.js, we need to handle the orgId as well and pass both variables into the delete() function
+  if(isset($_GET["id"])){
+		$client->id=$_GET["id"];
+		if($client->delete()){
+			echo '{"message": "success"}';
+		} else {
+			echo '{"message": "error"}';
+			http_response_code(403);
+		}
+	} else {
+		echo '{"error": "ID not set."}';
+		http_response_code(400);
+		return;
+	}
 
+} else {
+	http_response_code(405);
 }
 ?>

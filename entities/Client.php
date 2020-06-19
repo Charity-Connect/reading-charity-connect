@@ -171,8 +171,10 @@ class Client{
 
 	public function delete(){
 		$stmt=readOne($this->id);
+		// we need to parse in the orgId from clients.php
 		if($stmt->rowCount()==1){
-			$sql = "DELETE FROM clients WHERE id=:id";
+			// $sql = "DELETE FROM client_links WHERE client_id=:id AND link_id=:org_id; DELETE FROM client_needs WHERE client_id=:id AND requesting_organization_id=:org_id;";
+			$sql = "DELETE FROM clients WHERE id=:id"; // do NOT use this, it will delete clients across organisations
 			$stmt= $this->connection->prepare($sql);
 			return $stmt->execute(['id'=>$this->id]);
 		} else {

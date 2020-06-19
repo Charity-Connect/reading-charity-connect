@@ -421,6 +421,12 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                             } else {
                                                 decisionString = "Unaccepted";
                                             };
+                                            if(this.update_date){                                                
+                                                updateDt=new Date(this.update_date.replace(/-/g, '/'));
+												updateDateDisplay=updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB");
+											} else {
+												updateDateDisplay="unknown";
+											}
                                             self.requestsValues().push({
                                                 requestTargetDateRaw: targetDateCleansed,
                                                 requestTargetDate: targetDateCleansedLocale,
@@ -445,7 +451,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                                 type_name: this.type_name,
                                                 creation_date: this.creation_date,
                                                 created_by: this.created_by,
-                                                update_date: this.update_date,
+                                                update_date: updateDateDisplay,
                                                 updated_by: this.updated_by
                                             });
                                         });
