@@ -129,22 +129,21 @@ $method = $_SERVER['REQUEST_METHOD'];
             echo json_encode($clients);
         }
     }
-} else if ($method=="DELETE"){
-  // if orgId is passed in in client.js, we need to handle the orgId as well and pass both variables into the delete() function
-  if(isset($_GET["id"])){
-		$client->id=$_GET["id"];
-		if($client->delete()){
-			echo '{"message": "success"}';
-		} else {
-			echo '{"message": "error"}';
-			http_response_code(403);
-		}
-	} else {
-		echo '{"error": "ID not set."}';
-		http_response_code(400);
-		return;
-	}
-
+  } else if ($method=="DELETE"){
+    if(isset($_GET["id"])){
+      $client->id=$_GET["id"];
+      if($client->delete()){
+        echo '{"message": "success"}';
+      } else {
+        echo '{"message": "error"}';
+        http_response_code(403);
+      }
+    } else {
+      echo '{"error": "ID not set."}';
+      http_response_code(400);
+      return;
+    }
+    
 } else {
 	http_response_code(405);
 }

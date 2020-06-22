@@ -170,17 +170,22 @@ class Client{
 	}
 
 	public function delete(){
-		$stmt=readOne($this->id);
-		// we need to parse in the orgId from clients.php
-		if($stmt->rowCount()==1){
-			// $sql = "DELETE FROM client_links WHERE client_id=:id AND link_id=:org_id; DELETE FROM client_needs WHERE client_id=:id AND requesting_organization_id=:org_id;";
-			$sql = "DELETE FROM clients WHERE id=:id"; // do NOT use this, it will delete clients across organisations
-			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id]);
-		} else {
-			return false;
+        $stmt=$this->connection->prepare("select link_id,link_type from client_links where client_id=:id");
+		$stmt->execute(['id'=>$this->id]);
+		$active_org_id = $_SESSION['organization_id'];
+        if($stmt->rowCount()==1){
+			$row = $stmt->fetch();
+			if($active_org_id==$row['link_id']){
+				// TODO: add a database transaction				
+				$stmt= $this->connection->prepare("DELETE FROM clients WHERE id=:client_id; DELETE FROM client_needs WHERE client_id=:client_id; DELETE FROM need_requests WHERE client_need_id=:client_id; DELETE FROM client_links WHERE client_id=:client_id AND link_type='ORG'");
+				return $stmt->execute(['client_id'=>$this->id]);
+			}
+        } elseif($stmt->rowCount()>1)  {
+			$stmt= $this->connection->prepare("DELETE FROM client_links WHERE client_id=:client_id AND link_id=:organization_id AND link_type='ORG'");
+			return $stmt->execute(['client_id'=>$this->id, 'organization_id'=>$active_org_id]);
 		}
-	}
+		return false;
+        }
 
 	/* find an array of duplicates. Optionally pass in a single id and organization_id to find a single duplicate */
 	public function duplicateCheck($id=-1,$organization_id=-1){
