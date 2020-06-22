@@ -283,8 +283,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 						}
 
                         self.deleteButton = function () {
-                            // on the below line we would want to pass in the user's 'active' orgId as well, such as in a format like "clientId&orgId" eg. 7&2
-                            return $.when(restClient.doDeleteJson('/rest/clients/'+ clientId)
+                            return $.when(restClient.doDeleteJson('/rest/clients/'+clientId)
                                 .then(
                                     success = function (response) {
                                         router.go('clients');
