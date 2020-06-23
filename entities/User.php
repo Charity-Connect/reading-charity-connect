@@ -201,17 +201,6 @@ class User{
 		}
 	}
 
-	public function delete(){
-		$stmt=$this->readOne($this->id);
-		if($stmt->rowCount()==1){
-			$sql = "DELETE FROM users WHERE id=:id";
-			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id]);
-		} else {
-			return false;
-		}
-	}
-
 	public function confirmUser($id,$confirmation_string){
 		$query = "SELECT 1 from users u where u.id=:id and confirmation_string=:confirmation_string";
 		$stmt = $this->connection->prepare($query);
