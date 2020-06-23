@@ -75,15 +75,4 @@ class OfferType{
 			$stmt->execute(['type'=>$type]);
 			return $stmt;
 		}
-
-
-	public function delete(){
-		if(is_admin()){
-			$sql = "DELETE FROM offer_types WHERE type=:type";
-			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['type'=>$this->type]);
-		} else {
-			return false;
-		}
-	}
 }
