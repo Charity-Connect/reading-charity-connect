@@ -263,16 +263,4 @@ class NeedRequest{
 			return false;
 		}
 	}
-
-	public function delete(){
-		$stmt=readOne($this->id);
-		if($stmt->rowCount()==1){
-			$sql = "DELETE FROM need_requests WHERE id=:id";
-			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id]);
-		} else {
-			return false;
-		}
-
-	}
 }
