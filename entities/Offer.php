@@ -174,16 +174,13 @@ class Offer{
 			return false;
 		}
 	}
-
 	public function delete(){
-		$stmt=readOne($this->id);
+        $stmt=$this->readOne($this->id);
 		if($stmt->rowCount()==1){
-			$sql = "DELETE FROM offers WHERE id=:id";
-			$stmt= $this->connection->prepare($sql);
+			// TODO: add a database transaction				
+			$stmt= $this->connection->prepare("DELETE FROM offers WHERE id=:id; DELETE FROM need_requests WHERE offer_id=:id");
 			return $stmt->execute(['id'=>$this->id]);
-		} else {
-			return false;
-		}
-
+			}
+		return false;
 	}
 }
