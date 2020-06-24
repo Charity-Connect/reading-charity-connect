@@ -55,15 +55,4 @@ class TypeCategory{
 			return $stmt;
 		}
 
-
-	public function delete(){
-		if(is_admin()){
-			$sql = "DELETE FROM type_categories WHERE code=:code";
-			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['code'=>$this->code]);
-		} else {
-			return "";
-		}
-
-	}
 }
