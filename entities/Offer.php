@@ -175,11 +175,8 @@ class Offer{
 		}
 	}
 	public function delete(){
-        $stmt=$this->connection->prepare("select organization_id from offers where id=:id");
-		$stmt->execute(['id'=>$this->id]);
-		$active_org_id = $_SESSION['organization_id'];
-		$row = $stmt->fetch();
-		if($active_org_id==$row['organization_id']){
+        $stmt=$this->readOne($this->id);
+		if($stmt->rowCount()==1){
 			// TODO: add a database transaction				
 			$stmt= $this->connection->prepare("DELETE FROM offers WHERE id=:id; DELETE FROM need_requests WHERE offer_id=:id");
 			return $stmt->execute(['id'=>$this->id]);
