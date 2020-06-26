@@ -133,6 +133,25 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','re
                             })
                         );
                     };
+                    
+                    self.deleteButton = function () {
+                        return $.when(restClient.doDeleteJson('/rest/organizations/' + self.orgDetailid)
+                            .then(
+                                success = function (response) {
+                                    router.go('organizations');
+                                },
+                                error = function (response) {
+                                    self.postText("Error: Organization changes not deleted.");
+                                    self.postTextColor("red");
+                                    console.log("organization data not deleted");
+                                }).then(function () {
+                                self.fileContentPosted(true);
+                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                    //self.disableSaveButton(false);
+                                });
+                            })
+                        );
+                    }
 
                     var getData = function () {
                         self.organizationsLoaded = ko.observable();
