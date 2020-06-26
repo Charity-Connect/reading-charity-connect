@@ -4,11 +4,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/ClientNeed.php';
 
 $connection=initRest();
-
+$method = $_SERVER['REQUEST_METHOD'];
 
     $client_needs = new ClientNeed($connection);
 $data = json_decode(file_get_contents('php://input'), true);
-if(isset($data)) {
+if(isset($data)&&$method=="POST") {
     // doing a create or update
     header("Access-Control-Allow-Methods: POST");
     header("Access-Control-Max-Age: 3600");
@@ -54,8 +54,7 @@ if(isset($data)) {
         }
     }
 
-} else {
-
+} else if ($method=="GET") {
     // querying
 
     $view = "";
@@ -109,5 +108,22 @@ if(isset($data)) {
         }
     }
 
+} else if ($method=="DELETE"){
+    if(isset($_GET["id"])){
+      $client_needs->id=$_GET["id"];
+      if($client_needs->delete()){
+        echo '{"message": "success"}';
+      } else {
+        echo '{"message": "error"}';
+        http_response_code(403);
+      }
+    } else {
+      echo '{"error": "ID not set."}';
+      http_response_code(400);
+      return;
+    }
+    
+} else {
+	http_response_code(405);
 }
 ?>

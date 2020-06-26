@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Client.php';
 class Organization{
 
 	private $connection;
@@ -85,14 +86,25 @@ class Organization{
 		}
 	}
 
-	public function delete(){
-		if(is_admin() || ($this->id==$_SESSION['organization_id'] && is_org_admin())){
-			$sql = "DELETE FROM organizations WHERE id=:id";
+	public function delete() {
+		if(is_admin()) {
+			// TODO: add a database transaction
+			$stmt=$this->connection->prepare("SELECT client_id FROM client_links WHERE link_id=:id AND link_type='ORG'");
+			$stmt->execute(['id'=>$this->id]);
+			$client = new Client($this->connection);
+
+			while ($row = $stmt->fetch()) {
+				$client->id= $row['client_id'];
+				$client->delete();
+			}
+
+			$sql = "DELETE FROM organizations WHERE id=:id; DELETE FROM need_requests WHERE organization_id=:id;
+					DELETE FROM client_share_requests WHERE organization_id=:id OR requesting_organization_id=:id;
+					DELETE FROM user_organizations WHERE organization_id=:id;";
 			$stmt= $this->connection->prepare($sql);
 			return $stmt->execute(['id'=>$this->id]);
 		} else {
 			return false;
 		}
-
 	}
 }
