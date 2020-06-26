@@ -165,7 +165,7 @@ class ClientNeed{
 			$stmt->execute(['id'=>$id]);
 			return $stmt;
 		} else {
-			$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.fulfilling_need_request_id,cn.notes,cn.creation_date,cn.created_by,cn.update_date,cn.updated_by from client_needs cn, client_links l,offer_types types where cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
+			$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.fulfilling_need_request_id,cn.notes,cn.creation_date,cn.created_by,cn.update_date,cn.updated_by from client_needs cn, client_links l,offer_types types where types.type=cn.type and cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
 			return $stmt;
@@ -190,6 +190,9 @@ class ClientNeed{
 	public function delete(){
 		$stmt=$this->readOne($this->id);
 		if($stmt->rowCount()==1){
+			$sql = "DELETE FROM need_requests WHERE client_need_id=:id";
+			$stmt = $this->connection->prepare($sql);
+			$stmt->execute(['id'=>$this->id]);
 			$sql = "DELETE FROM client_needs WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
 			return $stmt->execute(['id'=>$this->id]);
