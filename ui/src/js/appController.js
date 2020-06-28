@@ -154,7 +154,8 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 		self.routerConfig = {
 			'home': {label: 'Home', isDefault: true}, //label: 'Requests'
 			'requests/{requestId}': {label: 'Requests'},
-			'offers/{offerId}': {label: 'Offers'},
+      'offers/{offerId}': {label: 'Offers'},
+      'addOffersFloating': {label: 'addOffersFloating'},
 			'clients': {label: 'Clients'},
 			'client/{clientId}': {label: 'Client'},
             'user/{userId}': {label: 'User'},

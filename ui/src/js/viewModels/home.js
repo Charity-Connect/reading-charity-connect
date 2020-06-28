@@ -105,7 +105,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					}();
 					
 					self.addOfferButton = function (event) {
-						router.go('offers');
+						router.go('addOffersFloating');
 						
 					};
 
