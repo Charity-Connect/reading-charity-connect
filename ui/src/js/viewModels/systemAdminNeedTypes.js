@@ -33,8 +33,8 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                     self.needTypesDataProvider = ko.observable();
 
                     self.needTypesTableColumns = [
-                        {headerText: 'NAME', field: "name"},
-                        {headerText: 'CATEGORY', field: "category"}
+                        {headerText: 'Name', field: "name"},
+                        {headerText: 'Category', field: "category"}
                     ];
 
                     self.addneedTypeButtonSelected = ko.observableArray([]);

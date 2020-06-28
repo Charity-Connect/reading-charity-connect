@@ -46,7 +46,9 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 					self.currentOrg=self.userDetails.user_organizations.find(element=> element.organization_id==organization_id);
 					// Navigation setup
 					self.navData = [
-						  {name: 'Requests', id: 'requests',
+						{name: 'Home', id: 'home',
+						iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-home-icon-24'},
+						{name: 'Requests', id: 'requests',
 							  iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'}
 					  ];
 
@@ -150,8 +152,9 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
        // Router setup
 		self.router = Router.rootInstance;
 		self.routerConfig = {
-			'requests/{requestId}': {label: 'Requests', isDefault: true},
-			'offers': {label: 'Offers'},
+			'home': {label: 'Requests', isDefault: true},
+			'requests/{requestId}': {label: 'Requests'},
+			'offers/{offerId}': {label: 'Offers'},
 			'clients': {label: 'Clients'},
 			'client/{clientId}': {label: 'Client'},
             'user/{userId}': {label: 'User'},

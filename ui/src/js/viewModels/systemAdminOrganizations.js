@@ -32,9 +32,9 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','re
                     self.organizationsDataProvider = ko.observable();
 
                     self.organizationsTableColumns = [
-                        {headerText: 'NAME', field: "name"},
-                        {headerText: 'ADDRESS', field: "address"},
-                        {headerText: 'PHONE', field: "phone"}
+                        {headerText: 'Name', field: "name"},
+                        {headerText: 'Address', field: "address"},
+                        {headerText: 'Phone', field: "phone"}
                     ];
 
                     self.addOrganizationButtonSelected = ko.observableArray([]);

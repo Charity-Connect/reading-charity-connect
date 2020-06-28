@@ -31,10 +31,10 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                     self.clientNeedsValues = ko.observableArray();
                     self.clientNeedsDataProvider = ko.observable();
                     self.clientNeedsTableColumns = [
-                        {headerText: 'TYPE', field: "type_name"},
-                        {headerText: 'NEED MET?', field: "need_met"},
-                        {headerText: 'DATE NEEDED', field: 'clientDateNeeded', sortProperty: "clientDateNeededRaw"},
-                        {headerText: 'NOTES', field: "notes"}
+                        {headerText: 'Need type', field: "type_name"},
+                        {headerText: 'Need met?', field: "need_met"},
+                        {headerText: 'Date Needed', field: 'clientDateNeeded', sortProperty: "clientDateNeededRaw"},
+                        {headerText: 'Notes', field: "notes"}
                     ];
 
                     self.offerTypesCategoriesValues = ko.observableArray();
