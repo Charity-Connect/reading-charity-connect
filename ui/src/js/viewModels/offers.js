@@ -27,11 +27,11 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
                     self.offersValues = ko.observableArray();
                     self.offersDataProvider = ko.observable();
                     self.offersTableColumns = [
-                        {headerText: 'NAME', field: "name"},
-                        {headerText: 'TYPE', field: "type_name"},
-                        {headerText: 'QUANTITY AVAILABLE', field: "quantityAvailable"},
-                        {headerText: 'DATE FROM', field: 'offerDateAvailable', sortProperty: "offerDateAvailableRaw"},
-                        {headerText: 'DATE TO', field: 'offerDateEnd', sortProperty: "offerDateEndRaw"}
+                        {headerText: 'Offer Name', field: "name"},
+                        {headerText: 'Offer Type', field: "type_name"},
+                        {headerText: 'Quantity Available', field: "quantityAvailable"},
+                        {headerText: 'Start Date', field: 'offerDateAvailable', sortProperty: "offerDateAvailableRaw"},
+                        {headerText: 'End Date', field: 'offerDateEnd', sortProperty: "offerDateEndRaw"}
                     ];
 
                     self.offerTypesCategoriesValues = ko.observableArray();
@@ -255,7 +255,7 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
                                                 offerDateEndRaw: dateEndCleansed,
                                                 offerDateEnd: dateEndCleansedLocale,
                                                 details: this.details,
-                                                distance: this.distance,
+                                                distance: this.distance===null?null:(+this.distance).toFixed(1),
                                                 id: this.id,
                                                 name: this.name,
                                                 organization_id: this.organization_id,

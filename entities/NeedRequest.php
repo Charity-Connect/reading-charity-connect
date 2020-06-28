@@ -58,7 +58,7 @@ class NeedRequest{
 			,types.name as type_name
 			,client_need.date_needed
 			,org.name source_organization_name
-			,if(target_date<CURDATE(),'Y','N') as overdue
+			,if(request.complete='Y','N',if(target_date<CURDATE(),'Y','N')) as overdue
 			from need_requests request
 			, client_needs client_need
 			, clients client
@@ -125,7 +125,9 @@ class NeedRequest{
 		  $where_clause=$where_clause." and agreed='N' ";
 		}else if ($agreed==="U")  {
 		  $where_clause=$where_clause." and agreed IS NULL ";
-		}
+		}else if ($agreed==="YU")  {
+			$where_clause=$where_clause." and (agreed='Y' or agreed IS NULL) ";
+		  }
 		if($completed==="Y"){
 		  $where_clause=$where_clause." and complete='Y' ";
 		} else if ($completed==="N")  {

@@ -39,12 +39,12 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                     self.requestsValues = ko.observableArray();
                     self.renderer1 = oj.KnockoutTemplateUtils.getRenderer("decisionMade_tmpl", true);
                     self.requestsTableColumns = [
-                        {headerText: 'TYPE', field: "type_name"},
-                        {headerText: 'NAME', field: "client_name"},
-                        {headerText: 'TARGET DATE', field: "requestTargetDate", sortProperty: "requestTargetDateRaw"},
-                        {headerText: 'DATE NEEDED', field: "requestDateNeeded", sortProperty: "requestDateNeededRaw"},
-                        {headerText: 'ORGANIZATION', field: "source_organization_name"},
-                        {headerText: 'DECISION MADE', renderer: self.renderer1, sortProperty: "requestSelectedDecision"}
+                        {headerText: 'Request Type', field: "type_name"},
+                        {headerText: 'Client Name', field: "client_name"},
+                        {headerText: 'Committed Date', field: "requestTargetDate", sortProperty: "requestTargetDateRaw"},
+                        {headerText: 'Date Needed', field: "requestDateNeeded", sortProperty: "requestDateNeededRaw"},
+                        {headerText: 'Organisation', field: "source_organization_name"},
+                        {headerText: 'Status', renderer: self.renderer1, sortProperty: "requestSelectedDecision"}
                     ];
 
                     self.offerTypesCategoriesValues = ko.observableArray();
@@ -409,7 +409,13 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
                                             var decisionString = "";
                                             var styleState = "";
-                                            if (this.complete === "Y") {
+                                            var faicon="";
+											if(this.overdue==='Y'){
+                                                decisionString = "Overdue";
+												styleState = "#E96D76"; //red
+												faicon="fa fa-exclamation-triangle";
+											}
+											else if (this.complete === "Y") {
                                                 decisionString = "Completed";
                                                 styleState = "#18BE94"; //green
                                             } else if (this.agreed === "Y") {
@@ -417,7 +423,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                                 styleState = "#309fdb"; //blue
                                             } else if (this.agreed === "N") {
                                                 decisionString = "Rejected";
-                                                styleState = "#E96D76"; //red
                                             } else {
                                                 decisionString = "Unaccepted";
                                             };
@@ -434,6 +439,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                                 requestDateNeeded: dateNeededCleansedLocale,
                                                 requestSelectedDecision: decisionString,
                                                 styleState: styleState,
+                                                faicon: faicon,
                                                 agreed: this.agreed,
                                                 complete: this.complete,
                                                 client_name: this.client_name,

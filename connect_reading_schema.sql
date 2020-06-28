@@ -183,16 +183,17 @@ REPLACE INTO `strings` (`code`, `string`, `creation_date`, `created_by`, `update
 CREATE TABLE `type_categories` (
   `code` varchar(30) NOT NULL,
   `name` varchar(255) NOT NULL,
+  `active` varchar(1) NOT NULL DEFAULT 'Y',
   `creation_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` int(11) DEFAULT NULL,
   `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-REPLACE INTO `type_categories` (`code`, `name`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
-('food', 'Food', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
-('medical', 'Medical', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
-('company', 'Company and visits', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
+REPLACE INTO `type_categories` (`code`, `name`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+('food', 'Food', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('medical', 'Medical', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('company', 'Company and visits', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,

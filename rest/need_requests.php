@@ -76,6 +76,8 @@ if(isset($data)) {
         	$stmt = $need_request->readFiltered("Y","N");
 		}else if($view=="overdue"){
         	$stmt = $need_request->readFiltered("Y","N",TRUE);
+		}else if($view=="active"){
+        	$stmt = $need_request->readFiltered("YU","N");
 		} else {
         	$stmt = $need_request->readAll();
         }

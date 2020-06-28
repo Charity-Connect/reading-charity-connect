@@ -67,8 +67,12 @@
                         </div>
                     </oj-form-layout>
 
-                    <hr />
-                    <oj-table id="userTable" class="row-selectable" aria-label="table using array"
+					<div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">
+						<h3>
+							Organisation Users
+						</h3>
+					</div>
+				<oj-table id="userTable" class="row-selectable" aria-label="table using array"
                               selection="{{userRowSelected}}"
                               on-selection-changed="[[handleUserRowChanged]]"
                               selection-mode='{"row": "single"}'

@@ -81,7 +81,7 @@
                                     <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.requestDateNeeded]]"></oj-bind-text></span>
                                 </div>
                                 <div class="oj-flex-bar">
-                                    <oj-label id="organizationLabel" class="oj-label-inline"><strong>Organization:</strong></oj-label>
+                                    <oj-label id="organizationLabel" class="oj-label-inline"><strong>Organisation:</strong></oj-label>
                                     <span class="oj-form-non-control-inline"><oj-bind-text value="[[$current.data.source_organization_name]]"></oj-bind-text></span>
                                 </div>
                                 <div class="oj-flex-bar">
@@ -109,6 +109,9 @@
                             <td>
                                 <strong>
                                     <span :style.color="[[$context.row.styleState]]">
+										<oj-bind-if test="[[$context.row.faicon !== '']]">
+											<i :class="[[$context.row.faicon]]" :style.color="[[$context.row.styleState]]"><!-- icon --></i>
+										</oj-bind-if>
                                         <oj-bind-text value="[[$context.row.requestSelectedDecision]]"></oj-bind-text>
                                     </span>
                                 </strong>
@@ -192,7 +195,7 @@
                                 </oj-bind-if>
                             </div>
                             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                                <oj-label id="editOrganizationLabel"><strong>Requesting Organization:</strong></oj-label>
+                                <oj-label id="editOrganizationLabel"><strong>Requesting Organisation:</strong></oj-label>
                                 <oj-bind-text value="[[requestSelected().source_organization_name]]"></oj-bind-text>
                             </div>
                         </div>
@@ -402,11 +405,11 @@
                                 </oj-input-date>
                             </div>
                             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                                <oj-label id="editOrganizationLabel"><strong>Organization:</strong></oj-label>
+                                <oj-label id="editOrganizationLabel"><strong>Organisation:</strong></oj-label>
                                 <oj-input-text id="inputEditOrganization" labelled-by="editOrganizationLabel"
                                                value="[[requestSelected().source_organization_name]]"
-                                               placeholder="Display organization"
-                                               title="Displays organization"
+                                               placeholder="Display organisation"
+                                               title="Displays organisation"
                                                readonly="true">
                                 </oj-input-text>
                             </div>

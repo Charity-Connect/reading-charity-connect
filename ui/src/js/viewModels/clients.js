@@ -29,10 +29,10 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                     self.clientsDataProvider = ko.observable();
                     self.renderer1 = oj.KnockoutTemplateUtils.getRenderer("combineAddressPostcode_tmpl", true);
                     self.clientsTableColumns = [
-                        {headerText: 'NAME', field: "name"},
-                        {headerText: 'ADDRESS', renderer: self.renderer1, sortProperty: "address"},
-                        {headerText: 'EMAIL', field: "email"},
-                        {headerText: 'PHONE', field: "phone"}
+                        {headerText: 'Client Name', field: "name"},
+                        {headerText: 'Address', renderer: self.renderer1, sortProperty: "address"},
+                        {headerText: 'Email', field: "email"},
+                        {headerText: 'Phone', field: "phone"}
                     ];
 
                     self.selectedRowDisplay = ko.observable("clientNeeds");

@@ -26,8 +26,8 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                 self.fileContentPosted = ko.observable(true);
 
                 self.connected = function () {
-                    accUtils.announce('Organization Admin page loaded.');
-                    document.title = "Organization Admin";
+                    accUtils.announce('Organisation Admin page loaded.');
+                    document.title = "Organisation Admin";
 
                     self.id = ko.observable();
                     self.userOrgName = ko.observable();
@@ -39,11 +39,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                     self.userOrgDataProvider = ko.observable();
 
                     self.userTableColumns = [
-                        {headerText: 'NAME', field: "name"},
-                        {
-                            headerText: "ADMIN", field: "adminTable",
-                            "renderer": KnockoutTemplateUtils.getRenderer("adminTemplate", true)
-                        }];
+                        {headerText: 'User name', field: "name"}];
                     self.userRowSelected = ko.observableArray();
                     self.userSelected = ko.observable("");
                     self.userId = ko.observable();

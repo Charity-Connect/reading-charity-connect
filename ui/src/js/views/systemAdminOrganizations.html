@@ -11,7 +11,7 @@
 
         <oj-bind-if test="[[organizationsValid() !== true]]">
             <oj-bind-text :style.color="red">
-                Critical Error: Organizations not loaded
+                Critical Error: Organisations not loaded
             </oj-bind-text>
         </oj-bind-if>
 
@@ -19,7 +19,7 @@
             <div class="spacer-sm">
                 <div class="oj-panel">
                     <strong>Info:</strong>
-                    please select a row from the below table to edit an organization
+                    please select a row from the below table to edit an organisation
                 </div>
             </div>
 
@@ -27,13 +27,13 @@
                 <div class="oj-panel oj-panel-alt2"> 
                     <div class="oj-flex sm-1x-row">
                         <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
-                            <h2>Organizations</h2>    
+                            <h2>Organisations</h2>    
                         </div>                    
                         <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">                                        
                                 <oj-buttonset-many id="addOrganizationButton" class="oj-sm-float-end"
                                     value="{{addOrganizationButtonSelected}}">
-                                    <oj-option value="addOrganization">Add Organization</oj-option>
+                                    <oj-option value="addOrganization">Add Organisation</oj-option>
                                 </oj-buttonset-many>                                                                
                             </div>
                         </div>
@@ -62,10 +62,10 @@
                     <div class="oj-flex sm-1x-row">
                         <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
                             <oj-bind-if test="[[addOrganizationButtonSelected().length]]">
-                                <h3>Add organization</h3>
+                                <h3>Add organisation</h3>
                             </oj-bind-if>
                             <oj-bind-if test="[[organizationRowSelected().length]]">
-                                <h3>Edit organization</h3>
+                                <h3>Edit organisation</h3>
                             </oj-bind-if>                            
                         </div>                    
                         <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
