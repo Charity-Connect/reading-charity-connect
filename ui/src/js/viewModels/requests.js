@@ -409,7 +409,13 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
                                             var decisionString = "";
                                             var styleState = "";
-                                            if (this.complete === "Y") {
+                                            var faicon="";
+											if(this.overdue==='Y'){
+                                                decisionString = "Overdue";
+												styleState = "#E96D76"; //red
+												faicon="fa fa-exclamation-triangle";
+											}
+											else if (this.complete === "Y") {
                                                 decisionString = "Completed";
                                                 styleState = "#18BE94"; //green
                                             } else if (this.agreed === "Y") {
@@ -417,7 +423,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                                 styleState = "#309fdb"; //blue
                                             } else if (this.agreed === "N") {
                                                 decisionString = "Rejected";
-                                                styleState = "#E96D76"; //red
                                             } else {
                                                 decisionString = "Unaccepted";
                                             };
@@ -434,6 +439,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                                 requestDateNeeded: dateNeededCleansedLocale,
                                                 requestSelectedDecision: decisionString,
                                                 styleState: styleState,
+                                                faicon: faicon,
                                                 agreed: this.agreed,
                                                 complete: this.complete,
                                                 client_name: this.client_name,

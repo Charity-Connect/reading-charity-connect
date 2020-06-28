@@ -58,7 +58,7 @@ class NeedRequest{
 			,types.name as type_name
 			,client_need.date_needed
 			,org.name source_organization_name
-			,if(target_date<CURDATE(),'Y','N') as overdue
+			,if(request.complete='Y','N',if(target_date<CURDATE(),'Y','N')) as overdue
 			from need_requests request
 			, client_needs client_need
 			, clients client

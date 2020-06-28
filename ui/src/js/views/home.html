@@ -90,6 +90,9 @@
                             <td>
                                 <strong>
                                     <span :style.color="[[$context.row.styleState]]">
+										<oj-bind-if test="[[$context.row.faicon !== '']]">
+											<i :class="[[$context.row.faicon]]" :style.color="[[$context.row.styleState]]"><!-- icon --></i>
+										</oj-bind-if>
                                         <oj-bind-text value="[[$context.row.requestSelectedDecision]]"></oj-bind-text>
                                     </span>
                                 </strong>
