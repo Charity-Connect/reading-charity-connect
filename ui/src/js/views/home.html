@@ -20,15 +20,18 @@
                     Welcome to Reading Charity Connect. This is where your organisation can offer to help others, can let other organisations know about people you work with who need help, and can pair those together. To get started, click on Offer Help to let people know what you can do, or click on Request Help to get help for someone
 			</div>
 			
-			<div style="text-align:center">
-				<oj-button id="addOffer"
-				on-oj-action="[[addOfferButton]]">
-		 <span>Offer Help</span>
-	 </oj-button>
-	 <oj-button id="addRequest"
-				on-oj-action="[[addRequestButton]]">
-		 <span>Request Help</span>
-	 </oj-button>
+
+     <div role="button" class="oj-flex oj-sm-justify-content-center">
+        <oj-button id="addRequest" class="oj-flex-item oj-sm-flex-initial oj-margin-end" chroming='callToAction' on-oj-action="[[addRequestButton]]"> <!--<on-oj-action='[[addRequest]]'--> 
+        Request Help
+        </oj-button>
+        <oj-button id="addOffer" class="oj-flex-item oj-sm-flex-initial" chroming='callToAction' on-oj-action="[[addOfferButton]]"> 
+        Offer Help
+        </oj-button>  
+      </div>
+
+
+
 </div>
 
             <div class="spacer-sm">
