@@ -19,7 +19,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                 if (app.currentOrg.manage_clients!="Y") {
                     return;
                 }
-		var router = Router.rootInstance;
+				var router = Router.rootInstance;
 
                 self.connected = function () {
                     accUtils.announce('Clients page loaded.');
@@ -46,7 +46,8 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
                     var primaryHandlerLogic = function() {
                         self.handleClientRowChanged = function (event) {
-                            if (event.detail.value[0] !== undefined) {
+                            router.go('client/' + event.detail.value[0].startKey.row);
+                           /*if (event.detail.value[0] !== undefined) {
 								self.addClientButtonSelected([]);
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray){
@@ -58,8 +59,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 };
                                 var client=searchNodes(event.target.currentRow.rowKey, self.clientsValues());
 
-                                router.go('client/' + client.id);
-                            }
+                            }*/
                         };
                     }();
 

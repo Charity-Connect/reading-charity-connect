@@ -53,24 +53,12 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                     self.offerTypeSelected = ko.observable("");
                     self.offerTypesCategorySelected = ko.observable("");
                     self.dateAvailableConvertor = ko.observable();
-                    self.dateEndConvertor = ko.observable();
-                    self.showPanel = ko.computed(function () {
-                        if (self.addOfferButtonSelected().length) {
-                            //inital disable
-                            self.disableSelectEditType(true);
-                            // big reset!
-                            self.offerRowSelected([]);
-                            self.offerSelected("");
-                            self.offerTypeSelected("");
-                            self.offerTypesCategorySelected("");
-                            self.dateAvailableConvertor("");
-                            self.dateEndConvertor("");
-                            return true;
-                        }
-                        if (self.offerRowSelected().length) {
-                            return true;
-                        }
-                    }, this);
+					self.dateEndConvertor = ko.observable();
+					
+					self.cancelButton = function (event) {
+						router.go('offers');
+					}
+
 
                     var primaryHandlerLogic = function () {
                         self.handleOfferRowChanged = function (event) {
@@ -300,7 +288,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
                         function getOfferTypesCategoriesAjax() {
                             //GET /rest/offer_type_categories - REST
-                            return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES))
+                            return $.when(restClient.doGet("/rest/offer_type_categories/active")
                                 .then(
                                     success = function (response) {
                                         console.log(response.offer_type_categorys);

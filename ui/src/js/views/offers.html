@@ -30,11 +30,10 @@
                             <h2>Offers</h2>    
                         </div>                    
                         <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
-                            <div class="oj-helper-clearfix">                                        
-                                <oj-buttonset-many id="addOfferButton" class="oj-sm-float-end"
-                                    value="{{addOfferButtonSelected}}">
-                                    <oj-option value="addOffer">Add Offer</oj-option>
-                                </oj-buttonset-many>
+                            <div class="oj-helper-clearfix">     
+								<oj-button id="addOfferButton" class="oj-sm-float-end" on-oj-action='[[addOffer]]'>
+                                    Add Offer
+                                </oj-button>
                             </div>
                         </div>
                     </div>
