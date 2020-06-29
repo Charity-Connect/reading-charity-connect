@@ -148,8 +148,8 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                         self.needTypesValid = ko.observable();
 
                         self.getOfferTypesCategoriesAjax = function() {
-                            //GET /rest/offer_type_categories - REST
-                            return $.when(restClient.doGet('/rest/offer_type_categories')
+                            // GET /rest/offer_type_categories/active - REST
+                            return $.when(restClient.doGet('/rest/offer_type_categories/active')
                                 .then(
                                     success = function (response) {
 
