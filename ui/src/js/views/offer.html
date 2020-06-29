@@ -1,0 +1,144 @@
+<!--
+ Copyright (c) 2014, 2019, Oracle and/or its affiliates.
+ The Universal Permissive License (UPL), Version 1.0
+ -->
+ <div class="oj-hybrid-padding">
+
+    <div class="oj-panel oj-panel-alt2">
+        <div class="oj-flex sm-1x-row">
+            <div class="oj-sm-padding-1x-horizontal oj-flex-item">
+                    <h3>Offer Help</h3>
+                </div>
+            <div class="oj-sm-padding-1x-horizontal oj-flex-item">
+                <div class="oj-helper-clearfix">
+                    <div class="oj-flex sm-1x-row oj-sm-float-end">
+                        <div class="oj-sm-padding-1x-horizontal">
+                            <oj-button id="saveButton" on-oj-action='[[saveButton]]'
+                                disabled="[[disableSaveButton]]">
+                                <span>Save</span>
+                            </oj-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="statusBar" class="oj-flex-bar sm-1x-row">
+            <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex-item">
+            </div>
+            <div class="oj-sm-12 oj-md-6 oj-sm-padding-1x-horizontal oj-flex-item oj-flex oj-sm-flex-direction-column">
+                <oj-bind-if test="[[fileContentPosted() !== true]]">
+                    <span class="oj-helper-text-align-right">Posting...</span>
+                    <oj-progress id="progressBar" value="-1"></oj-progress>
+                </oj-bind-if>
+                <oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="saveButton"
+                          :style.color="[[postTextColor]]">
+                    <oj-bind-text value='[[postText]]'></oj-bind-text>
+                </oj-label>
+            </div>
+        </div>
+        <hr />
+               
+        <div class="oj-flex sm-1x-row">                                                               
+            <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                <oj-label id="editNameLabel"><strong>Offer Name:</strong></oj-label>
+                <oj-input-text id="inputEditName" labelled-by="editNameLabel"
+                    value="{{offerSelected().name}}"
+                    placeholder="Input name"
+                    title="Edit name input">
+                </oj-input-text>
+            </div>
+            <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                <oj-label id="editQuantityLabel"><strong>Quantity:</strong></oj-label>
+                <oj-input-text id="inputEditQuantity" labelled-by="editQuantityLabel"
+                    value="{{offerSelected().quantity}}"
+                    placeholder="Input quantity"
+                    title="Edit quantity input">
+                </oj-input-text>
+            </div>                        
+        </div>
+        <hr />
+        <div class="oj-flex sm-1x-row">
+            <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                <oj-label id="editCategoryLabel"><strong>Category:</strong></oj-label>
+                <oj-select-single id="selectEditCategory" labelled-by="editCategoryLabel"
+                    data="[[offerTypesCategoriesDataProvider]]"
+                    value="{{offerTypesCategorySelected}}"
+                    on-value-changed="[[handleOfferTypesCategoryChanged]]"                                
+                    placeholder="Select category"
+                    title="Edit category select">
+                </oj-select-single>
+            </div>
+            <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                <oj-label id="editTypeLabel"><strong>Type:</strong></oj-label>
+                <oj-select-single id="selectEditType" labelled-by="editTypeLabel"
+                    data="[[offerTypesDataProvider]]"
+                    value="{{offerTypeSelected}}"
+                    placeholder="Select type"
+                    title="Edit type select"
+                    disabled="[[disableSelectEditType]]">
+                </oj-select-single>
+            </div>
+        </div>
+        <hr />
+        <div class="oj-flex sm-1x-row">
+            <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                <oj-label id="editPostcodeLabel"><strong>Postcode:</strong></oj-label>
+                <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"
+                    value="{{offerSelected().postcode}}"
+                    placeholder="Input postcode"
+                    title="Edit postcode input">
+                </oj-input-text>
+            </div>                        
+            <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                <oj-label id="editDistanceLabel"><strong>Distance:</strong></oj-label>
+                <oj-input-text id="inputEditDistance" labelled-by="editDistanceLabel"
+                    value="{{offerSelected().distance}}"
+                    placeholder="Input distance"
+                    title="Edit distance input">
+                </oj-input-text>
+            </div>                                
+        </div>
+        <hr />
+        <div class="oj-flex sm-1x-row">
+            <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                <oj-label id="editDateAvailableLabel"><strong>Start Date:</strong></oj-label>
+                <oj-input-date id="datepickerEditDateAvailable" labelled-by="editDateAvailableLabel"
+                    keyboard-edit='disabled'
+                    date-picker.footer-layout=''
+                    min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                
+                    value="{{dateAvailableConvertor}}"
+                    placeholder="Input date available"                                
+                    title="Pick date available">
+                </oj-input-date>
+            </div>
+            <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
+                <oj-label id="editDateEndLabel"><strong>End Date:</strong></oj-label>
+                <oj-input-date id="datepickerEditDateEnd" labelled-by="editDateEndLabel"
+                    keyboard-edit='disabled'
+                    date-picker.footer-layout=''
+                    min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                
+                    value="{{dateEndConvertor}}"
+                    placeholder="Input date end"                                
+                    title="Pick date end">
+                </oj-input-date>                            
+            </div>                                
+        </div>
+        <hr />                    
+        <oj-label id="editOfferNotesLabel"><strong>Offer Notes:</strong></oj-label>
+        <oj-text-area id="textareaEditOfferNotes" class="oj-form-control-full-width"
+            labelled-by="editOfferNotesLabel"
+            value="{{offerRowSelected().length ? offerSelected().details : ''}}"
+            placeholder="Input offer notes"
+            title="Edit offer notes textarea"
+            rows="5">                                
+        </oj-text-area>  
+         <!-- // if Edit Creation and Update dates are shown -->                  
+         <div id="datesInformation" class="datesPlaceholders">
+            <oj-bind-if test="[[offerRowSelected().length]]">
+                <hr />  
+                <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{offerSelected().update_date}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{offerSelected().updated_by}}"></oj-bind-text></oj-label>
+            </oj-bind-if> 
+        </div>
+    </div>
+
+</div>

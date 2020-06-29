@@ -152,10 +152,10 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
        // Router setup
 		self.router = Router.rootInstance;
 		self.routerConfig = {
-			'home': {label: 'Home', isDefault: true}, //label: 'Requests'
+			'home': {label: 'Home', isDefault: true}, 
 			'requests/{requestId}': {label: 'Requests'},
-      'offers/{offerId}': {label: 'Offers'},
-      'addOffersFloating': {label: 'addOffersFloating'},
+      		'offers/{offerId}': {label: 'Offers'},
+      		'offer/{offerId}': {label: 'Offer'},
 			'clients': {label: 'Clients'},
 			'client/{clientId}': {label: 'Client'},
             'user/{userId}': {label: 'User'},
