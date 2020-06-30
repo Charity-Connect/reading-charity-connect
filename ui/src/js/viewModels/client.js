@@ -270,7 +270,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 									,dataType: 'json'
 									,success:function(data){
                                         document.getElementById('duplicatesDialog').close();
-                                        self.disableSaveButton(true);
+                                      //  self.disableSaveButton(true);
 									}
 								});
 
