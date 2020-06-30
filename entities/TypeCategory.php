@@ -32,14 +32,14 @@ class TypeCategory{
 
 	}
 	public function readAll(){
-		$query = "SELECT code,name,active,creation_date,created_by,update_date,updated_by FROM type_categories ORDER BY code";
+		$query = "SELECT code,name,active,creation_date,created_by,update_date,updated_by FROM type_categories ORDER BY name";
 		$stmt = $this->connection->prepare($query);
 		$stmt->execute();
 		return $stmt;
 	}
 
 	public function readActive(){
-		$query = "SELECT code,name,active,creation_date,created_by,update_date,updated_by FROM type_categories WHERE active='Y' ORDER BY code";
+		$query = "SELECT code,name,active,creation_date,created_by,update_date,updated_by FROM type_categories WHERE active='Y' ORDER BY name";
 		$stmt = $this->connection->prepare($query);
 		$stmt->execute();
 		return $stmt;

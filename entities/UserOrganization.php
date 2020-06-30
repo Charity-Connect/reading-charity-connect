@@ -86,7 +86,7 @@ class UserOrganization{
 	}
 
 	public function readAllUser($user_id){
-		$query = "SELECT uo.id,uo.user_id,uo.organization_id,uo.admin,uo.user_approver,uo.need_approver,uo.manage_offers,uo.manage_clients,uo.client_share_approver,uo.confirmed,uo.creation_date,uo.created_by,uo.update_date,uo.updated_by, org.name as organization_name from user_organizations uo, organizations org where org.id=uo.organization_id and user_id=:id ORDER BY uo.id";
+		$query = "SELECT uo.id,uo.user_id,uo.organization_id,uo.admin,uo.user_approver,uo.need_approver,uo.manage_offers,uo.manage_clients,uo.client_share_approver,uo.confirmed,uo.creation_date,uo.created_by,uo.update_date,uo.updated_by, org.name as organization_name from user_organizations uo, organizations org where org.id=uo.organization_id and user_id=:id ORDER BY org.name";
 		$stmt = $this->connection->prepare($query);
 		$stmt->execute(['id'=>$user_id]);
 		return $stmt;

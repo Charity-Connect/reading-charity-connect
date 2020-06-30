@@ -269,7 +269,8 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 									,contentType: 'application/json'
 									,dataType: 'json'
 									,success:function(data){
-										document.getElementById('duplicatesDialog').close();
+                                        document.getElementById('duplicatesDialog').close();
+                                      //  self.disableSaveButton(true);
 									}
 								});
 
