@@ -132,9 +132,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 					$.when(restClient.doGet('/rest/set_organization?id='+event.target.value)
                         .then(
                             success = function(response) {
-                                self.currentOrganization(response.organization_name);
-                                utils.appConstants.users.organizationId = response.organization_id;
-                                self.setMenuEntries(response.organization_id);
+                                location.reload();
                             },
                             error = function() {
                                 alert("err");
