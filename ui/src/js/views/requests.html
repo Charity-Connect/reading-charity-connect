@@ -321,25 +321,13 @@
                         <hr />
                         <div class="oj-flex sm-1x-row">
                             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                                <oj-label id="editCategoryLabel"><strong>Category:</strong></oj-label>
-                                <oj-select-single id="selectEditCategory" labelled-by="editCategoryLabel"
-                                                  data="[[offerTypesCategoriesDataProvider]]"
-                                                  value="[[offerTypesCategorySelected]]"
-                                                  on-value-changed="[[handleOfferTypesCategoryChanged]]"
-                                                  placeholder="Display category"
-                                                  title="Displays category"
-                                                  readonly="true">
-                                </oj-select-single>
+								<oj-label id="editCategoryLabel"><strong>Category:</strong></oj-label>
+								<oj-bind-text value='[[requestSelected().category_name]]'></oj-bind-text>
+
                             </div>
                             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                                 <oj-label id="editTypeLabel"><strong>Type:</strong></oj-label>
-                                <oj-select-single id="selectEditType" labelled-by="editTypeLabel"
-                                                  data="[[offerTypesDataProvider]]"
-                                                  value="[[offerTypeSelected]]"
-                                                  placeholder="Display type"
-                                                  title="Displays type"
-                                                  readonly="true">
-                                </oj-select-single>
+								<oj-bind-text value='[[requestSelected().type_name]]'></oj-bind-text>
                             </div>
                         </div>
                         <hr />
