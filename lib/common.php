@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Audit.php';
 
 $connection;
 
@@ -235,6 +236,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 			$_SESSION["organization_name"]=$row['name'];
 		}
 	}
+	Audit::add($connection,"login","user",$id);
+
 }
 return true;
 }
@@ -267,9 +270,14 @@ function get_current_organizaton(){
 	return $_SESSION["organization_id"];
 }
 
-function logout(){
-	// Initialize the session
+function logout($connection){
 	session_start();
+	$uid=-1;
+	if(isset($_SESSION['id'])){
+		$uid=$_SESSION['id'];
+	}
+	Audit::add($connection,"logout","user",$uid);
+	// Initialize the session
 
 	// Unset all of the session variables
 	$_SESSION = array();
@@ -316,6 +324,7 @@ function password_reset_confirm($email,$key,$new_password){
 			$id = $row['id'];
 			$stmt = $connection->prepare("UPDATE users set password = :password,password_confirmation_string=null WHERE id = :id");
 			$success= $stmt->execute(["password"=>password_hash($new_password, PASSWORD_DEFAULT),"id"=>$id]);
+			Audit::add($connection,"login","password_reset",$id);
 			return $success;
 		}
 	}
