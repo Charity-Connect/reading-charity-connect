@@ -38,7 +38,7 @@
                                 <span style="color:red"><oj-bind-text value="[[cell.data.substring(10)]]"></oj-bind-text></span>
                             </oj-bind-if>
                             <oj-bind-if test="[[cell.data.startsWith('BUTTON:')]]">
-                                <oj-button :id="[[cell.data]]" on-oj-action=[[requestAccessButton]]>RequestAccess</oj-button>
+                                <oj-button :id="[[cell.data]]" on-oj-action=[[requestAccessButton]]>Request Access</oj-button>
                             </oj-bind-if>
                             <oj-bind-if test="[[cell.data.startsWith('BUTTON2:')]]">
                                 <oj-button :id="[[cell.data]]" on-oj-action=[[viewClientButton]]>Go To</oj-button>
@@ -92,8 +92,8 @@
                         <div class="oj-helper-clearfix">
                             <div class="oj-flex sm-1x-row oj-sm-float-end">
                                 <div class="oj-sm-padding-1x-horizontal">
-                                    <oj-button id="cancelButton" on-oj-action='[[cancelButton]]'
-                                               disabled="[[disableSaveButton]]">
+                                    <oj-button id="cancelButton" on-oj-action='[[cancelButton]]'>
+                                               <!-- disabled="[[disableSaveButton]]"> -->
                                         <span>Cancel</span>
                                     </oj-button>
                                 </div>                            
