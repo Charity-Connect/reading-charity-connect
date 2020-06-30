@@ -146,8 +146,12 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                 self.menuItemAction = function(event) {
                     if (event.target.value === "out") {
                         window.location.href = "/rest/logout?redirect=/index.html";
+                    } else if (event.target.value === "help") {
+                        window.location.href = "/docs/index.php/documentation/";
+                    }else if (event.target.value === "about") {
+                        window.location.href = "/docs/index.php/contact-us/";
                     }
-                };
+               };
 
        // Router setup
 		self.router = Router.rootInstance;
@@ -193,8 +197,8 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
         this.linkTarget = linkTarget;
       }
                 self.footerLinks = ko.observableArray([
-                    new footerLink('About Reading Connect', 'aboutOracle', '/about'),
-                    new footerLink('Contact Us', 'contactUs', 'http://www.oracle.com/us/corporate/contact/index.html'),
+                    new footerLink('About Reading Connect', 'aboutReadingConnect', '/docs/index.php'),
+                    new footerLink('Contact Us', 'contactUs', '/docs/index.php/contact-us/'),
                 ]);
      }
 
