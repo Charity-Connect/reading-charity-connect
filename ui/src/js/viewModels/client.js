@@ -500,8 +500,8 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                         };
 
                         function getOfferTypesCategoriesAjax() {
-                            //GET /rest/offer_type_categories - REST
-                            return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES))
+                            // GET /rest/offer_type_categories/active - REST
+                            return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES)}/active`)
                                 .then(
                                     success = function (response) {
                                         console.log(response.offer_type_categorys);

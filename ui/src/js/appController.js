@@ -152,9 +152,10 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
        // Router setup
 		self.router = Router.rootInstance;
 		self.routerConfig = {
-			'home': {label: 'Requests', isDefault: true},
+			'home': {label: 'Home', isDefault: true}, 
 			'requests/{requestId}': {label: 'Requests'},
-			'offers/{offerId}': {label: 'Offers'},
+      		'offers/{offerId}': {label: 'Offers'},
+      		'offer/{offerId}': {label: 'Offer'},
 			'clients': {label: 'Clients'},
 			'client/{clientId}': {label: 'Client'},
             'user/{userId}': {label: 'User'},
@@ -166,9 +167,10 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 
 	// Navigation setup
 	   self.navData = [
-		  {name: 'Requests', id: 'requests',
+		  {name: 'Home', id: 'home', //name: 'Requests', id: 'requests',
 			  iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chat-icon-24'}
-	  ];
+    ];
+    
 		self.navDataProvider(new ArrayDataProvider(self.navData, {keyAttributes: 'id'}));
 
 

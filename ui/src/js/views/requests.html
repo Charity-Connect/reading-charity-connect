@@ -266,7 +266,7 @@
                                                     <oj-option value="decisionIncomplete">Mark as Incomplete</oj-option>
                                                 </oj-buttonset-many>
                                             </oj-bind-if>
-                                            <oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Accepted']]">
+                                            <oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Accepted'||requestSelected().requestSelectedDecision === 'Overdue']]">
                                                 <oj-buttonset-many id="acceptedOptions" class="hide-buttons"
                                                                    disabled="[[disableOptionButtons]]"
                                                                    value="{{selectedDecisionDisplay}}"

@@ -4,10 +4,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/OfferType.php';
 
 $connection=initRest();
+$method = $_SERVER['REQUEST_METHOD'];
 
-$offer_type = new OfferType($connection);
+    $offer_type = new OfferType($connection);
 $data = json_decode(file_get_contents('php://input'), true);
-if(isset($data)) {
+if(isset($data)&&$method=="POST") {
     // doing a create or update
     header("Access-Control-Allow-Methods: POST");
     header("Access-Control-Max-Age: 3600");
@@ -39,7 +40,7 @@ if(isset($data)) {
 	}
 
 
-} else {
+} else if ($method=="GET") {
 
     // querying
     $view = "";
@@ -161,5 +162,7 @@ if(isset($data)) {
         }
     }
 
+} else {
+	http_response_code(405);
 }
 ?>

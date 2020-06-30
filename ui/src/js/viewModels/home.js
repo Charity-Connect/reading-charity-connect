@@ -20,7 +20,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
                 self.connected = function () {
                     accUtils.announce('Requests page loaded.');
-                    document.title = "Requests";
+                    document.title = "Home";
 
                     // observable for medium screens (above 768px)
                     var mdQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.MD_UP);
@@ -105,7 +105,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					}();
 					
 					self.addOfferButton = function (event) {
-						router.go('offers');
+						router.go('offer/new');
 						
 					};
 

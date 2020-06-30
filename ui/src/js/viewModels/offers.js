@@ -7,10 +7,10 @@
 /*
  * Your offers ViewModel code goes here
  */
-define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
+define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
-        function (app,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
+        function (app,Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
 
             function OffersViewModel() {
                 var self = this;
@@ -19,7 +19,8 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
                 if (app.currentOrg.manage_offers != "Y") {
                     return;
                 }
-                
+				var router = Router.rootInstance;
+
                 self.connected = function () {
                     accUtils.announce('Offers page loaded.');
                     document.title = "Offers";
@@ -50,7 +51,13 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
                     self.offerTypeSelected = ko.observable("");
                     self.offerTypesCategorySelected = ko.observable("");
                     self.dateAvailableConvertor = ko.observable();
-                    self.dateEndConvertor = ko.observable();
+					self.dateEndConvertor = ko.observable();
+					
+					self.addOffer=function(event){
+						router.go('offer/new');
+
+					}
+
                     self.showPanel = ko.computed(function () {
                         if (self.addOfferButtonSelected().length) {
                             //inital disable
@@ -72,7 +79,8 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
                     var primaryHandlerLogic = function () {
                         self.handleOfferRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
-                                self.addOfferButtonSelected([]);
+								router.go('offer/'+event.detail.value[0].startKey.row);
+                                /*self.addOfferButtonSelected([]);
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray){
                                     for (var i=0; i < myArray.length; i++) {
@@ -80,7 +88,9 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
                                             return myArray[i];
                                         }
                                     }
-                                };
+								};
+								
+
                                 self.offerSelected(searchNodes(event.target.currentRow.rowKey, self.offersValues()));
                                 console.log(self.offerSelected());
 
@@ -109,7 +119,7 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
                                     self.dateEndConvertor(oj.IntlConverterUtils.dateToLocalIso(new Date(self.offerSelected().offerDateEndRaw)));
                                 } else {
                                     self.dateEndConvertor("");
-                                }
+                                }*/
                             }
                         };
 
@@ -290,7 +300,7 @@ define(['appController','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils',
 
                         function getOfferTypesCategoriesAjax() {
                             //GET /rest/offer_type_categories - REST
-                            return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES))
+                            return $.when(restClient.doGet("/rest/offer_type_categories/active")
                                 .then(
                                     success = function (response) {
                                         console.log(response.offer_type_categorys);
