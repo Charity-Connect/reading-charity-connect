@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Audit.php';
 class OfferType{
 
 	// Connection instance
@@ -25,6 +26,7 @@ class OfferType{
 			$sql = "REPLACE INTO offer_types ( type,name,category,default_text,active,created_by,updated_by) values (:type,:name,:category,:default_text,:active,:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
 			if( $stmt->execute(['type'=>$this->type,'name'=>$this->name,'category'=>$this->category,'default_text'=>$this->default_text,'active'=>$this->active,'user_id'=>$_SESSION['id']])){
+				Audit::add($this->connection,"create","offer_type",null,$this->type);
 				return $this->type;
 			} else {
 				return "";

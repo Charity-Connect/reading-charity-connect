@@ -1,5 +1,6 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Audit.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/User.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Organization.php';
 class UserOrganization{
@@ -42,6 +43,8 @@ class UserOrganization{
 
 		if( $stmt->execute(['user_id'=>$this->user_id,'organization_id'=>$this->organization_id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'manage_offers'=>$this->manage_offers,'manage_clients'=>$this->manage_clients,'client_share_approver'=>$this->client_share_approver,'confirmed'=>$this->confirmed,'confirmation_string'=>$this->confirmation_string,'user_id2'=>$uid])){
 			$this->id=$this->connection->lastInsertId();
+			Audit::add($this->connection,"create","user_organization",$this->id);
+
 			if($this->confirmed=='N'){
 				$user= new User($this->connection);
 				$user->forceRead($this->user_id);
@@ -167,7 +170,7 @@ class UserOrganization{
 
 			$sql = "UPDATE user_organizations SET admin=:admin, user_approver=:user_approver, need_approver=:need_approver, manage_offers=:manage_offers, manage_clients=:manage_clients, client_share_approver=:client_share_approver,confirmed=:confirmed,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id
+			if( $stmt->execute(['id'=>$this->id
 			,'admin'=>$this->admin
 			,'user_approver'=>$this->user_approver
 			,'need_approver'=>$this->need_approver
@@ -176,10 +179,11 @@ class UserOrganization{
 			,'client_share_approver'=>$this->client_share_approver
 			,'confirmed'=>$this->confirmed
 			,'updated_by'=>$_SESSION['id']
-			]);
-		} else {
-			return false;
-		}
+			])){
+				return Audit::add($this->connection,"update","user_organization",$this->id);
+			}
+		} 
+		return false;
 	}
 
 	public function delete(){
@@ -188,11 +192,11 @@ class UserOrganization{
 		if($stmt->rowCount()==1){
 			$sql = "DELETE FROM user_organizations WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id]);
-		} else {
-			return false;
-		}
-
+			if( $stmt->execute(['id'=>$this->id])){
+				return Audit::add($this->connection,"delete","user_organization",$this->id);
+			}
+		} 
+		return false;
 	}
 
 	public function confirmUserOrganization($id,$confirmation_string){

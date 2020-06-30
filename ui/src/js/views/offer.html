@@ -43,10 +43,11 @@
                
         <div class="oj-flex sm-1x-row">                                                               
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                <oj-label id="editNameLabel"><strong>Offer Name:</strong></oj-label>
+                <oj-label id="editNameLabel"><strong>Offer Name:*</strong></oj-label>
                 <oj-input-text id="inputEditName" labelled-by="editNameLabel"
                     value="{{offerSelected().name}}"
-                    placeholder="Input name"
+					placeholder="Input name"
+					required="true"
                     title="Edit name input">
                 </oj-input-text>
             </div>
@@ -62,22 +63,24 @@
         <hr />
         <div class="oj-flex sm-1x-row">
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                <oj-label id="editCategoryLabel"><strong>Category:</strong></oj-label>
+                <oj-label id="editCategoryLabel"><strong>Category:*</strong></oj-label>
                 <oj-select-single id="selectEditCategory" labelled-by="editCategoryLabel"
                     data="[[offerTypesCategoriesDataProvider]]"
                     value="{{offerTypesCategorySelected}}"
                     on-value-changed="[[handleOfferTypesCategoryChanged]]"                                
-                    placeholder="Select category"
+					placeholder="Select category"
+					required="true"
                     title="Edit category select">
                 </oj-select-single>
             </div>
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                <oj-label id="editTypeLabel"><strong>Type:</strong></oj-label>
+                <oj-label id="editTypeLabel"><strong>Type:*</strong></oj-label>
                 <oj-select-single id="selectEditType" labelled-by="editTypeLabel"
                     data="[[offerTypesDataProvider]]"
                     value="{{offerTypeSelected}}"
                     placeholder="Select type"
-                    title="Edit type select"
+					title="Edit type select"
+					required="true"
                     disabled="[[disableSelectEditType]]">
                 </oj-select-single>
             </div>

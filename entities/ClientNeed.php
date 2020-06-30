@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Audit.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Client.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/NeedRequest.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
@@ -53,8 +54,9 @@ class ClientNeed{
 		,'need_met'=>$this->need_met
 		,'notes'=>$this->notes
 		,'user_id'=>$_SESSION['id']])){
-			$this->id=$this->connection->lastInsertId();
 
+			$this->id=$this->connection->lastInsertId();
+			Audit::add($this->connection,"create","client_need",$this->id);
 
 			$sql="select o.id,o.organization_id,o.latitude as offer_latitude,o.longitude as offer_longitude, o.distance,c.latitude as client_latitude,o.longitude as client_longitude
 			from clients c, offers o, client_needs n
@@ -159,12 +161,12 @@ class ClientNeed{
 		if($stmt->rowCount()==1){
 			$sql = "UPDATE client_needs SET client_id=:client_id, type=:type, date_needed=:date_needed, need_met=:need_met,fulfilling_need_request_id=:fulfilling_need_request_id, notes=:notes,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id,'client_id'=>$this->client_id,'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'fulfilling_need_request_id'=>$this->fulfilling_need_request_id,'notes'=>$this->notes
-			,'updated_by'=>$_SESSION['id']
-]);
-		} else {
-			return false;
-		}
+			if( $stmt->execute(['id'=>$this->id,'client_id'=>$this->client_id,'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'fulfilling_need_request_id'=>$this->fulfilling_need_request_id,'notes'=>$this->notes
+			,'updated_by'=>$_SESSION['id']])){
+				return Audit::add($this->connection,"update","client_need",$this->id);
+			}
+		} 
+		return false;
 	}
 
 	public function delete(){
@@ -175,10 +177,10 @@ class ClientNeed{
 			$stmt->execute(['id'=>$this->id]);
 			$sql = "DELETE FROM client_needs WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id]);
-		} else {
-			return false;
-		}
-
+			if( $stmt->execute(['id'=>$this->id])){
+				return Audit::add($this->connection,"delete","client_need",$this->id);
+			}
+		} 
+		return false;
 	}
 }

@@ -1,6 +1,7 @@
 <?php
 
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Audit.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
 
 class User{
@@ -51,6 +52,8 @@ class User{
 		,'user_id'=>$uid
 		])){
 			$this->id=$this->connection->lastInsertId();
+			Audit::add($this->connection,"create","user",$this->id);
+
 			$organization_user = new UserOrganization($this->connection);
 			$organization_user->user_id=$this->id;
 			$organization_user->organization_id=$organization_id;
@@ -193,12 +196,13 @@ class User{
 		if($stmt->rowCount()==1){
 			$sql = "UPDATE users SET display_name=:display_name, email=:email,phone=:phone,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id,'display_name'=>$this->display_name,'email'=>$this->email,'phone'=>$this->phone
+			if( $stmt->execute(['id'=>$this->id,'display_name'=>$this->display_name,'email'=>$this->email,'phone'=>$this->phone
 			,'updated_by'=>$_SESSION['id']
-			]);
-		} else {
-			return false;
-		}
+			])){
+				return Audit::add($this->connection,"update","user",$this->id);
+			}
+		} 
+		return false;
 	}
 
 	public function confirmUser($id,$confirmation_string){
