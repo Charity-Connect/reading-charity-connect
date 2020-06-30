@@ -18,9 +18,13 @@ class Audit{
 	}
 
 	public function insert(){
+		$uid=-1;
+		if(isset($_SESSION['id'])){
+			$uid=$_SESSION['id'];
+		}
 		$sql = "INSERT INTO audit (user_id,action,object,key_id,key_code) values (:user_id,:action,:object,:key_id,:key_code)";
 		$stmt= $this->connection->prepare($sql);
-		return $stmt->execute(['user_id'=>$_SESSION['id']
+		return $stmt->execute(['user_id'=>$uid
 		,'action'=>$this->action
 		,'object'=>$this->object
 		,'key_id'=>$this->key_id
@@ -29,9 +33,13 @@ class Audit{
 	}
 
 	public static function add($connection,$action,$object,$key_id,$key_code=null){
+		$uid=-1;
+		if(isset($_SESSION['id'])){
+			$uid=$_SESSION['id'];
+		}
 		$sql = "INSERT INTO audit (user_id,action,object,key_id,key_code) values (:user_id,:action,:object,:key_id,:key_code)";
 		$stmt= $connection->prepare($sql);
-		return $stmt->execute(['user_id'=>$_SESSION['id']
+		return $stmt->execute(['user_id'=>$uid
 		,'action'=>$action
 		,'object'=>$object
 		,'key_id'=>$key_id
