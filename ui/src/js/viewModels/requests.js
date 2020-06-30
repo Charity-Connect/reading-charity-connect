@@ -131,27 +131,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 } else if (event.target.id === "requestsTable") {
                                     self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));
                                 }
-                                console.log(self.requestSelected());
-
-                                if(self.requestSelected().type!="share"){
-
-                                _getOfferCategoryFromTypeAjax = function(code) {
-                                    self.offerTypesCategorySelected("");
-                                    //GET /rest/offer_types/{code} - REST
-                                    return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${code}`)
-                                        .then(
-                                            success = function (response) {
-                                                console.log(response.category);
-                                                self.offerTypesCategorySelected(response.category);
-                                            },
-                                            error = function (response) {
-                                                console.log(`Category from Offer Types "${code}" not loaded`);
-                                        })
-                                    );
-                                };
-                                _getOfferCategoryFromTypeAjax(self.requestSelected().type);
-
-							}
 
                                 if (self.requestSelected().requestTargetDateRaw) {
                                     self.targetDateConvertor(oj.IntlConverterUtils.dateToLocalIso(new Date(self.requestSelected().requestTargetDateRaw)));
@@ -455,6 +434,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                                 source_organization_name: this.source_organization_name,
                                                 type: this.type,
                                                 type_name: this.type_name,
+                                                category_name: this.category_name,
                                                 creation_date: this.creation_date,
                                                 created_by: this.created_by,
                                                 update_date: updateDateDisplay,
@@ -547,36 +527,8 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             );
                         };
 
-                        function getOfferTypesCategoriesAjax() {
-                            //GET /rest/offer_type_categories - REST
-                            return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES))
-                                .then(
-                                    success = function (response) {
-                                        console.log(response.offer_type_categorys);
-                                        self.offerTypesCategoriesValues(response.offer_type_categorys);
-                                    },
-                                    error = function (response) {
-                                        console.log("Offer Types Categories not loaded");
-                                }).then(function () {
-                                    //find all names
-                                    for (var i = 0; i < self.offerTypesCategoriesValues().length; i++) {
-                                        self.offerTypesCategoriesArray().push({
-                                            "value": self.offerTypesCategoriesValues()[i].code,
-                                            "label": self.offerTypesCategoriesValues()[i].name
-                                        });
-                                    };
-                                    //sort nameValue alphabetically
-                                    utils.sortAlphabetically(self.offerTypesCategoriesArray(), "value");
-                                    self.offerTypesCategoriesDataProvider(new ArrayDataProvider(self.offerTypesCategoriesArray(), { keyAttributes: 'value' }));
-                                }).then(function () {
-                                })
-                            );
-                        };
 
                         Promise.all([self.getRequestsAjax()])
-                        .then(function () {
-                            Promise.all([getOfferTypesCategoriesAjax()])
-                        })
                         .catch(function () {
                             //even if error remove loading bar
                             self.requestsLoaded(true);

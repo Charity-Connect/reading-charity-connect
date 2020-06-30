@@ -31,8 +31,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 						this.dataprovider = new ArrayDataProvider(requestsValues, { keyAttributes: 'id'});
 						self.requestsDataProvider( new ListDataProviderView(this.dataprovider, {sortCriteria: [{ attribute: 'requestDateNeededRaw', direction: 'ascending' }]}));
 					};
-					
-
 
                     self.requestsValues = ko.observableArray();
                     self.renderer1 = oj.KnockoutTemplateUtils.getRenderer("decisionMade_tmpl", true);
@@ -45,13 +43,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                         {headerText: 'Status', renderer: self.renderer1, sortProperty: "requestSelectedDecision"}
                     ];
 
-                    self.offerTypesCategoriesValues = ko.observableArray();
-                    self.offerTypesCategoriesArray = ko.observableArray([]);
-                    self.offerTypesCategoriesDataProvider = ko.observable();
-
-                    self.offerTypesValues = ko.observableArray();
-                    self.offerTypesArray = ko.observableArray([]);
-                    self.offerTypesDataProvider = ko.observable();
 
                     self.agreedStatus = ko.observable(null);
                     self.completeStatus = ko.observable(null);
@@ -60,8 +51,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                     self.selectedDecisionDisplay = ko.observableArray([]);
                     self.requestRowSelected = ko.observableArray();
                     self.requestSelected = ko.observable("");
-                    self.offerTypesCategorySelected = ko.observable("");
-                    self.offerTypeSelected = ko.observable("");
                     self.targetDateConvertor = ko.observable("");
                     self.dateNeededConvertor = ko.observable("");
 

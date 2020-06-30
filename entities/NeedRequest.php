@@ -58,6 +58,7 @@ class NeedRequest{
 			,if(STRCMP(request.agreed,'Y') = 0 ,client.email,'') as client_email
 			,types.type
 			,types.name as type_name
+			,categories.name as category_name
 			,client_need.date_needed
 			,org.name source_organization_name
 			,if(request.complete='Y','N',if(target_date<CURDATE(),'Y','N')) as overdue
@@ -66,10 +67,12 @@ class NeedRequest{
 			, clients client
 			, offer_types types
 			, organizations org
+			, type_categories categories
 			where request.client_need_id=client_need.id
 			and request.fulfilled_elsewhere='N'
 			and client_need.client_id=client.id
 			and client_need.type=types.type
+			and types.category=categories.code
 			and org.id=client_need.requesting_organization_id ";
 
 

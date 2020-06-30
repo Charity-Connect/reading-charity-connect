@@ -101,6 +101,7 @@ if(isset($data)) {
                 "client_email" => $client_email,
                 "type" => $type,
                 "type_name" => $type_name,
+                "category_name" => $category_name,
                 "date_needed" => $date_needed,
                 "request_organization_id" => $request_organization_id,
                 "agreed" => $agreed,
