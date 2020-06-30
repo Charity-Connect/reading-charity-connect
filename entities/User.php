@@ -70,7 +70,7 @@ class User{
 
 
 			$messageString=get_string("new_user_confirmation",array("%NAME%"=>$this->display_name,"%LINK%"=>$site_address."/rest/confirm_user.php?id=".$this->id."&key=".$this->confirmation_string));
-			//sendHtmlMail($this->email,get_string("new_user_subject"),$messageString);
+			sendHtmlMail($this->email,get_string("new_user_subject"),$messageString);
 
 			return $this->id;
 		} else {
@@ -202,6 +202,11 @@ class User{
 	}
 
 	public function confirmUser($id,$confirmation_string){
+		$uid=-1;
+		if(isset($_SESSION['id'])){
+			$uid=$_SESSION['id'];
+		}
+
 		$query = "SELECT 1 from users u where u.id=:id and confirmation_string=:confirmation_string";
 		$stmt = $this->connection->prepare($query);
 		$stmt->execute(['id'=>$id,'confirmation_string'=>$confirmation_string]);
@@ -209,7 +214,7 @@ class User{
 			$sql = "UPDATE users SET confirmed='Y',updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
 			return $stmt->execute(['id'=>$id
-			,'updated_by'=>$_SESSION['id']
+			,'updated_by'=>$uid
 			]);
 		}
 		return false;

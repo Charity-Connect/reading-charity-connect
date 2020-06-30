@@ -218,6 +218,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 	$_SESSION["loggedin"] = true;
 	$_SESSION["id"] = $id;
 	$_SESSION["email"] = $session_user['email'];
+	$_SESSION["view_all"]=false;
 	if(isset($session_user['display_name'])){
 	  $_SESSION["display_name"] = $session_user['display_name'];
 	} else {
@@ -241,17 +242,24 @@ return true;
 function set_current_organizaton($organization_id){
 	global $connection;
 
-	$sql = "select uo.organization_id,org.name from user_organizations uo, organizations org where user_id=:user_id and uo.organization_id=:organization_id and uo.confirmed='Y' and uo.organization_id=org.id";
-	$stmt= $connection->prepare($sql);
-	if( $stmt->execute(['user_id'=>$_SESSION["id"],'organization_id'=>$organization_id])){
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        $org_id= $row['organization_id'];
-        if($org_id==$organization_id){
-  			$_SESSION["organization_id"] = $organization_id;
-  			$_SESSION["organization_name"] = $row['name'];
-  			return $row['name'];
-  		}
-  	}
+	if($organization_id==-99){
+		$_SESSION["view_all"]=true;
+		return $_SESSION["organization_name"]."(View All)";
+	} else {
+
+		$_SESSION["view_all"]=false;
+		$sql = "select uo.organization_id,org.name from user_organizations uo, organizations org where user_id=:user_id and uo.organization_id=:organization_id and uo.confirmed='Y' and uo.organization_id=org.id";
+		$stmt= $connection->prepare($sql);
+		if( $stmt->execute(['user_id'=>$_SESSION["id"],'organization_id'=>$organization_id])){
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			$org_id= $row['organization_id'];
+			if($org_id==$organization_id){
+				$_SESSION["organization_id"] = $organization_id;
+				$_SESSION["organization_name"] = $row['name'];
+				return $row['name'];
+			}
+		}
+	}
   	return false;
 }
 

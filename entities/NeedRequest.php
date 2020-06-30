@@ -8,6 +8,7 @@ class NeedRequest{
 	public $id;
 	public $client_need_id;
 	public $request_organization_id;
+	public $client_id;
 	public $client_name;
 	public $client_address;
 	public $client_postcode;
@@ -49,6 +50,7 @@ class NeedRequest{
 			,request.update_date
 			,request.updated_by
 			,client_need.notes need_notes
+			,client.id as client_id
             ,if(STRCMP(request.agreed,'Y') = 0 ,client.name,IF(INSTR(client.name,' ')>0,LEFT(client.name,INSTR(client.name,' ')+1),client.name) )as client_name
 			,if(STRCMP(request.agreed,'Y') = 0 ,client.address,'') as client_address
 			,if(STRCMP(request.agreed,'Y') = 0 ,client.postcode,'') as client_postcode
@@ -73,6 +75,8 @@ class NeedRequest{
 
 	public function create(){
 
+		global $site_address;
+		global $ui_root;
 		$this->confirmation_code=generate_string(60);
 
 		$sql = "INSERT INTO need_requests ( client_need_id,organization_id,offer_id,confirmation_code,complete,target_date,notes,created_by,updated_by) values (:client_need_id,:organization_id,:offer_id,:confirmation_code,:complete,:target_date,:notes,:user_id,:user_id)";
@@ -91,6 +95,49 @@ class NeedRequest{
 			])){
 			$this->id=$this->connection->lastInsertId();
 
+			$sql="select c.name as client_name
+			,c.address
+			,c.postcode
+			,u.email
+			,u.display_name as user_name
+			,o.name as source_org_name
+			,o2.name as target_org_name
+			, ot.name type_name
+			from clients c
+			, users u
+			, organizations o
+			, user_organizations uo
+			, organizations o2
+			, offer_types ot
+			where o.id=:current_organization_id
+			and o2.id=:request_organization_id
+			and uo.organization_id=:request_organization_id
+			and uo.need_approver='Y'
+			and u.id=uo.user_id
+			and ot.type=:type
+			and c.id=:client_id";
+			$stmt = $this->connection->prepare($sql);
+			$stmt->execute(['current_organization_id'=>$_SESSION['organization_id']
+			,'request_organization_id'=>$this->request_organization_id
+			,'client_id'=>$this->client_id
+			,'type'=>$this->type]);
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+				sendHtmlMail($row['email']
+				,get_string("need_request_subject")
+				,get_string("need_request_body"
+					,array("%LINK%"=>$site_address.$ui_root."index.html?root=requests%2F".$this->id
+									,"%USER_NAME%"=>$row['user_name']
+									,"%CLIENT_NAME%"=>$row['client_name']
+									,"%SOURCE_ORG_NAME%"=>$row['source_org_name']
+									,"%TARGET_ORG_NAME%"=>$row['target_org_name']
+									,"%CLIENT_ADDRESS%"=>$row['address']
+									,"%CLIENT_POSTCODE%"=>$row['postcode']
+									,"%REQUEST_TYPE%"=>$row['type_name']
+									,"%DATE_NEEDED%"=>$this->date_needed
+									,"%NOTES%"=>$this->need_notes
+						)));
+			}
+
 			return $this->id;
 		} else {
 			return -1;
@@ -103,7 +150,7 @@ class NeedRequest{
 	}
 	public function readAll(){
 
-		if(is_admin()&&$_SESSION["organization_id"]==-99){
+		if(is_admin()&&$_SESSION["view_all"]){
 			$query =$this->base_query." ORDER BY request.id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute();
@@ -136,7 +183,7 @@ class NeedRequest{
 		if($overdue){
 			$where_clause=$where_clause." and target_date<CURDATE() ";
 		}
-		if(is_admin()&&$_SESSION["organization_id"]==-99){
+		if(is_admin()&&$_SESSION["view_all"]){
 			$query =$this->base_query.$where_clause." ORDER BY request.id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute();
@@ -174,7 +221,7 @@ class NeedRequest{
    }
 
 	public function readOne($id){
-		if(is_admin()&&$_SESSION["organization_id"]==-99){
+		if(is_admin()&&$_SESSION["view_all"]){
 			$query =$this->base_query." and request.id=:id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['id'=>$id]);
