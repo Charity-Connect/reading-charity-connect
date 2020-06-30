@@ -46,7 +46,13 @@ class ClientNeed{
 
 		$sql = "INSERT INTO client_needs ( client_id,requesting_organization_id,type,date_needed,need_met,notes,created_by,updated_by) values (:client_id,:requesting_organization_id,:type,:date_needed,:need_met,:notes,:user_id,:user_id)";
 		$stmt= $this->connection->prepare($sql);
-		if( $stmt->execute(['client_id'=>$this->client_id,'requesting_organization_id'=>$_SESSION['organization_id'],'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'notes'=>$this->notes,'user_id'=>$_SESSION['id']])){
+		if( $stmt->execute(['client_id'=>$this->client_id
+		,'requesting_organization_id'=>$_SESSION['organization_id']
+		,'type'=>$this->type
+		,'date_needed'=>$this->date_needed
+		,'need_met'=>$this->need_met
+		,'notes'=>$this->notes
+		,'user_id'=>$_SESSION['id']])){
 			$this->id=$this->connection->lastInsertId();
 
 
@@ -79,44 +85,18 @@ class ClientNeed{
 
 			//$oranization_list=array_unique($oranization_list);
 			foreach($oranization_list as $org_id=>$off_id){
-				$sql="select c.name as client_name,c.address,c.postcode,u.email,u.display_name as user_name,o.name as source_org_name,o2.name as target_org_name, ot.name type_name
-				from clients c, users u, organizations o, user_organizations uo, organizations o2, offer_types ot
-				where o.id=:organization_id
-				and ot.type=:type
-				and o2.id=uo.organization_id
-				and c.id=:client_id
-				and u.id=uo.user_id
-				and uo.need_approver='Y'";
-				$stmt = $this->connection->prepare($sql);
-				$stmt->execute(['organization_id'=>$_SESSION['organization_id'],'client_id'=>$this->client_id,'type'=>$this->type]);
 
 				$need_request=new NeedRequest($this->connection);
 				$need_request->client_need_id=$this->id;
 				$need_request->request_organization_id=$org_id;
 				$need_request->offer_id=$off_id;
+				$need_request->client_id=$this->client_id;
+				$need_request->type=$this->type;
+				$need_request->need_notes=$this->notes;
+				$need_request->date_needed=$this->date_needed;
 				$need_request->create();
 
-				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-					sendHtmlMail($row['email']
-					,get_string("need_request_subject")
-					,get_string("need_request_body"
-						,array("%LINK%"=>$site_address.$ui_root."index.html?root=requests%2F".$need_request->id
-										,"%USER_NAME%"=>$row['user_name']
-										,"%CLIENT_NAME%"=>$row['client_name']
-										,"%SOURCE_ORG_NAME%"=>$row['source_org_name']
-										,"%TARGET_ORG_NAME%"=>$row['target_org_name']
-										,"%CLIENT_ADDRESS%"=>$row['address']
-										,"%CLIENT_POSTCODE%"=>$row['postcode']
-										,"%REQUEST_TYPE%"=>$row['type_name']
-										,"%DATE_NEEDED%"=>$this->date_needed
-										,"%NOTES%"=>$this->notes
-							)));
-				}
-
 			}
-
-
-
 
 			return $this->id;
 		} else {

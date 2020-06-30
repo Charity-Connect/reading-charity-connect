@@ -91,7 +91,7 @@ class Offer{
 
 	}
 	public function readAll(){
-		if(is_admin()&&$_SESSION["organization_id"]==-99){
+		if(is_admin()&&$_SESSION["view_all"]){
 			$query = $this->base_query." ORDER BY o.id";
 	   		$stmt = $this->connection->prepare($query);
 	   		$stmt->execute();
@@ -128,7 +128,7 @@ class Offer{
   }
 
 	public function readOne($id){
-		if(is_admin()&&$_SESSION["organization_id"]==-99){
+		if(is_admin()&&$_SESSION["view_all"]){
 			$query = $this->base_query." and o.id=:id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['id'=>$id]);

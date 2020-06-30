@@ -70,7 +70,7 @@ class User{
 
 
 			$messageString=get_string("new_user_confirmation",array("%NAME%"=>$this->display_name,"%LINK%"=>$site_address."/rest/confirm_user.php?id=".$this->id."&key=".$this->confirmation_string));
-			//sendHtmlMail($this->email,get_string("new_user_subject"),$messageString);
+			sendHtmlMail($this->email,get_string("new_user_subject"),$messageString);
 
 			return $this->id;
 		} else {
