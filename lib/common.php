@@ -236,7 +236,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 			$_SESSION["organization_name"]=$row['name'];
 		}
 	}
-	Audit::add($connection,"login","user",$id);
+	echo("login");
+	Audit::add($connection,"login","user",$id,null,$email);
 
 }
 return true;
@@ -272,11 +273,15 @@ function get_current_organizaton(){
 
 function logout($connection){
 	session_start();
-	$uid=-1;
+	$uid=null;
 	if(isset($_SESSION['id'])){
 		$uid=$_SESSION['id'];
 	}
-	Audit::add($connection,"logout","user",$uid);
+	$uemail=null;
+	if(isset($_SESSION["email"])){
+		$uemail=$_SESSION["email"];
+	}
+	Audit::add($connection,"logout","user",$uid,null,$uemail);
 	// Initialize the session
 
 	// Unset all of the session variables
@@ -324,7 +329,7 @@ function password_reset_confirm($email,$key,$new_password){
 			$id = $row['id'];
 			$stmt = $connection->prepare("UPDATE users set password = :password,password_confirmation_string=null WHERE id = :id");
 			$success= $stmt->execute(["password"=>password_hash($new_password, PASSWORD_DEFAULT),"id"=>$id]);
-			Audit::add($connection,"login","password_reset",$id);
+			Audit::add($connection,"login","password_reset",$id,null,$email);
 			return $success;
 		}
 	}

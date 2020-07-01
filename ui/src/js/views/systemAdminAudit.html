@@ -1,0 +1,45 @@
+<!--
+ Copyright (c) 2014, 2019, Oracle and/or its affiliates.
+ The Universal Permissive License (UPL), Version 1.0
+ -->
+<div class="oj-hybrid-padding">
+    <oj-bind-if test="[[auditLoaded() !== true]]">
+        Loading...
+        <oj-progress id="progressBar" value="-1"></oj-progress>
+    </oj-bind-if>
+    <oj-bind-if test="[[auditLoaded() == true]]">
+
+        <oj-bind-if test="[[auditValid() !== true]]">
+            <oj-bind-text :style.color="red">
+                Critical Error: Need Types not loaded
+            </oj-bind-text>
+        </oj-bind-if>
+
+        <oj-bind-if test="[[auditValid() == true]]">
+
+            <div class="spacer-sm">
+                <div class="oj-panel oj-panel-alt2"> 
+                    <div class="oj-flex sm-1x-row">
+                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
+                            <h2>Audit</h2>
+                        </div>                    
+                    </div>
+                    <hr /> 
+                    <oj-table id="orgTable" class="row-selectable" aria-label="table using array"
+                        columns="{{auditTableColumns}}"
+                        display='grid'
+                        data="[[auditDataProvider]]"
+                        style="width: 100%; height:100%;">
+                    </oj-table>
+
+                    <oj-paging-control id="auditPaging" data='[[auditDataProvider]]'
+                        page-size='50' slot='bottom'>
+                    </oj-paging-control>
+
+
+                </div>
+            </div>            
+            
+        </oj-bind-if>            
+    </oj-bind-if>
+</div>

@@ -2,6 +2,7 @@ Options +SymLinksIfOwnerMatch
 RewriteEngine On 
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
+RewriteRule ^audit   audit.php [L,qsa]
 RewriteRule ^users/current/user_organizations   user_organizations.php?view=current_user [L,qsa]
 RewriteRule ^users/current   users.php?view=current [L,qsa]
 RewriteRule ^users/([0-9]+)/user_organizations/([0-9]+)   user_organizations.php?view=one&user_id=$1&id=$2 [L,qsa]

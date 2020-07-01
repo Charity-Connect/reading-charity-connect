@@ -23,7 +23,7 @@ class TypeCategory{
 			$sql = "REPLACE INTO type_categories (code,name,active,created_by,updated_by) values (:code,:name,:active,:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
 			if( $stmt->execute(['code'=>$this->code,'name'=>$this->name,'active'=>$this->active,'user_id'=>$_SESSION['id']])){
-				Audit::add($this->connection,"create","type_category",null,$this->code);
+				Audit::add($this->connection,"create","type_category",null,$this->code,$this->name);
 				return $this->code;
 			} else {
 				return "";

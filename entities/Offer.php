@@ -85,7 +85,7 @@ class Offer{
 			,'user_id'=>$_SESSION['id']
 			])){
 			$this->id=$this->connection->lastInsertId();
-			Audit::add($this->connection,"create","offer",$this->id);
+			Audit::add($this->connection,"create","offer",$this->id,null,$this->name);
 			return $this->id;
 		} else {
 			return -1;
@@ -172,7 +172,7 @@ class Offer{
 				,'updated_by'=>$_SESSION['id']
 
 			])){
-				return Audit::add($this->connection,"update","offer",$this->id);
+				return Audit::add($this->connection,"update","offer",$this->id,null,$this->name);
 			}
 		} 
 		return false;

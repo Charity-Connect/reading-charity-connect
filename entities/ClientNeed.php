@@ -56,7 +56,7 @@ class ClientNeed{
 		,'user_id'=>$_SESSION['id']])){
 
 			$this->id=$this->connection->lastInsertId();
-			Audit::add($this->connection,"create","client_need",$this->id);
+			Audit::add($this->connection,"create","client_need",$this->id,null,$this->type);
 
 			$sql="select o.id,o.organization_id,o.latitude as offer_latitude,o.longitude as offer_longitude, o.distance,c.latitude as client_latitude,o.longitude as client_longitude
 			from clients c, offers o, client_needs n
@@ -163,7 +163,7 @@ class ClientNeed{
 			$stmt= $this->connection->prepare($sql);
 			if( $stmt->execute(['id'=>$this->id,'client_id'=>$this->client_id,'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'fulfilling_need_request_id'=>$this->fulfilling_need_request_id,'notes'=>$this->notes
 			,'updated_by'=>$_SESSION['id']])){
-				return Audit::add($this->connection,"update","client_need",$this->id);
+				return Audit::add($this->connection,"update","client_need",$this->id,null,$this->type);
 			}
 		} 
 		return false;

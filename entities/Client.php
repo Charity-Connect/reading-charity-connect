@@ -71,7 +71,7 @@ class Client{
 			$stmt= $this->connection->prepare($sql);
 			$stmt->execute(['client_id'=>$this->id,'organization_id'=>$_SESSION["organization_id"],'user_id'=>$_SESSION['id']]);
 
-			Audit::add($this->connection,"create","client",$this->id);
+			Audit::add($this->connection,"create","client",$this->id,null,$this->name);
 			return $this->id;
 		} else {
 			return -1;
@@ -161,7 +161,7 @@ class Client{
 				,'phone'=>$this->phone,'email'=>$this->email,'notes'=>$this->notes
 				,'updated_by'=>$_SESSION['id']
 			]);
-			Audit::add($this->connection,"update","client",$this->id);
+			Audit::add($this->connection,"update","client",$this->id,null,$this->name);
 			return $result;
 		} else {
 			return false;

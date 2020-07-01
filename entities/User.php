@@ -52,7 +52,7 @@ class User{
 		,'user_id'=>$uid
 		])){
 			$this->id=$this->connection->lastInsertId();
-			Audit::add($this->connection,"create","user",$this->id);
+			Audit::add($this->connection,"create","user",$this->id,null,$this->display_name);
 
 			$organization_user = new UserOrganization($this->connection);
 			$organization_user->user_id=$this->id;
@@ -199,7 +199,7 @@ class User{
 			if( $stmt->execute(['id'=>$this->id,'display_name'=>$this->display_name,'email'=>$this->email,'phone'=>$this->phone
 			,'updated_by'=>$_SESSION['id']
 			])){
-				return Audit::add($this->connection,"update","user",$this->id);
+				return Audit::add($this->connection,"update","user",$this->id,null,$this->display_name);
 			}
 		} 
 		return false;

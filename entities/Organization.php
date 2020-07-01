@@ -37,7 +37,7 @@ class Organization{
 			$stmt= $this->connection->prepare($sql);
 			if( $stmt->execute(['name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone,'user_id'=>$_SESSION['id']])){
 				$this->id=$this->connection->lastInsertId();
-				Audit::add($this->connection,"create","organization",$this->id);
+				Audit::add($this->connection,"create","organization",$this->id,null,$this->name);
 
 				return $this->id;
 			} else {
@@ -84,7 +84,7 @@ class Organization{
 			if( $stmt->execute(['id'=>$this->id,'name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone
 			,'updated_by'=>$_SESSION['id']
 ])){
-	return Audit::add($this->connection,"update","organization",$this->id);
+	return Audit::add($this->connection,"update","organization",$this->id,null,$this->name);
 
 }
 		} 
@@ -106,11 +106,11 @@ class Organization{
 			$sql = "DELETE FROM organizations WHERE id=:id; DELETE FROM need_requests WHERE organization_id=:id;
 					DELETE FROM client_share_requests WHERE organization_id=:id OR requesting_organization_id=:id;
 					DELETE FROM user_organizations WHERE organization_id=:id;";
-			$stmt= $this->connection->prepare($sql);
+		$stmt= $this->connection->prepare($sql);
 			if( $stmt->execute(['id'=>$this->id])){
+				$stmt->closeCursor();
 				return Audit::add($this->connection,"delete","organization",$this->id);
-
-			}
+			} 
 		} 
 		return false;
 	}

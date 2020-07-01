@@ -135,7 +135,7 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','re
                     };
                     
                     self.deleteButton = function () {
-                        return $.when(restClient.doDeleteJson('/rest/organizations/' + self.orgDetailid)
+                        return $.when(restClient.doDeleteJson('/rest/organizations/' + self.orgDetailid())
                             .then(
                                 success = function (response) {
                                     router.go('organizations');
