@@ -84,7 +84,7 @@
                     <div class="oj-sm-padding-1x-horizontal oj-flex-item">
 						<div class="oj-flex sm-1x-row oj-sm-float-start">
 							<h3>
-							<span><oj-bind-text value="[[clientSelected().name]]"></oj-bind-text></span>
+							<span><oj-bind-text value="[[clientName]]"></oj-bind-text></span>
 						</h3>
 						</div>
 				</div>
@@ -129,15 +129,12 @@
                 <hr />
 
                 <div class="oj-flex sm-1x-row">
-                    <oj-input-text id="clientId"
-                                   value="{{clientSelected().id}}" style="display:none">
-                    </oj-input-text>
 
                     <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                         <oj-label id="editNameLabel"><strong>Name:*</strong></oj-label>
                         <oj-input-text id="inputEditName" labelled-by="editNameLabel"
-                                       value="{{clientSelected().name}}"
-                                       required="true"
+                                       value="{{clientName}}"
+                                       required
                                        placeholder="Input name"
                                        title="Edit name input">
                         </oj-input-text>
@@ -145,7 +142,7 @@
                     <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                         <oj-label id="editEmailLabel"><strong>Email:</strong></oj-label>
                         <oj-input-text id="inputEditEmail" labelled-by="editEmailLabel"
-                                       value="{{clientSelected().email}}"
+                                       value="{{clientEmail}}"
                                        placeholder="Input email"
                                        title="Edit email input">
                         </oj-input-text>
@@ -156,7 +153,7 @@
                     <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                         <oj-label id="editAddressLabel"><strong>Address:</strong></oj-label>
                         <oj-text-area id="textareaEditAddress" labelled-by="editAddressLabel"
-                                      value="{{clientSelected().address}}"
+                                      value="{{clientAddress}}"
                                       placeholder="Input address"
                                       title="Edit address textarea"
                                       rows="5">
@@ -165,7 +162,7 @@
                     <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                         <oj-label id="editPhoneLabel"><strong>Phone:</strong></oj-label>
                         <oj-input-text id="inputEditPhone" labelled-by="editPhoneLabel"
-                                       value="{{clientSelected().phone}}"
+                                       value="{{clientPhone}}"
                                        placeholder="Input phone"
                                        title="Edit phone input">
                         </oj-input-text>
@@ -176,7 +173,7 @@
                     <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                         <oj-label id="editPostcodeLabel"><strong>Postcode:</strong></oj-label>
                         <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"
-                                       value="{{clientSelected().postcode}}"
+                                       value="{{clientPostcode}}"
                                        placeholder="Input postcode"
                                        title="Edit postcode input">
                         </oj-input-text>
@@ -186,7 +183,7 @@
                 <oj-label id="editClientNotesLabel"><strong>Comments from Requestor:</strong></oj-label>
                 <oj-text-area id="textareaEditClientNotes" class="oj-form-control-full-width"
                               labelled-by="editClientNotesLabel"
-                              value="{{clientSelected().notes}}"
+                              value="{{clientNotes}}"
                               placeholder="Input client notes"
                               title="Edit client notes textarea"
                               rows="5">
@@ -195,7 +192,7 @@
                 <!-- // if Edit Creation and Update dates are shown -->                  
                 <div id="datesInformation" class="datesPlaceholders">
                         <hr />  
-                        <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{clientSelected().updateDateDisplay}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{clientSelected().updated_by}}"></oj-bind-text></oj-label>
+                        <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{clientUpdateDate}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{clientUpdatedBy}}"></oj-bind-text></oj-label>
                 </div>
             </div>
             <br>
@@ -203,28 +200,30 @@
                 <div class="oj-flex sm-1x-row">
                     <div class="oj-sm-padding-1x-horizontal oj-flex-item">
                         <h3>
-                            <span><oj-bind-text value="[[clientSelected().name + '\'s needs']]"></oj-bind-text></span>
+                            <span><oj-bind-text value="[[clientName() + '\'s needs']]"></oj-bind-text></span>
                         </h3>
                     </div>
                     <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                         <oj-dialog style="display:none" id="addNeedDialog" class="oj-sm-12 oj-md-8" dialog-title="Add Need" cancel-behavior="none">
                             <div slot="body">
-                                <oj-label id="editNeedCategoryLabel"><strong>Category:</strong></oj-label>
+                                <oj-label id="editNeedCategoryLabel"><strong>Category:*</strong></oj-label>
                                 <oj-select-single id="selectEditNeedCategory" labelled-by="editNeedCategoryLabel"
                                                   data="[[offerTypesCategoriesDataProvider]]"
                                                   value="{{offerTypesCategorySelected}}"
                                                   on-value-changed="[[handleOfferTypesCategoryChanged]]"
-                                                  placeholder="Select need category"
+												  placeholder="Select need category"
+												  required="true"
                                                   title="Edit need category select">
                                 </oj-select-single>
                                 <hr />
-                                <oj-label id="editNeedTypeLabel"><strong>Type:</strong></oj-label>
+                                <oj-label id="editNeedTypeLabel"><strong>Type:*</strong></oj-label>
                                 <oj-select-single id="selectEditNeedType" labelled-by="editNeedTypeLabel"
                                                   data="[[offerTypesDataProvider]]"
                                                   value="{{offerTypeSelected}}"
                                                   on-value-changed="[[handleOfferTypeChanged]]"
                                                   placeholder="Select need type"
-                                                  title="Edit need type select"
+												  title="Edit need type select"
+												  required
                                                   disabled="[[disableSelectEditType]]">
                                 </oj-select-single>
                                 <hr />
@@ -234,7 +233,7 @@
                                                date-picker.footer-layout=''
                                                min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                                                                              
                                                value="{{dateNeededConvertor}}"
-                                               placeholder="Input date needed"
+                                               placeholder="Select the date required"
                                                title="Pick date needed">
                                 </oj-input-date>
                                 <hr />
@@ -242,7 +241,7 @@
                                 <oj-text-area id="textareaEditNeedNotes" class="oj-form-control-full-width"
                                               labelled-by="editNeedNotesLabel"
                                               value="{{needNotesUpdateVal}}"
-                                              placeholder="Input need notes"
+                                              placeholder="Enter notes about the client's need"
                                               title="Edit need notes textarea"
                                               rows="10">
                                 </oj-text-area>

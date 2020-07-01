@@ -21,7 +21,8 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 				}
 			    var router = Router.rootInstance;
 			    var stateParams = router.observableModuleConfig().params.ojRouter.parameters;
-                var clientId=stateParams.clientId();
+				var clientId=stateParams.clientId();
+				
 
                 self.connected = function () {
                     accUtils.announce('Client page loaded.');
@@ -48,14 +49,47 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                     self.disableSelectEditType = ko.observable(true);
                     self.offerTypeSelected = ko.observable("");
                     self.offerTypesCategorySelected = ko.observable("");
-                    self.disableNeedSaveButton = ko.observable(true);
+					self.disableNeedSaveButton = ko.observable(true);
+					self.clientName=ko.observable("");
+					self.clientEmail=ko.observable("");
+					self.clientAddress=ko.observable("");
+					self.clientPhone=ko.observable("");
+					self.clientPostcode=ko.observable("");
+					self.clientNotes=ko.observable("");
+					self.clientUpdateDate=ko.observable("");
+					self.clientUpdatedBy=ko.observable("");
+					self.clientId=null;
+
+					self.populateResponse=function(response){
+						self.clientName(response.name);
+						self.clientEmail(response.email);
+						self.clientAddress(response.address);
+						self.clientPhone(response.phone);
+						self.clientPostcode(response.postcode);
+						self.clientNotes(response.notes);
+						self.clientUpdateDate(response.updateDateDisplay);
+						self.clientUpdatedBy(response.updated_by);
+						self.clientId=response.id;
+					}
+	
+					self.clearResponse=function(){
+					
+						self.clientName("");
+						self.clientEmail("");
+						self.clientAddress("");
+						self.clientPhone("");
+						self.clientPostcode("");
+						self.clientNotes("");
+						self.clientUpdateDate("");
+						self.clientUpdatedBy("");
+						self.clientId=null;
+					}
 
 					this.duplicatesColumns = ko.observableArray([{ headerText: '',field: 'field' }]);
 					this.duplicatesDataProvider = ko.observable(new ArrayDataProvider([{field:"Organization"},{field:"Name"}],{ keyAttributes: 'field' }));
 
                     self.selectedRowDisplay = ko.observable("clientNeeds");
                     self.addClientButtonSelected = ko.observableArray([]);
-                    self.clientSelected = ko.observable("");
 
                     var primaryHandlerLogic = function() {
 
@@ -211,17 +245,31 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 							document.getElementById('duplicatesDialog').close();
 						};
 
-						var saveClient = function () {
 
+						var saveClient = function () {
+							var element1 = document.getElementById('inputEditName');
+
+							if(self.clientName().length<1){
+								console.log(element1.showMessages());
+								self.postTextColor("red");
+								self.postText("Error: Client not saved.");
+								console.log("form errors");
+								self.fileContentPosted(true);
+								$(".postMessage").css('display', 'inline-block').fadeOut(2000, function(){
+									self.disableSaveButton(false);
+								});
+
+								return;
+							}
 							postAddress = restUtils.constructUrl(restUtils.EntityUrl.CLIENTS);
 							responseJson = {
-								id: $('#clientId')[0].value,
-								name: $('#inputEditName')[0].value,
-								address: $('#textareaEditAddress')[0].value,
-								postcode: $('#inputEditPostcode')[0].value,
-								phone: $('#inputEditPhone')[0].value,
-								email: $('#inputEditEmail')[0].value,
-								notes: $('#textareaEditClientNotes')[0].value
+								id: self.clientId,
+								name: self.clientName(),
+								address: self.clientAddress(),
+								postcode: self.clientPostcode(),
+								phone: self.clientPhone(),
+								email: self.clientEmail(),
+								notes: self.clientNotes()
 							};
 
 							return $.when(restClient.doPostJson(postAddress, responseJson)
@@ -230,11 +278,8 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 									self.postTextColor("green");
 										self.postText("You have succesfully saved the client.");
 										console.log("client data posted");
-										self.clientSelected(response);
-										clientId=response.id;
-										console.log(clientId);
-										//update clientsTable
-										//self.getClientsAjax();
+										self.populateResponse(response)
+										self.clientId=response.id;
 								},
 								error = function (response) {
 									self.postTextColor("red");
@@ -256,13 +301,13 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 								responseJson = {
 									id: id,
 									organization_id: organization_id,
-									name: $('#inputEditName')[0].value,
-									address: $('#textareaEditAddress')[0].value,
-									postcode: $('#inputEditPostcode')[0].value,
-									phone: $('#inputEditPhone')[0].value,
-									email: $('#inputEditEmail')[0].value,
-									notes: $('#textareaEditClientNotes')[0].value
-								};
+									name: self.clientName(),
+									address: self.clientAddress(),
+									postcode: self.clientPostcode(),
+									phone: self.clientPhone(),
+									email: self.clientEmail(),
+									notes: self.clientNotes()
+									};
 								$.ajax({type: 'POST'
 									,url:`/rest/clients/duplicate_request`
 									,data:JSON.stringify(responseJson)
@@ -306,7 +351,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 							console.log("getting client "+clientId);
 							self.clientsLoaded(false);
 								if(clientId=="new"){
-									self.clientSelected("");
+									self.clearResponse();
 								} else {
 									$.when(restClient.doGet('/rest/clients/'+clientId))
 										.then(
@@ -317,7 +362,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 												} else {
 													response.updateDateDisplay="unknown";
 												}
-												self.clientSelected(response);
+												self.populateResponse(response)
 												self.clientsValid(true);
 											},
 											error = function (response) {
@@ -345,14 +390,14 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             var postAddress;
                             var responseJson;
                             if (event.target.id === "saveButton") {
-                                responseJson = {
-                                    id: $('#clientId')[0].value,
-                                    name: $('#inputEditName')[0].value,
-                                    address: $('#textareaEditAddress')[0].value,
-                                    postcode: $('#inputEditPostcode')[0].value,
-                                    phone: $('#inputEditPhone')[0].value,
-                                    email: $('#inputEditEmail')[0].value,
-                                    notes: $('#textareaEditClientNotes')[0].value
+								responseJson = {
+                                    id: self.clientId,
+                                    name: self.clientName(),
+                                    address: self.clientAddress(),
+                                    postcode: self.clientPostcode(),
+                                    phone: self.clientPhone(),
+                                    email: self.clientEmail(),
+                                    notes: self.clientNotes()
                                 };
 								self.fileContentPosted(false);
 								self.disableSaveButton(true);
@@ -424,7 +469,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 								}
 
                             } else if (event.target.id === "editNeedSaveButton")  {
-                                postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${self.clientSelected().id}/client_needs`;
+                                postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${self.clientId}/client_needs`;
                                 responseJson = {
                                     type: $('#selectEditNeedType')[0].valueItem.data.value,
                                     date_needed: _formatDate($('#datepickerEditNeedDateNeeded')[0].value),
@@ -464,11 +509,12 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
                     var getData = function () {
                         self.getClientsAjax = function() {
+							console.log("getting data");
                             self.clientsLoaded = ko.observable();
                             self.clientsValid = ko.observable();
 
 							if(clientId=="new"){
-								self.clientSelected("");
+								self.clearResponse();
 								self.clientsValid(true);
 								self.clientsLoaded(true);
 							} else {
@@ -479,7 +525,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 								return $.when(restClient.doGetJson("/rest/clients/"+clientId)
 									.then(
 										success = function (response) {
-											console.log(response);
 											if(response.update_date){
                                                 updateDt=new Date(response.update_date.replace(/-/g, '/'));
 												response.updateDateDisplay=updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB");
@@ -487,7 +532,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 												response.updateDateDisplay="unknown";
 											}
 
-											self.clientSelected(response);
+											self.populateResponse(response);
 											self.clientsValid(true);
 											self.clientsLoaded(true);
 										},
