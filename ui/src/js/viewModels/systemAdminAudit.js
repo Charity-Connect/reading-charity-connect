@@ -27,28 +27,17 @@ define(['utils','ojs/ojcore','ojs/ojconverterutils-i18n', 'knockout', 'jquery', 
 				var DateUtils = function () { };
 				self.filterDate=new Date();
 
-
-			// Validator that ensures that the date iso value does not fall on a weekend
-			DateUtils.refreshDateValidator = {
-				// Throws error when value falls on a weekend.
-				validate: function (value) {
-				if (typeof value === 'string') {
-					self.filterDate = ConverterUtilsI18n.IntlConverterUtils.isoToLocalDate(value);
-					self.dateAvailableConvertor(self.filterDate.ymd());
-					Promise.all([self.getauditAjax()])
-					.catch(function () {
-					//even if error remove loading bar
-					self.auditLoaded(true);
-				});
-				}
-				},
-				getHint: function () {
-				return null;
-				}
-			};
-
-          // weekend validator set on the 'validators' option for startDate and endDate fields
-		  this.refreshDateValidator = DateUtils.refreshDateValidator;
+				self.handleAuditDateChanged = function (event) {
+					if (event.target.value !== null) {
+						self.filterDate = ConverterUtilsI18n.IntlConverterUtils.isoToLocalDate(event.target.value);
+						self.dateAvailableConvertor(self.filterDate.ymd());
+						Promise.all([self.getauditAjax()])
+						.catch(function () {
+						//even if error remove loading bar
+						self.auditLoaded(true);
+					});
+						} 
+				};
 
                 self.connected = function () {
                     accUtils.announce('Admin page loaded.');
