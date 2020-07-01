@@ -485,7 +485,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 												self.postText("You have succesfully saved the need.");
 												console.log("need data posted");
 												//update clientNeedsTable
-												self.getClientNeedsAjax(self.clientSelected().id);
+												self.getClientNeedsAjax(self.clientId);
 										},
 										error = function (response) {
 											self.postTextColor("red");
