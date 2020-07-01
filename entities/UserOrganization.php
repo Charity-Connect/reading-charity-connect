@@ -1,8 +1,8 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Audit.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/User.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Organization.php';
+require_once __DIR__.'/Audit.php';
+require_once __DIR__.'/User.php';
+require_once __DIR__.'/Organization.php';
+require_once __DIR__.'/../lib/common.php';
 class UserOrganization{
 
 	private $connection;

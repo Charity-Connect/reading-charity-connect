@@ -1,5 +1,5 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Audit.php';
+require_once __DIR__.'/Audit.php';
 class ClientShareRequest{
 
 	private $connection;

@@ -1,6 +1,6 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Audit.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Client.php';
+require_once __DIR__.'/Audit.php';
+require_once __DIR__.'/Client.php';
 class Organization{
 
 	private $connection;

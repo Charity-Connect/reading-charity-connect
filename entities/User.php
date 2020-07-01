@@ -1,8 +1,8 @@
 <?php
 
-include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Audit.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
+require_once __DIR__.'/Audit.php';
+require_once __DIR__.'/UserOrganization.php';
+require_once __DIR__.'/../lib/common.php';
 
 class User{
 

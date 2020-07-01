@@ -1,8 +1,8 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Audit.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Client.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/NeedRequest.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
+require_once __DIR__.'/Audit.php';
+require_once __DIR__.'/Client.php';
+require_once __DIR__.'/NeedRequest.php';
+require_once __DIR__.'/../config/dbclass.php';
 
 class ClientNeed{
 
