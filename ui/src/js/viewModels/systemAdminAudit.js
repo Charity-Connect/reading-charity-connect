@@ -7,18 +7,48 @@
 /*
  * Your admin ViewModel code goes here
  */
-define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
+define(['utils','ojs/ojcore','ojs/ojconverterutils-i18n', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
-    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset','ojs/ojformlayout'],
-        function (utils,oj, ko, $, accUtils, restClient,KnockoutTemplateUtils,ArrayDataProvider) {
+    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset','ojs/ojformlayout','ojs/ojdatetimepicker'],
+        function (utils,oj,ConverterUtilsI18n, ko, $, accUtils, restClient,KnockoutTemplateUtils,ArrayDataProvider) {
 
             function AdminViewModel() {
                 var self = this;
-                utils.getSetLanguage();
+				utils.getSetLanguage();
+				
+				Date.prototype.ymd = function(){
+					var dat= new Date(this.getTime() - this.getTimezoneOffset() * 60000)
+					return dat.toISOString().substr(0,10); 
+				};
                 
                 self.postTextColor = ko.observable();
                 self.postText = ko.observable();
-                self.fileContentPosted = ko.observable(true);
+				self.dateAvailableConvertor = ko.observable((new Date()).ymd());
+				var DateUtils = function () { };
+				self.filterDate=new Date();
+
+
+			// Validator that ensures that the date iso value does not fall on a weekend
+			DateUtils.refreshDateValidator = {
+				// Throws error when value falls on a weekend.
+				validate: function (value) {
+				if (typeof value === 'string') {
+					self.filterDate = ConverterUtilsI18n.IntlConverterUtils.isoToLocalDate(value);
+					self.dateAvailableConvertor(self.filterDate.ymd());
+					Promise.all([self.getauditAjax()])
+					.catch(function () {
+					//even if error remove loading bar
+					self.auditLoaded(true);
+				});
+				}
+				},
+				getHint: function () {
+				return null;
+				}
+			};
+
+          // weekend validator set on the 'validators' option for startDate and endDate fields
+		  this.refreshDateValidator = DateUtils.refreshDateValidator;
 
                 self.connected = function () {
                     accUtils.announce('Admin page loaded.');
@@ -44,7 +74,7 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                         self.getauditAjax = function() {
                             //GET /rest/audit - REST
                             self.auditLoaded(false);
-                            return $.when(restClient.doGet('/rest/audit')
+                            return $.when(restClient.doGet('/rest/audit?date='+self.filterDate.ymd())
                                 .then(
                                     success = function (response) {
                                         self.auditValues(response.audit_entries);

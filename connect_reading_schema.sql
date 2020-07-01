@@ -11,12 +11,13 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `audit` (
   `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `audit_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `action` varchar(30) NOT NULL,
   `object` varchar(30) NOT NULL,
   `key_id` int(11) DEFAULT NULL,
-  `key_code` varchar(30) DEFAULT NULL
+  `key_code` varchar(30) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `clients` (

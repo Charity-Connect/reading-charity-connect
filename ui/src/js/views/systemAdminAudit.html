@@ -11,7 +11,7 @@
 
         <oj-bind-if test="[[auditValid() !== true]]">
             <oj-bind-text :style.color="red">
-                Critical Error: Need Types not loaded
+                Critical Error: Audit not loaded
             </oj-bind-text>
         </oj-bind-if>
 
@@ -23,7 +23,16 @@
                         <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
                             <h2>Audit</h2>
                         </div>                    
-                    </div>
+					</div>
+					<oj-input-date id="datepickerEditDateAvailable"
+						max="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                
+						value="{{dateAvailableConvertor}}"
+						placeholder="Input audit date"                                
+						title="Pick audit date"
+						validators="[[[refreshDateValidator]]]"
+						>
+					</oj-input-date>
+	
                     <hr /> 
                     <oj-table id="orgTable" class="row-selectable" aria-label="table using array"
                         columns="{{auditTableColumns}}"
