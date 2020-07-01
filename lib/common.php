@@ -236,7 +236,6 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 			$_SESSION["organization_name"]=$row['name'];
 		}
 	}
-	echo("login");
 	Audit::add($connection,"login","user",$id,null,$email);
 
 }
