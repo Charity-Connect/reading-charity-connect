@@ -1,7 +1,11 @@
 <?php
 
+include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
 include_once $_SERVER['DOCUMENT_ROOT'] .'/lib/common.php';
-logout();
+
+$dbclass = new DBClass();
+$connection = $dbclass->getConnection();
+logout($connection);
 
 global $force_login;
 

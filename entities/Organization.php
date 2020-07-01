@@ -1,5 +1,6 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Client.php';
+require_once __DIR__.'/Audit.php';
+require_once __DIR__.'/Client.php';
 class Organization{
 
 	private $connection;
@@ -36,6 +37,8 @@ class Organization{
 			$stmt= $this->connection->prepare($sql);
 			if( $stmt->execute(['name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone,'user_id'=>$_SESSION['id']])){
 				$this->id=$this->connection->lastInsertId();
+				Audit::add($this->connection,"create","organization",$this->id,null,$this->name);
+
 				return $this->id;
 			} else {
 				return -1;
@@ -78,12 +81,14 @@ class Organization{
 
 			$sql = "UPDATE organizations SET name=:name, address=:address, phone=:phone,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id,'name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone
+			if( $stmt->execute(['id'=>$this->id,'name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone
 			,'updated_by'=>$_SESSION['id']
-]);
-		} else {
-			return false;
-		}
+])){
+	return Audit::add($this->connection,"update","organization",$this->id,null,$this->name);
+
+}
+		} 
+		return false;
 	}
 
 	public function delete() {
@@ -101,10 +106,12 @@ class Organization{
 			$sql = "DELETE FROM organizations WHERE id=:id; DELETE FROM need_requests WHERE organization_id=:id;
 					DELETE FROM client_share_requests WHERE organization_id=:id OR requesting_organization_id=:id;
 					DELETE FROM user_organizations WHERE organization_id=:id;";
-			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id]);
-		} else {
-			return false;
-		}
+		$stmt= $this->connection->prepare($sql);
+			if( $stmt->execute(['id'=>$this->id])){
+				$stmt->closeCursor();
+				return Audit::add($this->connection,"delete","organization",$this->id);
+			} 
+		} 
+		return false;
 	}
 }

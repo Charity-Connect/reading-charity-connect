@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__.'/Audit.php';
 class Offer{
 
 	private $connection;
@@ -84,6 +85,7 @@ class Offer{
 			,'user_id'=>$_SESSION['id']
 			])){
 			$this->id=$this->connection->lastInsertId();
+			Audit::add($this->connection,"create","offer",$this->id,null,$this->name);
 			return $this->id;
 		} else {
 			return -1;
@@ -163,23 +165,26 @@ class Offer{
 
 			$sql = "UPDATE offers SET name=:name, type=:type, details=:details, quantity=:quantity,date_available=:date_available,date_end=:date_end,postcode=:postcode,latitude=:latitude,longitude=:longitude,distance=:distance,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id,'name'=>$this->name,'type'=>$this->type,'details'=>$this->details,'quantity'=>$this->quantity,'date_available'=>$this->date_available,'date_end'=>$this->date_end,'postcode'=>$this->postcode
+			if( $stmt->execute(['id'=>$this->id,'name'=>$this->name,'type'=>$this->type,'details'=>$this->details,'quantity'=>$this->quantity,'date_available'=>$this->date_available,'date_end'=>$this->date_end,'postcode'=>$this->postcode
 				,'latitude'=>($latitude==-1) ? null:$latitude
 				,'longitude'=>($latitude==-1) ? null:$longitude
 				,'distance'=>$this->distance
 				,'updated_by'=>$_SESSION['id']
 
-			]);
-		} else {
-			return false;
-		}
+			])){
+				return Audit::add($this->connection,"update","offer",$this->id,null,$this->name);
+			}
+		} 
+		return false;
 	}
 	public function delete(){
         $stmt=$this->readOne($this->id);
 		if($stmt->rowCount()==1){
 			// TODO: add a database transaction				
 			$stmt= $this->connection->prepare("DELETE FROM offers WHERE id=:id; DELETE FROM need_requests WHERE offer_id=:id");
-			return $stmt->execute(['id'=>$this->id]);
+			if( $stmt->execute(['id'=>$this->id])){
+				return Audit::add($this->connection,"delete","offer",$this->id);
+			}
 			}
 		return false;
 	}

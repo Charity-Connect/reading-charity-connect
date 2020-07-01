@@ -1,7 +1,8 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/User.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/UserOrganization.php';
-include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/ClientShareRequest.php';
+require_once __DIR__.'/Audit.php';
+require_once __DIR__.'/User.php';
+require_once __DIR__.'/UserOrganization.php';
+require_once __DIR__.'/ClientShareRequest.php';
 class Client{
 
 	// Connection instance
@@ -66,14 +67,11 @@ class Client{
 		])){
 			$this->id=$this->connection->lastInsertId();
 
-			$user = new User($this->connection);
-			$user->id=$_SESSION["id"];
-			$user->read();
-
 			$sql = "INSERT INTO client_links ( client_id,link_id,link_type,created_by,updated_by) values (:client_id,:organization_id,'ORG',:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
 			$stmt->execute(['client_id'=>$this->id,'organization_id'=>$_SESSION["organization_id"],'user_id'=>$_SESSION['id']]);
 
+			Audit::add($this->connection,"create","client",$this->id,null,$this->name);
 			return $this->id;
 		} else {
 			return -1;
@@ -163,6 +161,7 @@ class Client{
 				,'phone'=>$this->phone,'email'=>$this->email,'notes'=>$this->notes
 				,'updated_by'=>$_SESSION['id']
 			]);
+			Audit::add($this->connection,"update","client",$this->id,null,$this->name);
 			return $result;
 		} else {
 			return false;
@@ -178,11 +177,13 @@ class Client{
 			if($active_org_id==$row['link_id']){
 				// TODO: add a database transaction				
 				$stmt= $this->connection->prepare("DELETE FROM clients WHERE id=:client_id; DELETE FROM client_needs WHERE client_id=:client_id; DELETE FROM need_requests WHERE client_need_id=:client_id; DELETE FROM client_links WHERE client_id=:client_id AND link_type='ORG'");
+				Audit::add($this->connection,"delete","client",$this->id);
 				return $stmt->execute(['client_id'=>$this->id]);
 			}
         } elseif($stmt->rowCount()>1)  {
 			$stmt= $this->connection->prepare("DELETE FROM client_links WHERE client_id=:client_id AND link_id=:organization_id AND link_type='ORG'");
 			return $stmt->execute(['client_id'=>$this->id, 'organization_id'=>$active_org_id]);
+			Audit::add($this->connection,"delete","client_links",$this->connection->lastInsertId());
 		}
 		return false;
         }

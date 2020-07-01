@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] .'/entities/Audit.php';
 class NeedRequest{
 
 	// Connection instance
@@ -97,6 +98,7 @@ class NeedRequest{
 			,'user_id'=>$_SESSION['id']
 			])){
 			$this->id=$this->connection->lastInsertId();
+			Audit::add($this->connection,"create","need_request",$this->id);
 
 			$sql="select c.name as client_name
 			,c.address
@@ -260,7 +262,9 @@ class NeedRequest{
 				,'notes'=>$this->request_response_notes
 				,'updated_by'=>$_SESSION['id']
 			]);
+
 			if(!$result){return false;}
+			Audit::add($this->connection,"update","need_request",$this->id);
 
 			if($this->agreed!=$orig_agreed && $this->agreed=='Y'){
 				// lock the agreement

@@ -23,7 +23,7 @@ if(isset($data)&&$method=="POST") {
 
 
 	$type=$offer_type->replace();
-	if($type=""){
+	if($type!=""){
 		$offer_type_arr  = array(
 				"name" => $offer_type->name,
 				"type" => $offer_type->type,
@@ -35,7 +35,7 @@ if(isset($data)&&$method=="POST") {
 
 	}else{
 		echo '{';
-			echo '"message": "Unable to process offer_type."';
+			echo '"message": "error"';
 		echo '}';
 	}
 

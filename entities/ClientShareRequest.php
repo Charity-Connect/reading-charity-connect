@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__.'/Audit.php';
 class ClientShareRequest{
 
 	private $connection;
@@ -58,6 +59,8 @@ class ClientShareRequest{
 			,'user_id'=>$_SESSION['id']
 			])){
 			$this->id=$this->connection->lastInsertId();
+			Audit::add($this->connection,"create","client_share_request",$this->id);
+
 			return $this->id;
 		} else {
 			return -1;
@@ -152,14 +155,15 @@ class ClientShareRequest{
 
 			$sql = "UPDATE client_share_requests SET approved=:approved,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id
+			if( $stmt->execute(['id'=>$this->id
 				,'approved'=>$this->approved
 				,'updated_by'=>$_SESSION['id']
 
-			]);
-		} else {
-			return false;
-		}
+			])){
+				return Audit::add($this->connection,"update","client_share_request",$this->id);
+			}
+		} 
+		return false;
 	}
 
 	public function delete(){
@@ -167,10 +171,10 @@ class ClientShareRequest{
 		if($stmt->rowCount()==1){
 			$sql = "DELETE FROM client_share_requests WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			return $stmt->execute(['id'=>$this->id]);
-		} else {
-			return false;
-		}
-
+			if( $stmt->execute(['id'=>$this->id])){
+				return Audit::add($this->connection,"delete","client_share_request",$this->id);
+			}
+		} 
+		return false;
 	}
 }

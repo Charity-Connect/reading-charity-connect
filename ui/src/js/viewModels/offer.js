@@ -157,9 +157,8 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                     return null;
                                 }
                             };
-
                             var responseJson = {
-                                id: self.offerRowSelected().length ? self.offerSelected().id : null,
+                                id: self.offerSelected().id!==undefined ? self.offerSelected().id : null,
                                 date_available: _formatDate($('#datepickerEditDateAvailable')[0].value),
                                 date_end: _formatDate($('#datepickerEditDateEnd')[0].value),
                                 details: $('#textareaEditOfferNotes')[0].value,
@@ -168,18 +167,20 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 postcode: $('#inputEditPostcode')[0].value,
                                 quantity: $('#inputEditQuantity')[0].value,
                                 type: $('#selectEditType')[0].valueItem.data.value
-                            };
+							};
+							console.log(responseJson);
 
                             self.fileContentPosted(false);
                             self.disableSaveButton(true);
                             //POST /rest/offers - REST
-                            return $.when(restClient.doPost(restUtils.constructUrl(restUtils.EntityUrl.OFFERS), responseJson)
+                            return $.when(restClient.doPostJson(restUtils.constructUrl(restUtils.EntityUrl.OFFERS), responseJson)
                                 .then(
                                     success = function (response) {
                                         self.postText("You have succesfully saved the offer.");
                                         self.postTextColor("green");
-                                        console.log("data posted");
-
+										console.log("data posted");
+										self.offerSelected().id=response.id;
+										offerId=response.id;
                                         //update offersTable
                                         self.getOffersAjax();
                                     },

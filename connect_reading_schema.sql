@@ -9,6 +9,16 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 
+CREATE TABLE `audit` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `audit_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `action` varchar(30) NOT NULL,
+  `object` varchar(30) NOT NULL,
+  `key_id` int(11) DEFAULT NULL,
+  `key_code` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `clients` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -125,7 +135,7 @@ CREATE TABLE `offer_types` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 REPLACE INTO `offer_types` (`type`, `name`, `category`, `default_text`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
-('company', 'Companionship visit', 'company', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('company', 'Companionship visit', 'company', 'Suitable times: ', 'Y', '2020-06-30 09:51:46', 1, '2020-06-30 09:51:46', 1),
 ('cooking', 'Help with cooking', 'food', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('food_parcel', 'Food Parcel', 'food', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('prescription_collection', 'Prescription Collection', 'medical', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
@@ -193,7 +203,14 @@ CREATE TABLE `type_categories` (
 REPLACE INTO `type_categories` (`code`, `name`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
 ('food', 'Food', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('medical', 'Medical', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
-('company', 'Company and visits', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
+('company', 'Company and visits', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('employement_support', 'Support to employment', 'Y', '2020-06-30 15:10:52', NULL, '2020-06-30 15:10:52', NULL),
+('befriending', 'Befriending', 'Y', '2020-06-30 15:10:52', NULL, '2020-06-30 15:10:52', NULL),
+('carer_support', 'Carer support', 'Y', '2020-06-30 15:11:20', NULL, '2020-06-30 15:11:20', NULL),
+('mental_health', 'Mental health and wellbeing', 'Y', '2020-06-30 15:11:20', NULL, '2020-06-30 15:11:20', NULL),
+('benefits_advice', 'Benefits advice', 'Y', '2020-06-30 15:11:45', NULL, '2020-06-30 15:11:45', NULL),
+('food_parcel', 'Food parcel', 'Y', '2020-06-30 15:11:45', NULL, '2020-06-30 15:11:45', NULL),
+('shopping', 'Shopping', 'Y', '2020-06-30 15:11:56', NULL, '2020-06-30 15:11:56', NULL);
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
@@ -238,6 +255,10 @@ CREATE TABLE `user_roles` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+ALTER TABLE `audit`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `audit_date` (`audit_date`);
 
 ALTER TABLE `clients`
   ADD PRIMARY KEY (`id`);
@@ -292,6 +313,9 @@ ALTER TABLE `user_organizations`
 ALTER TABLE `user_roles`
   ADD PRIMARY KEY (`id`);
 
+
+ALTER TABLE `audit`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `clients`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
