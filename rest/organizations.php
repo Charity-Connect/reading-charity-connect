@@ -41,7 +41,11 @@ if(isset($data)&&$method=="POST") {
                     "id" => $organization->id,
                     "name" => $organization->name,
                     "address" => $organization->address,
-                    "phone" => $organization->phone
+                    "phone" => $organization->phone,
+					"creation_date" => $organization->creation_date,
+					"created_by" => $organization->created_by,
+					"update_date" => $organization->update_date,
+					"updated_by" => $organization->updated_by
                     );
             echo json_encode($organization_arr);
 

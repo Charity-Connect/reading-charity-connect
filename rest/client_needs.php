@@ -43,7 +43,11 @@ if(isset($data)&&$method=="POST") {
                     "type" => $client_needs->type,
                     "date_needed" => $client_needs->date_needed,
                     "need_met" => $client_needs->need_met,
-                    "notes" => $client_needs->notes
+                    "notes" => $client_needs->notes,
+					"creation_date" => $client_needs->creation_date,
+					"created_by" => $client_needs->created_by,
+					"update_date" => $client_needs->update_date,
+					"updated_by" => $client_needs->updated_by
                     );
             echo json_encode($client_needs_arr);
 

@@ -35,6 +35,7 @@ class Offer{
 		,o.name
 		,o.type
 		,t.name as type_name
+		,t.category
 		,o.details
 		,o.quantity
 		,o.quantity_taken
@@ -86,6 +87,10 @@ class Offer{
 			])){
 			$this->id=$this->connection->lastInsertId();
 			Audit::add($this->connection,"create","offer",$this->id,null,$this->name);
+			$this->creation_date=date("Y-m-d H:i:s");
+			$this->created_by=$_SESSION['display_name'];
+			$this->update_date=date("Y-m-d H:i:s");
+			$this->updated_by=$_SESSION['display_name'];
 			return $this->id;
 		} else {
 			return -1;
@@ -113,6 +118,7 @@ class Offer{
 		$this->name=$row['name'];
 		$this->type=$row['type'];
 		$this->type_name=$row['type_name'];
+		$this->category=$row['category'];
 		$this->details=$row['details'];
 		$this->quantity=$row['quantity'];
 		$this->quantity_taken=$row['quantity_taken'];

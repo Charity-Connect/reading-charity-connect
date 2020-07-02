@@ -70,6 +70,10 @@ class Client{
 			$sql = "INSERT INTO client_links ( client_id,link_id,link_type,created_by,updated_by) values (:client_id,:organization_id,'ORG',:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
 			$stmt->execute(['client_id'=>$this->id,'organization_id'=>$_SESSION["organization_id"],'user_id'=>$_SESSION['id']]);
+			$this->creation_date=date("Y-m-d H:i:s");
+			$this->created_by=$_SESSION['display_name'];
+			$this->update_date=date("Y-m-d H:i:s");
+			$this->updated_by=$_SESSION['display_name'];
 
 			Audit::add($this->connection,"create","client",$this->id,null,$this->name);
 			return $this->id;
@@ -162,6 +166,9 @@ class Client{
 				,'updated_by'=>$_SESSION['id']
 			]);
 			Audit::add($this->connection,"update","client",$this->id,null,$this->name);
+			$this->update_date=date("Y-m-d H:i:s");
+			$this->updated_by=$_SESSION['display_name'];
+	
 			return $result;
 		} else {
 			return false;

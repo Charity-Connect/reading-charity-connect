@@ -21,7 +21,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 				}
 			    var router = Router.rootInstance;
 			    var stateParams = router.observableModuleConfig().params.ojRouter.parameters;
-				var clientId=stateParams.clientId();
+				var clientIdIn=stateParams.clientId();
 				
 
                 self.connected = function () {
@@ -58,8 +58,10 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					self.clientNotes=ko.observable("");
 					self.clientUpdateDate=ko.observable("");
 					self.clientUpdatedBy=ko.observable("");
-					self.clientId=null;
-
+					self.clientId=ko.observable(clientIdIn);
+					self.addNeedButtonDisabled=ko.observable(true);
+					self.cancelButtonName=ko.observable("Cancel");
+					
 					self.populateResponse=function(response){
 						self.clientName(response.name);
 						self.clientEmail(response.email);
@@ -67,9 +69,16 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 						self.clientPhone(response.phone);
 						self.clientPostcode(response.postcode);
 						self.clientNotes(response.notes);
-						self.clientUpdateDate(response.updateDateDisplay);
+						if(response.update_date){
+							updateDt=new Date(response.update_date.replace(/-/g, '/'));
+							self.clientUpdateDate(updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB"));
+						} else {
+							self.clientUpdateDate("unknown");
+						}
 						self.clientUpdatedBy(response.updated_by);
-						self.clientId=response.id;
+						self.clientId(response.id);
+						self.addNeedButtonDisabled(false);
+						this.cancelButtonName("Close");
 					}
 	
 					self.clearResponse=function(){
@@ -82,7 +91,9 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 						self.clientNotes("");
 						self.clientUpdateDate("");
 						self.clientUpdatedBy("");
-						self.clientId=null;
+						self.clientId(null);
+						self.addNeedButtonDisabled(true);
+						this.cancelButtonName("Cancel");
 					}
 
 					this.duplicatesColumns = ko.observableArray([{ headerText: '',field: 'field' }]);
@@ -144,7 +155,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             );
                         };
 
-						self.getClientNeedsAjax(clientId);
+						self.getClientNeedsAjax(self.clientId());
 
 
                         self.handleOfferTypesCategoryChanged = function(event) {
@@ -263,7 +274,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 							}
 							postAddress = restUtils.constructUrl(restUtils.EntityUrl.CLIENTS);
 							responseJson = {
-								id: self.clientId,
+								id: self.clientId(),
 								name: self.clientName(),
 								address: self.clientAddress(),
 								postcode: self.clientPostcode(),
@@ -279,7 +290,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 										self.postText("You have succesfully saved the client.");
 										console.log("client data posted");
 										self.populateResponse(response)
-										self.clientId=response.id;
 								},
 								error = function (response) {
 									self.postTextColor("red");
@@ -321,7 +331,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
 						}
 						self.viewClientButton = function (event) {
-							        clientId= event.target.id.split(":")[1];
+							        self.clientId(event.target.id.split(":")[1]);
 							        self.getClient();
 						}
 						self.cancelButton = function (event) {
@@ -329,7 +339,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 						}
 
                         self.deleteButton = function () {
-                            return $.when(restClient.doDeleteJson('/rest/clients/'+clientId)
+                            return $.when(restClient.doDeleteJson('/rest/clients/'+self.clientId())
                                 .then(
                                     success = function (response) {
                                         router.go('clients');
@@ -348,20 +358,14 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                         }
 
 						self.getClient= function (){
-							console.log("getting client "+clientId);
+							console.log("getting client "+self.clientId());
 							self.clientsLoaded(false);
-								if(clientId=="new"){
+								if(self.clientId()=="new"){
 									self.clearResponse();
 								} else {
-									$.when(restClient.doGet('/rest/clients/'+clientId))
+									$.when(restClient.doGet('/rest/clients/'+self.clientId()))
 										.then(
 											success = function (response) {
-												if(response.update_date){
-                                                    updateDt=new Date(response.update_date.replace(/-/g, '/'));
-													response.updateDateDisplay=updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB");
-												} else {
-													response.updateDateDisplay="unknown";
-												}
 												self.populateResponse(response)
 												self.clientsValid(true);
 											},
@@ -391,7 +395,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             var responseJson;
                             if (event.target.id === "saveButton") {
 								responseJson = {
-                                    id: self.clientId,
+                                    id: self.clientId(),
                                     name: self.clientName(),
                                     address: self.clientAddress(),
                                     postcode: self.clientPostcode(),
@@ -469,7 +473,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 								}
 
                             } else if (event.target.id === "editNeedSaveButton")  {
-                                postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${self.clientId}/client_needs`;
+                                postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${self.clientId()}/client_needs`;
                                 responseJson = {
                                     type: $('#selectEditNeedType')[0].valueItem.data.value,
                                     date_needed: _formatDate($('#datepickerEditNeedDateNeeded')[0].value),
@@ -485,7 +489,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 												self.postText("You have succesfully saved the need.");
 												console.log("need data posted");
 												//update clientNeedsTable
-												self.getClientNeedsAjax(self.clientId);
+												self.getClientNeedsAjax(self.clientId());
 										},
 										error = function (response) {
 											self.postTextColor("red");
@@ -513,7 +517,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             self.clientsLoaded = ko.observable();
                             self.clientsValid = ko.observable();
 
-							if(clientId=="new"){
+							if(self.clientId()=="new"){
 								self.clearResponse();
 								self.clientsValid(true);
 								self.clientsLoaded(true);
@@ -522,7 +526,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
 								//GET /rest/clients - REST
 								self.clientsLoaded(false);
-								return $.when(restClient.doGetJson("/rest/clients/"+clientId)
+								return $.when(restClient.doGetJson("/rest/clients/"+self.clientId())
 									.then(
 										success = function (response) {
 											if(response.update_date){

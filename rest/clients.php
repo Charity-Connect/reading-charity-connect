@@ -66,8 +66,12 @@ $method = $_SERVER['REQUEST_METHOD'];
 						"postcode" => $client->postcode,
 						"phone" => $client->phone,
 						"email" => $client->email,
-						"notes" => $client->notes
-						);
+						"notes" => $client->notes,
+						"creation_date" => $client->creation_date,
+						"created_by" => $client->created_by,
+						"update_date" => $client->update_date,
+						"updated_by" => $client->updated_by
+								);
 				echo json_encode($client_arr);
 
 			}else{

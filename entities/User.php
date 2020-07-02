@@ -53,6 +53,15 @@ class User{
 		])){
 			$this->id=$this->connection->lastInsertId();
 			Audit::add($this->connection,"create","user",$this->id,null,$this->display_name);
+			$this->creation_date=date("Y-m-d H:i:s");
+			$this->update_date=date("Y-m-d H:i:s");
+			if(isset($_SESSION['display_name'])){
+				$this->created_by=$_SESSION['display_name'];
+				$this->updated_by=$_SESSION['display_name'];
+			} else {
+				$this->created_by="System";
+				$this->updated_by="System";
+			}
 
 			$organization_user = new UserOrganization($this->connection);
 			$organization_user->user_id=$this->id;

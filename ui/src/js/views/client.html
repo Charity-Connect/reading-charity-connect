@@ -91,10 +91,9 @@
                     <div class="oj-sm-padding-1x-horizontal oj-flex-item">
                         <div class="oj-helper-clearfix">
                             <div class="oj-flex sm-1x-row oj-sm-float-end">
-                                <div class="oj-sm-padding-1x-horizontal">
+                                <div class="oj-sm-padding-1x-horizontal" id="cancelButtonContainer">
                                     <oj-button id="cancelButton" on-oj-action='[[cancelButton]]'>
-                                               <!-- disabled="[[disableSaveButton]]"> -->
-                                        <span>Cancel</span>
+                                        <span data-bind="text: cancelButtonName"></span>
                                     </oj-button>
                                 </div>                            
                                 <div class="oj-sm-padding-1x-horizontal">
@@ -192,7 +191,7 @@
                 <!-- // if Edit Creation and Update dates are shown -->                  
                 <div id="datesInformation" class="datesPlaceholders">
                         <hr />  
-                        <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{clientUpdateDate}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{clientUpdatedBy}}"></oj-bind-text></oj-label>
+                        <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="[[clientUpdateDate]]"></oj-bind-text> <strong>by</strong> <oj-bind-text value="[[clientUpdatedBy]]"></oj-bind-text></oj-label>
                 </div>
             </div>
             <br>
@@ -200,7 +199,7 @@
                 <div class="oj-flex sm-1x-row">
                     <div class="oj-sm-padding-1x-horizontal oj-flex-item">
                         <h3>
-                            <span><oj-bind-text value="[[clientName() + '\'s needs']]"></oj-bind-text></span>
+                            <span><oj-bind-text value="[[clientName().length>0?(clientName() + '\'s needs'):'']]"></oj-bind-text></span>
                         </h3>
                     </div>
                     <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
@@ -260,7 +259,7 @@
                                     </div>
                                     <div class="oj-sm-padding-1x-horizontal oj-flex">
                                         <oj-button id="editNeedCancelButton"
-                                                   on-oj-action="[[closeAddNeedModalButton]]">
+                                                   on-oj-action="[[closeAddNeedModalButton]]" >
                                             <span>Cancel</span>
                                         </oj-button>
                                     </div>
@@ -275,7 +274,7 @@
                         </oj-dialog>
 
                         <div class="oj-helper-clearfix">
-                            <oj-button id="addNeedButton" class="oj-sm-float-end"
+                            <oj-button id="addNeedButton" class="oj-sm-float-end" disabled='[[addNeedButtonDisabled]]'
                                        on-oj-action='[[addNeedButton]]'>
                                 <span>Add Need</span>
                             </oj-button>
@@ -286,7 +285,8 @@
                 <oj-table id="clientNeedsTable" aria-label="table using array"
                           columns="{{clientNeedsTableColumns}}"
                           display='grid'
-                          data="[[clientNeedsDataProvider]]">
+						  data="[[clientNeedsDataProvider]]"
+						  translations.msg-initializing="">
                 </oj-table>
                 <oj-paging-control id="clientNeedsPaging" data='[[clientNeedsDataProvider]]'
                                    page-size='5' slot='bottom'>
