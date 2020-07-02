@@ -2,7 +2,7 @@
  * Copyright (c) 2014, 2016, Oracle and/or its affiliates.
  * The Universal Permissive License (UPL), Version 1.0
  */
-define(['ojs/ojcore', 'knockout', 'ojs/ojconfig'],
+define(['ojs/ojcore', 'knockout', 'ojs/ojconfig', 'ojs/ojmessaging'],
     function (oj, ko, Config) {
         var self = this;
         var appConstants = {
@@ -11,6 +11,7 @@ define(['ojs/ojcore', 'knockout', 'ojs/ojconfig'],
                 organizationId: ""
             }
         }
+        self.applicationMessages = ko.observableArray([]);
         
         // OLI NOTE: addition to get browser locale; set OJET locale
         getSetLanguage = function () {
@@ -36,12 +37,12 @@ define(['ojs/ojcore', 'knockout', 'ojs/ojconfig'],
         };
 
         showErrorMessage = function (summary, detail) {
-            self.applicationMessages([{
+            self.applicationMessages.push({
                 severity: "error",
                 summary: summary,
                 detail: detail,
                 autoTimeout: 10000
-            }]);
+            });
         };
 
         return {
