@@ -91,6 +91,7 @@ if(isset($data)&&$method=="POST") {
                 "name" => $name,
                 "type" => $type,
                 "type_name" => $type_name,
+                "category" => $category,
                 "details" => $details,
                 "quantity" => $quantity,
                 "quantity_taken" => $quantity_taken,

@@ -35,6 +35,7 @@ class Offer{
 		,o.name
 		,o.type
 		,t.name as type_name
+		,t.category
 		,o.details
 		,o.quantity
 		,o.quantity_taken
@@ -113,6 +114,7 @@ class Offer{
 		$this->name=$row['name'];
 		$this->type=$row['type'];
 		$this->type_name=$row['type_name'];
+		$this->category=$row['category'];
 		$this->details=$row['details'];
 		$this->quantity=$row['quantity'];
 		$this->quantity_taken=$row['quantity_taken'];
