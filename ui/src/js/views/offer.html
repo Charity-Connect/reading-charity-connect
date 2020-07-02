@@ -13,10 +13,10 @@
                 <div class="oj-helper-clearfix">
                     <div class="oj-flex sm-1x-row oj-sm-float-end">
                         <div class="oj-sm-padding-1x-horizontal">
-                            <oj-button id="cancelButton" on-oj-action='[[cancelButton]]'>
-                                <span>Cancel</span>
-                            </oj-button>
-                            <oj-button id="saveButton" on-oj-action='[[saveButton]]'
+								<oj-button id="cancelButton" on-oj-action='[[cancelButton]]'>
+									<span data-bind="text: cancelButtonName"></span>
+								</oj-button>
+						<oj-button id="saveButton" on-oj-action='[[saveButton]]'
                                 disabled="[[disableSaveButton]]">
                                 <span>Save</span>
                             </oj-button>
@@ -45,16 +45,16 @@
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                 <oj-label id="editNameLabel"><strong>Offer Name:*</strong></oj-label>
                 <oj-input-text id="inputEditName" labelled-by="editNameLabel"
-                    value="{{offerSelected().name}}"
+                    value="{{offerName}}"
 					placeholder="Input name"
-					required="true"
+					required
                     title="Edit name input">
                 </oj-input-text>
             </div>
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                 <oj-label id="editQuantityLabel"><strong>Quantity:</strong></oj-label>
                 <oj-input-text id="inputEditQuantity" labelled-by="editQuantityLabel"
-                    value="{{offerSelected().quantity}}"
+                    value="{{quantity}}"
                     placeholder="Input quantity"
                     title="Edit quantity input">
                 </oj-input-text>
@@ -66,10 +66,10 @@
                 <oj-label id="editCategoryLabel"><strong>Category:*</strong></oj-label>
                 <oj-select-single id="selectEditCategory" labelled-by="editCategoryLabel"
                     data="[[offerTypesCategoriesDataProvider]]"
-                    value="{{offerTypesCategorySelected}}"
+                    value="{{category}}"
                     on-value-changed="[[handleOfferTypesCategoryChanged]]"                                
 					placeholder="Select category"
-					required="true"
+					required
                     title="Edit category select">
                 </oj-select-single>
             </div>
@@ -77,10 +77,10 @@
                 <oj-label id="editTypeLabel"><strong>Type:*</strong></oj-label>
                 <oj-select-single id="selectEditType" labelled-by="editTypeLabel"
                     data="[[offerTypesDataProvider]]"
-                    value="{{offerTypeSelected}}"
+                    value="{{type}}"
                     placeholder="Select type"
 					title="Edit type select"
-					required="true"
+					required
                     disabled="[[disableSelectEditType]]">
                 </oj-select-single>
             </div>
@@ -90,7 +90,7 @@
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                 <oj-label id="editPostcodeLabel"><strong>Postcode:</strong></oj-label>
                 <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"
-                    value="{{offerSelected().postcode}}"
+                    value="{{postcode}}"
                     placeholder="Input postcode"
                     title="Edit postcode input">
                 </oj-input-text>
@@ -98,7 +98,7 @@
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                 <oj-label id="editDistanceLabel"><strong>Distance:</strong></oj-label>
                 <oj-input-text id="inputEditDistance" labelled-by="editDistanceLabel"
-                    value="{{offerSelected().distance}}"
+                    value="{{distance}}"
                     placeholder="Input distance"
                     title="Edit distance input">
                 </oj-input-text>
@@ -112,7 +112,8 @@
                     keyboard-edit='disabled'
                     date-picker.footer-layout=''
                     min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                
-                    value="{{dateAvailableConvertor}}"
+					value="{{startDate}}"
+					converter="[[dateConverter]]"
                     placeholder="Input date available"                                
                     title="Pick date available">
                 </oj-input-date>
@@ -123,7 +124,8 @@
                     keyboard-edit='disabled'
                     date-picker.footer-layout=''
                     min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                
-                    value="{{dateEndConvertor}}"
+                    value="{{endDate}}"
+					converter="[[dateConverter]]"
                     placeholder="Input date end"                                
                     title="Pick date end">
                 </oj-input-date>                            
@@ -133,16 +135,16 @@
         <oj-label id="editOfferNotesLabel"><strong>Offer Notes:</strong></oj-label>
         <oj-text-area id="textareaEditOfferNotes" class="oj-form-control-full-width"
             labelled-by="editOfferNotesLabel"
-            value="{{offerRowSelected().length ? offerSelected().details : ''}}"
+            value="{{notes}}"
             placeholder="Input offer notes"
             title="Edit offer notes textarea"
             rows="5">                                
         </oj-text-area>  
          <!-- // if Edit Creation and Update dates are shown -->                  
          <div id="datesInformation" class="datesPlaceholders">
-            <oj-bind-if test="[[offerRowSelected().length]]">
+            <oj-bind-if test="[[offerId!=null]]">
                 <hr />  
-                <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{offerSelected().update_date}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{offerSelected().updated_by}}"></oj-bind-text></oj-label>
+                <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{updateDate}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{updatedBy}}"></oj-bind-text></oj-label>
             </oj-bind-if> 
         </div>
     </div>
