@@ -87,6 +87,10 @@ class Offer{
 			])){
 			$this->id=$this->connection->lastInsertId();
 			Audit::add($this->connection,"create","offer",$this->id,null,$this->name);
+			$this->creation_date=date("Y-m-d H:i:s");
+			$this->created_by=$_SESSION['display_name'];
+			$this->update_date=date("Y-m-d H:i:s");
+			$this->updated_by=$_SESSION['display_name'];
 			return $this->id;
 		} else {
 			return -1;

@@ -29,7 +29,11 @@ if(isset($data)&&$method=="POST") {
 				"type" => $offer_type->type,
 				"category" => $offer_type->category,
 				"default_text" => $offer_type->default_text,
-				"active" => $offer_type->active
+				"active" => $offer_type->active,
+				"creation_date" => $offer_type->creation_date,
+				"created_by" => $offer_type->created_by,
+				"update_date" => $offer_type->update_date,
+				"updated_by" => $offer_type->updated_by
 				);
 		echo json_encode($offer_type_arr);
 

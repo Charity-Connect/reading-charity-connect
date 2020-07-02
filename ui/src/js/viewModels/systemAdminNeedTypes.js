@@ -29,7 +29,7 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                     self.needDetailName = ko.observable();
                     self.needDetailCategory = ko.observable();
                     self.needDetailDefaultText = ko.observable();
-                    self.needDetailActive = ko.observableArray([]);
+                    self.needDetailActive = ko.observableArray(["active"]);
                     self.needTypesDataProvider = ko.observable();
 
                     self.needTypesTableColumns = [
@@ -51,7 +51,7 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                             // big reset!
                             self.needTypeRowSelected([]);
                             self.needTypeSelected("");
-                            populateNeedData({});
+                            populateNewNeedData();
                             return true;
                         }
                         if (self.needTypeRowSelected().length) {
@@ -66,9 +66,19 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                         self.needDetailCategory(params.category);
                         self.needDetailDefaultText(params.default_text);
                         self.needDetailActive([]);
-                        if (params.active === "Y") {
+                        if (params.active === "Y"||!params.hasOwnProperty("active")) {
                             self.needDetailActive(["active"]);
                         }
+
+                    }
+                    function populateNewNeedData()
+                    {
+                        self.needDetailType("");
+                        self.needDetailName("");
+                        self.needDetailCategory("");
+                        self.needDetailDefaultText("");
+                        self.needDetailActive([]);
+                            self.needDetailActive(["active"]);
 
                     }
                     var primaryHandlerLogic = function () {
@@ -115,7 +125,7 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                                 "name": self.needDetailName(),
                                 "type": self.needDetailType(),
                                 "category": self.needDetailCategory(),
-                                "default_text": self.needDetailDefaultText(),
+                                "default_text": self.needDetailDefaultText().length>0?self.needDetailDefaultText():"",
                                 "active": (self.needDetailActive().length > 0) ? "Y" : "N"
                             };
                         return $.when(restClient.doPost('/rest/offer_types', needData)

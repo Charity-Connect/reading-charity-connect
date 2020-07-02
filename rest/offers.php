@@ -49,7 +49,11 @@ if(isset($data)&&$method=="POST") {
                     "date_available" => $offer->date_available,
                     "date_end" => $offer->date_end,
                     "postcode" => $offer->postcode,
-                    "distance" => $offer->distance
+                    "distance" => $offer->distance,
+					"creation_date" => $offer->creation_date,
+					"created_by" => $offer->created_by,
+					"update_date" => $offer->update_date,
+					"updated_by" => $offer->updated_by
                     );
             echo json_encode($offer_arr);
 

@@ -57,6 +57,10 @@ class ClientNeed{
 
 			$this->id=$this->connection->lastInsertId();
 			Audit::add($this->connection,"create","client_need",$this->id,null,$this->type);
+			$this->creation_date=date("Y-m-d H:i:s");
+			$this->created_by=$_SESSION['display_name'];
+			$this->update_date=date("Y-m-d H:i:s");
+			$this->updated_by=$_SESSION['display_name'];
 
 			$sql="select o.id,o.organization_id,o.latitude as offer_latitude,o.longitude as offer_longitude, o.distance,c.latitude as client_latitude,o.longitude as client_longitude
 			from clients c, offers o, client_needs n

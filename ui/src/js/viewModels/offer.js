@@ -99,7 +99,9 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					self.populateResponse=function(response){
 						self.offerName(response.name);
 						self.quantity(response.quantity);
-						self.category(response.category);
+						if(response.hasOwnProperty('category')){
+							self.category(response.category);
+						}
 						self.typeVal=response.type;
 						self.postcode(response.postcode);
 						self.distance(response.distance);
