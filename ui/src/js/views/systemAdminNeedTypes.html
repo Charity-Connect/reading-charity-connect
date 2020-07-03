@@ -80,7 +80,7 @@
                         </div>                    
                         <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">
-                                <oj-button id="saveButton" class="oj-sm-float-end"
+                                <oj-button id="saveButton" chroming='callToAction' class="oj-sm-float-end"
                                         on-oj-action='[[saveButton]]'>
                                         <span>Save</span>
                                     </oj-button>
@@ -157,6 +157,15 @@
                              </div>
 
                         </div>
+
+                        <oj-bind-if test="[[needTypeRowSelected().length]]">
+                            <div id="datesInformation" class="datesPlaceholders">
+                                
+                                    <hr />  
+                                    <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{needUpdateDate}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{needUpdatedBy}}"></oj-bind-text></oj-label>
+
+                            </div>
+                        </oj-bind-if>
 
                      </oj-form-layout>
 

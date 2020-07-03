@@ -30,6 +30,8 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','re
                     self.orgDetailaddress = ko.observable();
                     self.orgDetailphone = ko.observable();
                     self.organizationsDataProvider = ko.observable();
+                    self.orgUpdateDate= ko.observable("");
+					self.orgUpdatedBy= ko.observable("");
 
                     self.organizationsTableColumns = [
                         {headerText: 'Name', field: "name"},
@@ -59,6 +61,13 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','re
                          self.orgDetailname(params.name);
                          self.orgDetailaddress(params.address);
                          self.orgDetailphone(params.phone);
+                         if(params.update_date){
+							updateDt=new Date(params.update_date.replace(/-/g, '/'));
+							self.orgUpdateDate(updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB"));
+						} else {
+							self.orgUpdateDate("unknown");
+						}
+                         self.orgUpdatedBy(params.updated_by);
                      }
 
                     var primaryHandlerLogic = function () {
