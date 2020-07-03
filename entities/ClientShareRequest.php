@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__.'/Audit.php';
+require_once __DIR__.'/Client.php';
+require_once __DIR__.'/UserOrganization.php';
 class ClientShareRequest{
 
 	private $connection;
@@ -47,29 +49,48 @@ class ClientShareRequest{
 
 
 	public function create(){
+		global $site_address;
+		$stmt= $this->connection->prepare("SELECT 1 from client_share_requests where organization_id=:organization_id and 
+		requesting_organization_id=:requesting_organization_id and client_id=:client_id and approved is NULL");
+		$stmt->execute(['organization_id'=>$this->organization_id,
+		'requesting_organization_id'=>$this->requesting_organization_id,
+		'client_id'=>$this->client_id
+		]);
+		if($stmt->rowCount()==0){
+			$sql = "INSERT INTO client_share_requests (organization_id,requesting_organization_id,client_id,notes,approved,created_by,updated_by) values
+			(:organization_id,:requesting_organization_id,:client_id,:notes,:approved,:user_id,:user_id)";
+			$stmt= $this->connection->prepare($sql);
+			if( $stmt->execute(['organization_id'=>$this->organization_id
+				,'requesting_organization_id'=>$this->requesting_organization_id
+				,'client_id'=>$this->client_id
+				,'approved'=>$this->approved
+				,'notes'=>$this->notes
+				,'user_id'=>$_SESSION['id']
+				])){
+				$this->id=$this->connection->lastInsertId();
+				Audit::add($this->connection,"create","client_share_request",$this->id);
+				$this->creation_date=date("Y-m-d H:i:s");
+				$this->created_by=$_SESSION['display_name'];
+				$this->update_date=date("Y-m-d H:i:s");
+				$this->updated_by=$_SESSION['display_name'];
+				
+				$matchedClient=new Client($this->connection);
+				$matchedClient->forceRead($this->client_id);
 
-		$sql = "INSERT INTO client_share_requests (organization_id,requesting_organization_id,client_id,notes,approved,created_by,updated_by) values
-(:organization_id,:requesting_organization_id,:client_id,:notes,:approved,:user_id,:user_id)";
-		$stmt= $this->connection->prepare($sql);
-		if( $stmt->execute(['organization_id'=>$this->organization_id
-			,'requesting_organization_id'=>$this->requesting_organization_id
-			,'client_id'=>$this->client_id
-			,'approved'=>$this->approved
-			,'notes'=>$this->notes
-			,'user_id'=>$_SESSION['id']
-			])){
-			$this->id=$this->connection->lastInsertId();
-			Audit::add($this->connection,"create","client_share_request",$this->id);
-			$this->creation_date=date("Y-m-d H:i:s");
-			$this->created_by=$_SESSION['display_name'];
-			$this->update_date=date("Y-m-d H:i:s");
-			$this->updated_by=$_SESSION['display_name'];
+				$user_organization = new UserOrganization($this->connection);
+				$stmt=$user_organization->readAllClientShareApprovers($this->organization_id);
 
-			return $this->id;
+				$messageSubject=get_string("client_share_subject",array("%CLIENT_NAME%"=>$matchedClient->name));
+				$messageString=get_string("client_share_body",array("%SOURCE_ORGANISATION%"=>$_SESSION["organization_name"],"%CLIENT_NAME%"=>$matchedClient->name,"%LINK%"=>$site_address."/ui/index.html?root=requests"));
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+					sendHtmlMail($row['email'],$messageSubject,$messageString);
+				}
+				return "success";
+			}
 		} else {
-			return -1;
+			return "duplicate";
 		}
-
+		return false;
 	}
 	public function readAll(){
 		if(is_admin()&&$_SESSION["view_all"]){

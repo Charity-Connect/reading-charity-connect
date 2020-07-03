@@ -336,34 +336,14 @@ class Client{
 			if(count($matchedPeople)!=1){
 				return false;
 			} else {
-
-
 				$shareRequest = new ClientShareRequest($this->connection);
 				$shareRequest->organization_id=$organization_id;
 				$shareRequest->requesting_organization_id=$_SESSION["organization_id"];
 				$shareRequest->client_id=$id;
 				$shareRequest->notes=$notes;
-				$shareRequest->create();
-
-				$matchedClient=new Client($this->connection);
-				$matchedClient->forceRead($id);
-
-				$user_organization = new UserOrganization($this->connection);
-				$stmt=$user_organization->readAllClientShareApprovers($organization_id);
-
-				$messageSubject=get_string("client_share_subject",array("%CLIENT_NAME%"=>$matchedClient->name));
-				$messageString=get_string("client_share_body",array("%SOURCE_ORGANISATION%"=>$_SESSION["organization_name"],"%CLIENT_NAME%"=>$matchedClient->name,"%LINK%"=>$site_address."/ui/index.html?root=requests"));
-				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-					sendHtmlMail($row['email'],$messageSubject,$messageString);
-				}
-
-				return true;
-
+				return $shareRequest->create();
 			}
-
-		} else {
-			return false;
 		}
+		return false;
 	}
-
 }

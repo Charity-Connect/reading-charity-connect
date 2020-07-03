@@ -35,51 +35,51 @@ $method = $_SERVER['REQUEST_METHOD'];
         	echo "{\"count\":0}";
         }
       } else if($action=="duplicate_request"){
-    	$id = $data['id'];
-    	$organization_id = $data['organization_id'];
-    	if($client->requestAccess($id,$organization_id,$client->notes)){
-			echo '{"status": "success"}';
-    	} else {
-			echo '{"status": "failed"}';
-    	}
+        $id = $data['id'];
+        $organization_id = $data['organization_id'];
+        if($status = $client->requestAccess($id,$organization_id,$client->notes)){
+          echo '{"message": "'.$status.'"}'; // if there is at least one duplicate
+        } else {
+          echo '{"message": "error"}'; // if there aren't any duplicates
+        }
       }
     } else {
 
-		if(isset($data['id'])){
-			$client->id = $data['id'];
-			if($client->update()){
-				$client->read();
-				echo json_encode($client);
-			}else{
-				echo '{';
-					echo '"message": "Unable to update client."';
-				echo '}';
-			}
+      if(isset($data['id'])){
+        $client->id = $data['id'];
+        if($client->update()){
+          $client->read();
+          echo json_encode($client);
+        }else{
+          echo '{';
+            echo '"message": "Unable to update client."';
+          echo '}';
+        }
 
-		} else {
-		$id=$client->create();
-			if($id>0){
-				$client_arr  = array(
-						"id" => $client->id,
-						"name" => $client->name,
-						"address" => $client->address,
-						"postcode" => $client->postcode,
-						"phone" => $client->phone,
-						"email" => $client->email,
-						"notes" => $client->notes,
-						"creation_date" => $client->creation_date,
-						"created_by" => $client->created_by,
-						"update_date" => $client->update_date,
-						"updated_by" => $client->updated_by
-								);
-				echo json_encode($client_arr);
+      } else {
+        $id=$client->create();
+        if($id>0){
+          $client_arr  = array(
+              "id" => $client->id,
+              "name" => $client->name,
+              "address" => $client->address,
+              "postcode" => $client->postcode,
+              "phone" => $client->phone,
+              "email" => $client->email,
+              "notes" => $client->notes,
+              "creation_date" => $client->creation_date,
+              "created_by" => $client->created_by,
+              "update_date" => $client->update_date,
+              "updated_by" => $client->updated_by
+                  );
+          echo json_encode($client_arr);
 
-			}else{
-				echo '{';
-					echo '"message": "Unable to create client."';
-				echo '}';
-			}
-		}
+        }else{
+          echo '{';
+            echo '"message": "Unable to create client."';
+          echo '}';
+        }
+      }
 
     }
 
