@@ -9,7 +9,7 @@
  */
 define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojselectcombobox', 'ojs/ojlistview', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
-    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
+    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol','ojs/ojvalidation-datetime'],
         function (app,Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider, ResponsiveUtils, ResponsiveKnockoutUtils) {
 
             function RequestsViewModel() {
@@ -34,7 +34,14 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                         var arrayDataSource = new oj.ArrayTableDataSource(requestsValues, {idAttribute: 'id'});
                         arrayDataSource.sort(sortCriteria);
                         self.requestsDataProvider(new oj.PagingTableDataSource(arrayDataSource));
-                    };
+					};
+					
+					self.dateConverter = ko.observable(oj.Validation.converterFactory(oj.ConverterFactory.CONVERTER_TYPE_DATETIME).
+					createConverter(
+					{
+					  pattern : "dd/MM/yyyy"
+					}));
+
 
                     self.requestsValues = ko.observableArray();
                     self.renderer1 = oj.KnockoutTemplateUtils.getRenderer("decisionMade_tmpl", true);

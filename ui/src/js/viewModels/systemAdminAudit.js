@@ -9,7 +9,8 @@
  */
 define(['utils','ojs/ojcore','ojs/ojconverterutils-i18n', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
-    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset','ojs/ojformlayout','ojs/ojdatetimepicker'],
+	'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource'
+	, 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset','ojs/ojformlayout','ojs/ojdatetimepicker','ojs/ojvalidation-datetime'],
         function (utils,oj,ConverterUtilsI18n, ko, $, accUtils, restClient,KnockoutTemplateUtils,ArrayDataProvider) {
 
             function AdminViewModel() {
@@ -20,6 +21,13 @@ define(['utils','ojs/ojcore','ojs/ojconverterutils-i18n', 'knockout', 'jquery', 
 					var dat= new Date(this.getTime() - this.getTimezoneOffset() * 60000)
 					return dat.toISOString().substr(0,10); 
 				};
+
+				self.dateConverter = ko.observable(oj.Validation.converterFactory(oj.ConverterFactory.CONVERTER_TYPE_DATETIME).
+				createConverter(
+				{
+				  pattern : "dd/MM/yyyy"
+				}));
+
                 
                 self.postTextColor = ko.observable();
                 self.postText = ko.observable();
