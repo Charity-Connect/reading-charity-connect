@@ -107,7 +107,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 						self.distance(response.distance);
 						self.startDate(response.date_available);
 						self.endDate(response.date_end);
-						self.notes(response.notes);
+						self.notes(response.details);
 						if(response.update_date){
 							updateDt=new Date(response.update_date.replace(/-/g, '/'));
 							self.updateDate(updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB"));
@@ -234,7 +234,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             return $.when(restClient.doGet('/rest/offers/'+self.offerId())
                                 .then(
                                     success = function (response) {
-										console.log(response);
+                                        console.log(response);
 										self.populateResponse(response);
                                             var dateAvailableCleansed;
                                             var dateAvailableCleansedLocale;

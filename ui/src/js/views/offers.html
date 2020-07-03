@@ -31,7 +31,7 @@
                         </div>                    
                         <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">     
-								<oj-button id="addOfferButton" class="oj-sm-float-end" on-oj-action='[[addOffer]]'>
+								<oj-button id="addOfferButton" class="oj-sm-float-end" chroming='callToAction' on-oj-action='[[addOffer]]'>
                                     Add Offer
                                 </oj-button>
                             </div>
@@ -52,7 +52,7 @@
                 </div>
             </div>
             
-            <oj-bind-if test="[[showPanel()]]">
+<!--             <oj-bind-if test="[[showPanel()]]">
                 <div class="oj-panel oj-panel-alt2">
                     <div class="oj-flex sm-1x-row">
                         <div class="oj-sm-padding-1x-horizontal oj-flex-item">
@@ -186,7 +186,7 @@
                         title="Edit offer notes textarea"
                         rows="5">                                
                     </oj-text-area>  
-                     <!-- // if Edit Creation and Update dates are shown -->                  
+                     // if Edit Creation and Update dates are shown              
                      <div id="datesInformation" class="datesPlaceholders">
                         <oj-bind-if test="[[offerRowSelected().length]]">
                             <hr />  
@@ -194,7 +194,7 @@
                         </oj-bind-if> 
                     </div>
                 </div>
-            </oj-bind-if>
+            </oj-bind-if> -->
         </oj-bind-if>            
     </oj-bind-if>
 </div>

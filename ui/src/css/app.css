@@ -165,3 +165,8 @@ ul.no-disc {
     align-self: flex-end;
     margin-top: 10px; 
   }
+
+  .hide-buttons {
+    margin-left: 10px; 
+
+  }
