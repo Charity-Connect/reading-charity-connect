@@ -31,6 +31,8 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                     self.needDetailDefaultText = ko.observable();
                     self.needDetailActive = ko.observableArray(["active"]);
                     self.needTypesDataProvider = ko.observable();
+                    self.needUpdateDate= ko.observable("");
+					self.needUpdatedBy= ko.observable("");
 
                     self.needTypesTableColumns = [
                         {headerText: 'Name', field: "name"},
@@ -69,6 +71,13 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                         if (params.active === "Y"||!params.hasOwnProperty("active")) {
                             self.needDetailActive(["active"]);
                         }
+                        if(params.update_date){
+							updateDt=new Date(params.update_date.replace(/-/g, '/'));
+							self.needUpdateDate(updateDt.toLocaleTimeString("en-GB",{hour: '2-digit', minute:'2-digit'})+" "+updateDt.toLocaleDateString("en-GB"));
+						} else {
+							self.needUpdateDate("unknown");
+						}
+                         self.needUpdatedBy(params.updated_by);
 
                     }
                     function populateNewNeedData()

@@ -74,7 +74,7 @@
                                     on-oj-action='[[deleteButton]]'>
                                         <span>Delete</span>
                                 </oj-button>
-                                <oj-button id="saveButton" class="oj-sm-float-end"
+                                <oj-button id="saveButton" chroming='callToAction' class="oj-sm-float-end oj-margin-end"
                                         on-oj-action='[[saveButton]]'>
                                         <span>Save</span>
                                  </oj-button>
@@ -124,6 +124,17 @@
                                 </div>
                             </div>
                         </div>
+
+                                   
+                        <oj-bind-if test="[[organizationRowSelected().length]]">
+                            <div id="datesInformation" class="datesPlaceholders">
+                                
+                                    <hr />  
+                                    <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{orgUpdateDate}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{orgUpdatedBy}}"></oj-bind-text></oj-label>
+
+                            </div>
+                        </oj-bind-if>
+
                     </oj-form-layout>
 
 
