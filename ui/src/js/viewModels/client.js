@@ -473,6 +473,12 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 								}
 
                             } else if (event.target.id === "editNeedSaveButton")  {
+								if($('#datepickerEditNeedDateNeeded')[0].value.length<1){
+									var element1 = document.getElementById('datepickerEditNeedDateNeeded');
+									element1.showMessages();
+									self.postText("Error: Need not saved.");
+									return;
+								}
                                 postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${self.clientId()}/client_needs`;
                                 responseJson = {
                                     type: $('#selectEditNeedType')[0].valueItem.data.value,

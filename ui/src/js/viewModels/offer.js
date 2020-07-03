@@ -154,11 +154,15 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 							var element1 = document.getElementById('inputEditName');
 							var element2 = document.getElementById('selectEditCategory');
 							var element3 = document.getElementById('selectEditType');
+							var element4 = document.getElementById('inputEditQuantity');
+							var element5 = document.getElementById('datepickerEditDateAvailable');
 
-							if(self.offerName().length<1||self.type().length<1){
+							if(self.offerName().length<1||self.type().length<1||self.quantity().length<1||self.startDate().length<1){
 								element1.showMessages();
 								element2.showMessages();
 								element3.showMessages();
+								element4.showMessages();
+								element5.showMessages();
 								self.postTextColor("red");
 								self.postText("Error: Offer not saved.");
 								self.fileContentPosted(true);
