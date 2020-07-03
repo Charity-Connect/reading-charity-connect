@@ -97,7 +97,7 @@
                                     </oj-button>
                                 </div>                            
                                 <div class="oj-sm-padding-1x-horizontal">
-                                    <oj-button id="saveButton" on-oj-action='[[saveButton]]'
+                                    <oj-button id="saveButton" chroming='callToAction' on-oj-action='[[saveButton]]'
                                         disabled="[[disableSaveButton]]">
                                         <span>Save</span>
                                     </oj-button>
@@ -274,9 +274,9 @@
                         </oj-dialog>
 
                         <div class="oj-helper-clearfix">
-                            <oj-button id="addNeedButton" class="oj-sm-float-end" disabled='[[addNeedButtonDisabled]]'
+                            <oj-button id="addNeedButton" class="oj-sm-float-end" chroming='callToAction' disabled='[[addNeedButtonDisabled]]'
                                        on-oj-action='[[addNeedButton]]'>
-                                <span>Add Need</span>
+                                <span>Add Request for Help</span>
                             </oj-button>
                         </div>
                     </div>
