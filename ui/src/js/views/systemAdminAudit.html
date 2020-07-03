@@ -28,6 +28,7 @@
 						max="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                
 						value="{{dateAvailableConvertor}}"
 						placeholder="Input audit date"                                
+						converter="[[dateConverter]]"
 						title="Pick audit date"
 						on-value-changed="[[handleAuditDateChanged]]"
 						>

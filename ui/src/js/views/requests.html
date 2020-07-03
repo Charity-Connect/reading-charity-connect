@@ -227,7 +227,8 @@
                                                        value="{{targetDateConvertor}}"
                                                        min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                                       
                                                        on-value-changed="[[handleTargetDateChanged]]"
-                                                       placeholder="Input target date"
+													   placeholder="Input target date"
+													   converter="[[dateConverter]]"
                                                        title="Pick target date">
                                         </oj-input-date>
                                         <hr />
@@ -375,7 +376,8 @@
                                                date-picker.footer-layout=''
                                                min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                               
                                                value="[[targetDateConvertor]]"
-                                               placeholder="[[targetDatePlaceholder]]"
+											   converter="[[dateConverter]]"
+											   placeholder="[[targetDatePlaceholder]]"
                                                title="Displays target date"
                                                readonly="true">
                                 </oj-input-date>
@@ -387,7 +389,8 @@
                                                date-picker.footer-layout=''
                                                min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                                                                              
                                                value="[[dateNeededConvertor]]"
-                                               placeholder="Display date needed"
+											   converter="[[dateConverter]]"
+											   placeholder="Display date needed"
                                                title="Displays date needed"
                                                readonly="true">
                                 </oj-input-date>

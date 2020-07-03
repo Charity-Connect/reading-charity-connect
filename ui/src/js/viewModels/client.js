@@ -9,7 +9,7 @@
  */
 define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
-    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol'],
+    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol','ojs/ojvalidation-datetime'],
         function (app,Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
 
             function ClientViewModel() {
@@ -36,7 +36,14 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                         {headerText: 'Need met?', field: "need_met"},
                         {headerText: 'Date Needed', field: 'clientDateNeeded', sortProperty: "clientDateNeededRaw"},
                         {headerText: 'Notes', field: "notes"}
-                    ];
+					];
+					
+					self.dateConverter = ko.observable(oj.Validation.converterFactory(oj.ConverterFactory.CONVERTER_TYPE_DATETIME).
+					createConverter(
+					{
+					  pattern : "dd/MM/yyyy"
+					}));
+
 
                     self.offerTypesCategoriesValues = ko.observableArray();
                     self.offerTypesCategoriesArray = ko.observableArray([]);
