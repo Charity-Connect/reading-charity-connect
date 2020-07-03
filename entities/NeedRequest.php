@@ -47,9 +47,9 @@ class NeedRequest{
 			,request.confirmation_code
 			,request.notes request_response_notes
 			,request.creation_date
-			,request.created_by
+			,COALESCE(create_user.display_name,'System') as created_by
 			,request.update_date
-			,request.updated_by
+			,COALESCE(update_user.display_name,'System') as updated_by 
 			,client_need.notes need_notes
 			,client.id as client_id
             ,if(STRCMP(request.agreed,'Y') = 0 ,client.name,IF(INSTR(client.name,' ')>0,LEFT(client.name,INSTR(client.name,' ')+1),client.name) )as client_name
@@ -64,6 +64,8 @@ class NeedRequest{
 			,org.name source_organization_name
 			,if(request.complete='Y','N',if(target_date<CURDATE(),'Y','N')) as overdue
 			from need_requests request
+			left join users create_user on create_user.id=request.created_by
+			left join users update_user on update_user.id=request.updated_by
 			, client_needs client_need
 			, clients client
 			, offer_types types
