@@ -207,7 +207,14 @@
                         </oj-bind-if>
                         <oj-bind-if test="[[requestSelected().need_notes == null]]">
                             None
-                        </oj-bind-if>
+						</oj-bind-if>
+						
+						                        <!-- // if Edit Creation and Update dates are shown -->                  
+												<div id="datesInformation" class="datesPlaceholders">
+													<hr />  
+													<oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{requestSelected().update_date}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{requestSelected().updated_by}}"></oj-bind-text></oj-label>
+												</div>
+						
                     </div>
                 </oj-bind-if>
 

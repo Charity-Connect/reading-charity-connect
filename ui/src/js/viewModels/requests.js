@@ -491,8 +491,12 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 														request_response_notes: null,
 														source_organization_name: this.requesting_organization_name,
 														type: "share",
-														type_name: "Share Client Details"
-												});
+														type_name: "Share Client Details",
+														creation_date: this.creation_date,
+														created_by: this.created_by,
+														update_date: updateDateDisplay,
+														updated_by: this.updated_by
+														});
 
 											});
 										}
