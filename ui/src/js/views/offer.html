@@ -52,9 +52,10 @@
                 </oj-input-text>
             </div>
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                <oj-label id="editQuantityLabel"><strong>Quantity:</strong></oj-label>
+                <oj-label id="editQuantityLabel"><strong>Quantity:*</strong></oj-label>
                 <oj-input-text id="inputEditQuantity" labelled-by="editQuantityLabel"
-                    value="{{quantity}}"
+					value="{{quantity}}"
+					required
                     placeholder="Input quantity"
                     title="Edit quantity input">
                 </oj-input-text>
@@ -107,12 +108,13 @@
         <hr />
         <div class="oj-flex sm-1x-row">
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
-                <oj-label id="editDateAvailableLabel"><strong>Start Date:</strong></oj-label>
+                <oj-label id="editDateAvailableLabel"><strong>Start Date:*</strong></oj-label>
                 <oj-input-date id="datepickerEditDateAvailable" labelled-by="editDateAvailableLabel"
                     keyboard-edit='disabled'
                     date-picker.footer-layout=''
                     min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                
 					value="{{startDate}}"
+					required
 					converter="[[dateConverter]]"
                     placeholder="Input date available"                                
                     title="Pick date available">

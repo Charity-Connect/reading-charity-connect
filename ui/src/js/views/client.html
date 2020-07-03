@@ -226,12 +226,13 @@
                                                   disabled="[[disableSelectEditType]]">
                                 </oj-select-single>
                                 <hr />
-                                <oj-label id="editNeedDateNeededLabel"><strong>Date Needed:</strong></oj-label>
+                                <oj-label id="editNeedDateNeededLabel"><strong>Date Needed:*</strong></oj-label>
                                 <oj-input-date id="datepickerEditNeedDateNeeded" labelled-by="editNeedDateNeededLabel"
                                                keyboard-edit='disabled'
                                                date-picker.footer-layout=''
                                                min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                                                                              
-                                               value="{{dateNeededConvertor}}"
+											   value="{{dateNeededConvertor}}"
+											   required
                                                placeholder="Select the date required"
                                                title="Pick date needed">
                                 </oj-input-date>
