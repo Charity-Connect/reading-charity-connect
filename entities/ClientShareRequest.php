@@ -36,10 +36,12 @@ class ClientShareRequest{
 		,c.approved
 		,c.notes
 		,c.creation_date
-		,c.created_by
+		,COALESCE(create_user.display_name,'System') as created_by
 		,c.update_date
-		,c.updated_by
+		,COALESCE(update_user.display_name,'System') as updated_by 
 		from client_share_requests c
+		left join users create_user on create_user.id=c.created_by
+			left join users update_user on update_user.id=c.updated_by
 		, organizations org
 		, organizations org2
 		, clients clients
