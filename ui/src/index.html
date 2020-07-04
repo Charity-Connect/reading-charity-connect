@@ -71,21 +71,25 @@
           <div class="oj-flex-bar-middle oj-sm-align-items-center">
             <span role="img" class="oj-icon demo-oracle-icon" title="Oracle Logo" alt="Oracle Logo"></span>
             <h1 class="oj-sm-only-hide oj-web-applayout-header-title" title="Application Name"><oj-bind-text value="[[appName]]"></oj-bind-text>:&nbsp;</h1>
+              
               <oj-menu-button id="organizationMenu" display="[[smScreen() ? 'icons' : 'all']]" chroming="half">
                 <span><oj-bind-text value="[[currentOrganization]]"></oj-bind-text></span>
-                <span slot="endIcon" :class="[[{'oj-icon demo-appheader-avatar': smScreen(), 'oj-component-icon oj-button-menu-dropdown-icon': !smScreen()}]]"></span>
-                <oj-menu id="orgMenu" slot="menu" style="display:none" on-oj-action="[[orgMenuItemAction]]">
-    <oj-bind-for-each data="[[organizationList]]">
-        <template>
-            <oj-option :id="[[$current.data.id]]" :value="[[$current.data.id]]" >
-                <span>
-                    <oj-bind-text value="[[$current.data.name]]"></oj-bind-text>
-                </span>
-            </oj-option>
-        </template>
-    </oj-bind-for-each>
-                </oj-menu>
+                <oj-bind-if test="[[organizationList.length > 1]]">  <!-- Drop down menu when org list is more than 1 -->
+                  <span slot="endIcon" :class="[[{'oj-icon demo-appheader-avatar': smScreen(), 'oj-component-icon oj-button-menu-dropdown-icon': !smScreen()}]]"></span>
+                  <oj-menu id="orgMenu" slot="menu" style="display:none" on-oj-action="[[orgMenuItemAction]]">
+                    <oj-bind-for-each data="[[organizationList]]">
+                        <template>
+                            <oj-option :id="[[$current.data.id]]" :value="[[$current.data.id]]" >
+                                <span>
+                                    <oj-bind-text value="[[$current.data.name]]"></oj-bind-text>
+                                </span>
+                            </oj-option>
+                        </template>
+                    </oj-bind-for-each>
+                  </oj-menu>
+                </oj-bind-if>
               </oj-menu-button>
+
           </div>
           <div class="oj-flex-bar-end">
             <!-- Responsive Toolbar -->
