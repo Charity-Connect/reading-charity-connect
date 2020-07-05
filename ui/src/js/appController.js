@@ -105,7 +105,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 									utils.appConstants.sysModuleConfig = {viewPath: 'views/systemAdminOrganizations.html'
 									, viewModelPath: 'viewModels/systemAdminOrganizations'
 									, params: {parentRouter: self.router}} ;
-                    self.organizationList.push({"id":-99,"name":"View All"});
+                    				self.organizationList.push({"id":-99,"name":"View All"});
 								}
 
 								if(user_confirmed_organizations.length>1){
@@ -113,6 +113,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 										self.organizationList.push({"id":org.organization_id,"name":org.organization_name});
 									});
 								}
+								console.log(self.organizationList());
 
 								self.setMenuEntries(response.organization_id);
 

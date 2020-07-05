@@ -285,10 +285,22 @@
                 </div>
                 <hr />
                 <oj-table id="clientNeedsTable" aria-label="table using array"
-                          columns="{{clientNeedsTableColumns}}"
-                          display='grid'
+				  columns="{{clientNeedsTableColumns}}"
 						  data="[[clientNeedsDataProvider]]"
 						  translations.msg-initializing="">
+						  <template slot="actionTemplate" data-oj-as="cell">
+							<oj-menu-button chroming="borderless" display='icons' on-oj-action="[[actionListener]]">Action
+								<oj-menu  slot="menu" on-oj-action="[[menuListener]]">
+									<oj-option value="edit" disabled="[[cell.row.need_met === 'Y']]">
+										<span class="oj-ux-ico-check" slot="startIcon"></span>Edit
+									</oj-option>
+									<oj-option value="delete" disabled="[[cell.row.need_met === 'Y']]">
+										<span class="oj-ux-ico-delete-circle" slot="startIcon"></span>Delete
+									</oj-option>
+								</oj-menu>
+							</oj-menu-button>
+						</template>
+		  
                 </oj-table>
                 <oj-paging-control id="clientNeedsPaging" data='[[clientNeedsDataProvider]]'
                                    page-size='5' slot='bottom'>

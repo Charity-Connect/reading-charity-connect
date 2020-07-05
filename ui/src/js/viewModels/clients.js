@@ -47,19 +47,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                     var primaryHandlerLogic = function() {
                         self.handleClientRowChanged = function (event) {
                             router.go('client/' + event.detail.value[0].startKey.row);
-                           /*if (event.detail.value[0] !== undefined) {
-								self.addClientButtonSelected([]);
-                                //find whether node exists based on selection
-                                function searchNodes(nameKey, myArray){
-                                    for (var i=0; i < myArray.length; i++) {
-                                        if (myArray[i].id === nameKey) {
-                                            return myArray[i];
-                                        }
-                                    }
-                                };
-                                var client=searchNodes(event.target.currentRow.rowKey, self.clientsValues());
-
-                            }*/
                         };
                     }();
 

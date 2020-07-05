@@ -22,7 +22,10 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 			    var router = Router.rootInstance;
 			    var stateParams = router.observableModuleConfig().params.ojRouter.parameters;
 				var clientIdIn=stateParams.clientId();
-				
+				self.clientNeedRowSelected = ko.observableArray();
+				self.dateNeededConvertor = ko.observable("");
+				self.needNotesUpdateVal = ko.observable("");
+
 
                 self.connected = function () {
                     accUtils.announce('Client page loaded.');
@@ -35,7 +38,12 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                         {headerText: 'Need type', field: "type_name"},
                         {headerText: 'Need met?', field: "need_met"},
                         {headerText: 'Date Needed', field: 'clientDateNeeded', sortProperty: "clientDateNeededRaw"},
-                        {headerText: 'Notes', field: "notes"}
+						{headerText: 'Notes', field: "notes",sortable:"disabled"},
+						{headerText:'Action',
+						headerStyl: "text-align: center;",
+						style:"text-align: center; padding-top: 0px; padding-bottom: 0px;",
+						template: "actionTemplate",
+						sortable:"disabled"}
 					];
 					
 					self.dateConverter = ko.observable(oj.Validation.converterFactory(oj.ConverterFactory.CONVERTER_TYPE_DATETIME).
@@ -68,6 +76,9 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					self.clientId=ko.observable(clientIdIn);
 					self.addNeedButtonDisabled=ko.observable(true);
 					self.cancelButtonName=ko.observable("Cancel");
+					self.currentType="";
+					self.currentNeedId="";
+					self.loadingNeed=false;
 					
 					self.populateResponse=function(response){
 						self.clientName(response.name);
@@ -107,7 +118,43 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					this.duplicatesDataProvider = ko.observable(new ArrayDataProvider([{field:"Organization"},{field:"Name"}],{ keyAttributes: 'field' }));
 
                     self.selectedRowDisplay = ko.observable("clientNeeds");
-                    self.addClientButtonSelected = ko.observableArray([]);
+					self.addClientButtonSelected = ko.observableArray([]);
+
+					this.actionListener = function (event) {
+						event.detail.originalEvent.stopPropagation();
+					  };
+				
+					self.menuListener = function (event, context) {
+						var rowIndex = self.clientNeedsValues.indexOf(context.row);
+						if (event.target.value === 'delete') {
+							return $.when(restClient.doDeleteJson('/rest/client_needs/'+context.row.id)
+							.then(
+								success = function (response) {
+									self.getClientNeedsAjax(self.clientId());
+								},
+								error = function (response) {
+									self.postText("Error: Client need not deleted.");
+									self.postTextColor("red");
+									console.log("client need not deleted");
+								}).then(function () {
+								self.fileContentPosted(true);
+								$("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+								});
+							})
+						);
+						} else if (event.target.value === 'edit') {
+						  console.log(context.row);
+						  self.loadingNeed=true;
+						  self.currentType=context.row.type;
+						  self.currentNeedId=context.row.id;
+						  self.offerTypesCategorySelected(context.row.category);
+						  self.dateNeededConvertor(context.row.clientDateNeededRaw.toISOString());
+						  self.needNotesUpdateVal(context.row.notes);
+						  document.getElementById('addNeedDialog').open();
+
+						}
+					  }.bind(this);
+				
 
                     var primaryHandlerLogic = function() {
 
@@ -143,6 +190,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                                 requesting_organization_id: this.requesting_organization_id,
                                                 type: this.type,
                                                 type_name: this.type_name,
+                                                category: this.category,
                                                 creation_date: this.creation_date,
                                                 created_by: this.created_by,
                                                 update_date: this.update_date,
@@ -167,7 +215,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
                         self.handleOfferTypesCategoryChanged = function(event) {
                             if (event.target.value !== "") {
-                                _getOfferTypesFromCategoryAjax(event.target.value);
+								_getOfferTypesFromCategoryAjax(event.target.value);
                                 self.disableSelectEditType(false);
                             }
                         };
@@ -191,34 +239,44 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                     };
                                     //sort nameValue alphabetically
                                     utils.sortAlphabetically(self.offerTypesArray(), "value");
-                                    self.offerTypesDataProvider(new ArrayDataProvider(self.offerTypesArray(), { keyAttributes: 'value' }));
+									self.offerTypesDataProvider(new ArrayDataProvider(self.offerTypesArray(), { keyAttributes: 'value' }));
+
                                 }).then(function () {
-                                    self.offerTypeSelected(self.offerTypesArray()[0].value);
+									if(self.currentType!=""){
+										self.offerTypeSelected(self.currentType);
+									} else {
+										self.offerTypeSelected(self.offerTypesArray()[0].value);
+									}
                                 })
                             );
                         };
                     }();
 
                     var addNeedDialogLogic = function() {
-                        self.dateNeededConvertor = ko.observable("");
-                        self.needNotesUpdateVal = ko.observable("");
 
                         self.addNeedButton = function () {
+							self.currentType="";
+							self.currentNeedId="";
+							self.loadingNeed=false;
                             document.getElementById('addNeedDialog').open();
                         };
 
                         self.handleOfferTypeChanged = function (event) {
                             if (event.target.value !== "") {
-                                _getOfferNotesFromTypeAjax(event.target.value);
-                               self.disableNeedSaveButton(false);
+								if(!self.loadingNeed){
+								_getOfferNotesFromTypeAjax(event.target.value);
+								}
+							   self.disableNeedSaveButton(false);
+							   // we set the end of loading needs here, as this is the last event on the load
+							   self.loadingNeed=false;
                             }
                         };
                         _getOfferNotesFromTypeAjax = function (code) {
                                 return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${code}`)
                                 .then(
                                     success = function (response) {
-                                        console.log(response.default_text);
-                                        self.needNotesUpdateVal(response.default_text);
+										self.needNotesUpdateVal(response.default_text);
+										
                                     },
                                     error = function (response) {
                                         console.log(`Offer Notes from Type "${code}" not loaded`);
