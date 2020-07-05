@@ -33,6 +33,26 @@ class ClientNeed{
 
 	}
 
+	private $base_query="SELECT cn.id
+	,cn.client_id
+	,cn.requesting_organization_id
+	,cn.type
+	, types.name type_name
+	,types.category
+	,cn.date_needed
+	,cn.need_met
+	,cn.fulfilling_need_request_id
+	,cn.notes
+	,cn.creation_date
+	,COALESCE(create_user.display_name,'System') as created_by
+	,cn.update_date
+	,COALESCE(update_user.display_name,'System') as updated_by 
+	from client_needs cn
+	left join users create_user on create_user.id=cn.created_by
+	left join users update_user on update_user.id=cn.updated_by
+	,offer_types types 
+	where types.type=cn.type ";
+
 	public function create(){
 
 		$stmt=$this->client->readOne($this->client_id);
@@ -62,35 +82,8 @@ class ClientNeed{
 			$this->update_date=date("Y-m-d H:i:s");
 			$this->updated_by=$_SESSION['display_name'];
 
-			$sql="select o.id,o.organization_id,o.latitude as offer_latitude,o.longitude as offer_longitude, o.distance,c.latitude as client_latitude,o.longitude as client_longitude
-			from clients c, offers o, client_needs n
-			where
-			c.id=n.client_id
-			and n.id=:id
-			and o.type=n.type
-			and o.quantity_taken<o.quantity
-			and n.date_needed between coalesce(o.date_available,n.date_needed) and coalesce(o.date_end,n.date_needed)";
-			$stmt = $this->connection->prepare($sql);
-			$stmt->execute(['id'=>$this->id]);
-
-			$oranization_list=array();
-			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-				if(!is_null($row['distance'])){
-					if(is_null($row['offer_latitude'])||is_null($row['offer_longitude'])||is_null($row['client_latitude'])||is_null($row['client_longitude'])){
-						continue;
-					} else {
-						$distance=distance($row['offer_latitude'],$row['offer_longitude'],$row['client_latitude'],$row['client_longitude'],"M");
-						if($distance>$row['distance']){
-							continue;
-						}
-					}
-				}
-				//array_push($oranization_list,	$row['organization_id']);
-			$oranization_list[$row['organization_id']]=$row['id'];
-			}
-
-			//$oranization_list=array_unique($oranization_list);
-			foreach($oranization_list as $org_id=>$off_id){
+			$offer_list=$this->getMatchingOffers();
+			foreach($offer_list as $org_id=>$off_id){
 
 				$need_request=new NeedRequest($this->connection);
 				$need_request->client_need_id=$this->id;
@@ -114,14 +107,54 @@ class ClientNeed{
 	}
 
 	}
+
+
+	public function getMatchingOffers(){
+		$sql="select o.id
+		,o.organization_id
+		,o.latitude as offer_latitude
+		,o.longitude as offer_longitude
+		, o.distance
+		,c.latitude as client_latitude
+		,o.longitude as client_longitude
+		from clients c
+		, offers o
+		, client_needs n
+		where
+		c.id=n.client_id
+		and n.id=:id
+		and o.type=n.type
+		and o.quantity_taken<o.quantity
+		and n.date_needed between coalesce(o.date_available,n.date_needed) and coalesce(o.date_end,n.date_needed)";
+		$stmt = $this->connection->prepare($sql);
+		$stmt->execute(['id'=>$this->id]);
+
+		$offer_list=array();
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+			if(!is_null($row['distance'])){
+				if(is_null($row['offer_latitude'])||is_null($row['offer_longitude'])||is_null($row['client_latitude'])||is_null($row['client_longitude'])){
+					continue;
+				} else {
+					$distance=distance($row['offer_latitude'],$row['offer_longitude'],$row['client_latitude'],$row['client_longitude'],"M");
+					if($distance>$row['distance']){
+						continue;
+					}
+				}
+			}
+		$offer_list[$row['organization_id']]=$row['id'];
+		}
+		return $offer_list;
+
+	}
 	public function readAll($client_id){
 		if(is_admin()){
-			$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type, types.name type_name,cn.date_needed,cn.need_met,cn.fulfilling_need_request_id,cn.notes,cn.creation_date,cn.created_by,cn.update_date,cn.updated_by from client_needs cn,offer_types types where types.type=cn.type and cn.client_id = :client_id ORDER BY cn.id";
+			$query =  $this->base_query."  
+			and cn.client_id = :client_id ORDER BY cn.id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['client_id'=>$client_id]);
 			return $stmt;
 		} else {
-			$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type, types.name type_name,cn.date_needed,cn.need_met,cn.fulfilling_need_request_id,cn.notes,cn.creation_date,cn.created_by,cn.update_date,cn.updated_by from client_needs cn, client_links l,offer_types types where types.type=cn.type and cn.client_id=:client_id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
+			$query = $this->base_query." and cn.client_id = :client_id and l.link_id=:organization_id ORDER BY cn.id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['organization_id'=>$_SESSION["organization_id"],'client_id'=>$client_id]);
 			return $stmt;
@@ -133,11 +166,12 @@ class ClientNeed{
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		$this->client_id=$row['client_id'];
 		$this->type=$row['type'];
+		$this->type_name=$row['type_name'];
+		$this->category=$row['category'];
 		$this->date_needed=$row['date_needed'];
 		$this->need_met=$row['need_met'];
 		$this->fulfilling_need_request_id=$row['fulfilling_need_request_id'];
 		$this->notes=$row['notes'];
-		$this->type_name=$row['type_name'];
 		$this->creation_date=$row['creation_date'];
 		$this->created_by=$row['created_by'];
 		$this->update_date=$row['update_date'];
@@ -146,12 +180,12 @@ class ClientNeed{
 
 	public function readOne($id){
 		if(is_admin()){
-			$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.fulfilling_need_request_id,cn.notes,cn.creation_date,cn.created_by,cn.update_date,cn.updated_by from client_needs cn,offer_types types where types.type=cn.type and cn.id=:id";
+			$query = $this->base_query." and cn.id=:id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['id'=>$id]);
 			return $stmt;
 		} else {
-			$query = "SELECT cn.id,cn.client_id,cn.requesting_organization_id,cn.type,types.name type_name,cn.date_needed,cn.need_met,cn.fulfilling_need_request_id,cn.notes,cn.creation_date,cn.created_by,cn.update_date,cn.updated_by from client_needs cn, client_links l,offer_types types where types.type=cn.type and cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
+			$query = $this->base_query." and cn.id=:id and cn.client_id=l.client_id and l.link_type='ORG' and l.link_id=:organization_id ORDER BY cn.id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
 			return $stmt;
@@ -160,14 +194,52 @@ class ClientNeed{
 	}
 
 	public function update(){
+		global $site_address;
+		global $ui_root;
+
+		$client_need_orig= new ClientNeed($this->connection);
+		$client_need_orig->id=$this->id;
+		$client_need_orig->read();
 
 		$stmt=$this->readOne($this->id);
 		if($stmt->rowCount()==1){
-			$sql = "UPDATE client_needs SET client_id=:client_id, type=:type, date_needed=:date_needed, need_met=:need_met,fulfilling_need_request_id=:fulfilling_need_request_id, notes=:notes,updated_by=:updated_by WHERE id=:id";
+			// can't update the type or date if it is already complete
+			if($client_need_orig->need_met=='Y' &&
+			 ($this->type!=$client_need_orig->type ||
+			 $this->date_needed!=$client_need_orig->date_needed) ){
+				 return false;
+			 }
+
+			$this->connection->beginTransaction();
+
+			$sql = "UPDATE client_needs SET  type=:type, date_needed=:date_needed, need_met=:need_met,fulfilling_need_request_id=:fulfilling_need_request_id, notes=:notes,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			if( $stmt->execute(['id'=>$this->id,'client_id'=>$this->client_id,'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'fulfilling_need_request_id'=>$this->fulfilling_need_request_id,'notes'=>$this->notes
+			if( $stmt->execute(['id'=>$this->id,'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'fulfilling_need_request_id'=>$this->fulfilling_need_request_id,'notes'=>$this->notes
 			,'updated_by'=>$_SESSION['id']])){
-				return Audit::add($this->connection,"update","client_need",$this->id,null,$this->type);
+				// if the type or the date has changed, delete the old need requests and create new ones
+				if($this->type!=$client_need_orig->type ||
+				 $this->date_needed!=$client_need_orig->date_needed ){
+
+					$sql = "DELETE FROM need_requests WHERE client_need_id=:id";
+					$stmt = $this->connection->prepare($sql);
+					$stmt->execute(['id'=>$this->id]);
+		
+					$offer_list=$this->getMatchingOffers();
+					foreach($offer_list as $org_id=>$off_id){
+						$need_request=new NeedRequest($this->connection);
+						$need_request->client_need_id=$this->id;
+						$need_request->request_organization_id=$org_id;
+						$need_request->offer_id=$off_id;
+						$need_request->client_id=$this->client_id;
+						$need_request->type=$this->type;
+						$need_request->need_notes=$this->notes;
+						$need_request->date_needed=$this->date_needed;
+						$need_request->create();		
+					}
+				 }
+	
+				Audit::add($this->connection,"update","client_need",$this->id,null,$this->type);
+				return $this->connection->commit();
 			}
 		} 
 		return false;
