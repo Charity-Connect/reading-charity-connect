@@ -40,7 +40,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                         {headerText: 'Date Needed', field: 'clientDateNeeded', sortProperty: "clientDateNeededRaw"},
 						{headerText: 'Notes', field: "notes",sortable:"disabled"},
 						{headerText:'Action',
-						headerStyl: "text-align: center;",
+						headerStyle: "text-align: center;",
 						style:"text-align: center; padding-top: 0px; padding-bottom: 0px;",
 						template: "actionTemplate",
 						sortable:"disabled"}
