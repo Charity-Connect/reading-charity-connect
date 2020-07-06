@@ -356,12 +356,14 @@
                                 <oj-input-text id="inputEditPhone" labelled-by="phoneNameLabel"
                                                value="[[requestSelected().client_phone]]"
                                                title="Displays phone"
+											   placeholder="none"
                                                readonly="true">
                                 </oj-input-text>
                                 <oj-label id="emailLabel"><strong>Email address:</strong></oj-label>
                                 <oj-input-text id="inputEditEmail" labelled-by="emailLabel"
                                                value="[[requestSelected().client_email]]"
                                                title="Displays email"
+											   placeholder="none"
                                                readonly="true">
                                 </oj-input-text>
                             </div>
@@ -389,8 +391,9 @@
                                                min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                               
                                                value="[[targetDateConvertor]]"
 											   converter="[[dateConverter]]"
-											   placeholder="[[targetDatePlaceholder]]"
-                                               title="Pick target date"
+											   title="Pick target date"
+											   placeholder="none"
+											   readonly="[[!(requestSelected().requestSelectedDecision === 'Accepted'||requestSelected().requestSelectedDecision === 'Overdue')]]"
                                                on-value-changed="[[handleTargetDateChangedInline]]">
                                 </oj-input-date>
                             </div>
@@ -434,8 +437,9 @@
                                       value="{{requestNotesUpdateVal}}"
                                       raw-value="{{requestNotesUpdateRawVal}}"
                                       on-raw-value-changed="[[handleRequestNotesUpdateChanged]]"
-                                      placeholder="Input request notes"
-                                      title="Edit request notes textarea"
+                                      placeholder="none"
+									  title="Edit request notes textarea"
+									  readonly="[[!(requestSelected().requestSelectedDecision === 'Accepted'||requestSelected().requestSelectedDecision === 'Overdue')]]"
                                       rows="5">
                         </oj-text-area>
                         <!-- // if Edit Creation and Update dates are shown -->                  

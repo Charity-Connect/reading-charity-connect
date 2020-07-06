@@ -197,7 +197,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                     }();
 
                     var agreeDialogLogic = function() {
-                        self.targetDatePlaceholder = ko.observable("Please select a decision");
                         self.handleSelectedDecisionChanged = function (event) {
                             if (event.detail.updatedFrom === "internal") {
                                 //button toggle
@@ -233,10 +232,8 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 if ((self.requestSelected().requestSelectedDecision === 'Rejected') || (self.requestSelected().requestSelectedDecision === 'Unaccepted')) {
                                     if (self.selectedDecisionDisplay()[0] === 'decisionAgreed') {
                                         document.getElementById('agreeDialog').open();
-                                        self.targetDatePlaceholder("Please select target date");
                                     } else if (!self.selectedDecisionDisplay()[0]) {
                                         self.targetDateConvertor("");
-                                        self.targetDatePlaceholder("Please select a decision");
                                         self.requestNotesUpdateVal(self.requestSelected().request_response_notes);
                                     };
                                 };
@@ -275,7 +272,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 self.selectedDecisionDisplay([]);
                                 //same as self.handleSelectedDecisionChanged() (!self.selectedDecisionDisplay()[0]) above
                                 self.targetDateConvertor("");
-                                self.targetDatePlaceholder("Please select a decision");
                                 self.requestNotesUpdateVal(self.requestSelected().request_response_notes);
                             } else if (event.target.id === "saveButton") {
                                 self.agreedStatus("Y");
