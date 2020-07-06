@@ -187,9 +187,9 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 date_available: self.startDate(),
                                 date_end: self.endDate(),
                                 details: self.notes().length<1?" ":self.notes(),
-                                distance: self.distance(),
+                                distance: self.distance()===""?null:self.distance(),
                                 name: self.offerName(),
-                                postcode: self.postcode(),
+                                postcode: self.postcode()===""?null:self.postcode(),
                                 quantity: self.quantity(),
                                 type: self.type()
 							};
