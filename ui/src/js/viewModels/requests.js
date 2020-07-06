@@ -259,6 +259,15 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 self.disableSaveButton(true);
                             }
                         };
+                        self.disableSaveButtonInline = ko.observable(true);
+                        self.handleTargetDateChangedInline = function (event) {
+                            // target date when loaded is in UTC, when different date selected it is in the form YYYY-MM-DD, so we check for length because UTC is longer and includes time
+                            if (event.target.value.length > 10) {
+                                self.disableSaveButtonInline(true);
+                            } else {
+                                self.disableSaveButtonInline(false);
+                            }
+                        };
                         self.closeAgreeModalButton = function (event) {
                             if (event.target.id === "cancelButton") {
                                 self.selectedDecisionDisplay([]);
@@ -271,6 +280,10 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 self.saveButton();
                             }
                             document.getElementById('agreeDialog').close();
+                        };
+                        self.handleSaveButtonInline = function (event) {
+                            self.agreedStatus("Y");
+                            self.saveButton();
                         };
                     }();
 

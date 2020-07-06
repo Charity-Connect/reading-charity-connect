@@ -275,6 +275,11 @@
                                                 </oj-buttonset-many>
                                             </oj-bind-if>
                                             <oj-bind-if test="[[requestSelected().requestSelectedDecision === 'Accepted'||requestSelected().requestSelectedDecision === 'Overdue']]">
+                                                <oj-button id="saveButtonInline"
+                                                            disabled="[[disableSaveButtonInline]]"
+                                                            on-oj-action="[[handleSaveButtonInline]]">
+                                                    <span>Save</span>
+                                                </oj-button>
                                                 <oj-buttonset-many id="acceptedOptions" class="hide-buttons"
                                                                    disabled="[[disableOptionButtons]]"
                                                                    value="{{selectedDecisionDisplay}}"
@@ -385,8 +390,8 @@
                                                value="[[targetDateConvertor]]"
 											   converter="[[dateConverter]]"
 											   placeholder="[[targetDatePlaceholder]]"
-                                               title="Displays target date"
-                                               readonly="true">
+                                               title="Pick target date"
+                                               on-value-changed="[[handleTargetDateChangedInline]]">
                                 </oj-input-date>
                             </div>
                             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
