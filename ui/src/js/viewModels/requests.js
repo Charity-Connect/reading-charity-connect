@@ -248,7 +248,9 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             //protect initial load
                             if (event.detail.originalEvent) {
                                 self.requestNotesUpdateVal(self.requestNotesUpdateRawVal());
+                                self.disableSaveButtonInline(false);
                             }
+                            
                         };
 
                         self.disableSaveButton = ko.observable(true);

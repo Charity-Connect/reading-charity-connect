@@ -431,11 +431,12 @@
                         <oj-label id="editRequestNotesLabel"><strong>Notes:</strong></oj-label>
                         <oj-text-area id="textareaEditRequestNotes" class="oj-form-control-full-width"
                                       labelled-by="editRequestNotesLabel"
-                                      value="[[requestNotesUpdateVal]]"
-                                      placeholder="Display request notes"
-                                      title="Displays request notes"
-                                      readonly="[[selectedDecisionDisplay()[0] === 'decisionAgreed' ? false : true]]"
-                                      rows="5"> 
+                                      value="{{requestNotesUpdateVal}}"
+                                      raw-value="{{requestNotesUpdateRawVal}}"
+                                      on-raw-value-changed="[[handleRequestNotesUpdateChanged]]"
+                                      placeholder="Input request notes"
+                                      title="Edit request notes textarea"
+                                      rows="5">
                         </oj-text-area>
                         <!-- // if Edit Creation and Update dates are shown -->                  
                         <div id="datesInformation" class="datesPlaceholders">
