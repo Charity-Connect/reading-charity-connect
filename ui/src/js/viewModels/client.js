@@ -545,11 +545,21 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 									return;
 								}
                                 postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${self.clientId()}/client_needs`;
-                                responseJson = {
+								if(self.currentNeedId===""){
+									responseJson = {
                                     type: $('#selectEditNeedType')[0].valueItem.data.value,
                                     date_needed: _formatDate($('#datepickerEditNeedDateNeeded')[0].value),
                                     notes: $('#textareaEditNeedNotes')[0].value
-                                };
+								};
+								} else {
+									responseJson = {
+										id:self.currentNeedId,
+										type: $('#selectEditNeedType')[0].valueItem.data.value,
+										date_needed: _formatDate($('#datepickerEditNeedDateNeeded')[0].value),
+										notes: $('#textareaEditNeedNotes')[0].value
+									};
+	
+								}	
 								self.fileContentPosted(false);
 								self.disableSaveButton(true);
 								//POST /rest/need_requests - REST
