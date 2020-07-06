@@ -2,6 +2,8 @@
 require_once __DIR__.'/Audit.php';
 require_once __DIR__.'/Client.php';
 require_once __DIR__.'/NeedRequest.php';
+require_once __DIR__.'/UserOrganization.php';
+require_once __DIR__.'/OfferType.php';
 require_once __DIR__.'/../config/dbclass.php';
 
 class ClientNeed{
@@ -212,6 +214,14 @@ class ClientNeed{
 
 			$this->connection->beginTransaction();
 
+			$meeting_need=false;
+			if($client_need_orig->need_met=='N' 
+			&& $client_need_orig->fulfilling_need_request_id!=null 
+			&& ($this->type!=$client_need_orig->type ||$this->date_needed!=$client_need_orig->date_needed) ){
+				$meeting_need=new NeedRequest($this->connection);
+				$meeting_need->forceRead($client_need_orig->fulfilling_need_request_id);
+			}
+
 			$sql = "UPDATE client_needs SET  type=:type, date_needed=:date_needed, need_met=:need_met,fulfilling_need_request_id=:fulfilling_need_request_id, notes=:notes,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
 			if( $stmt->execute(['id'=>$this->id,'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'fulfilling_need_request_id'=>$this->fulfilling_need_request_id,'notes'=>$this->notes
@@ -239,7 +249,39 @@ class ClientNeed{
 				 }
 	
 				Audit::add($this->connection,"update","client_need",$this->id,null,$this->type);
-				return $this->connection->commit();
+				$success= $this->connection->commit();
+				if($success&& $meeting_need!=false){
+					
+					// someone had agreed to do this and we've changed it. Let them know.
+					$client = new Client($this->connection);
+					$client->id=$this->client_id;
+					$client->read();
+					$offer_type= new OfferType($this->connection);
+					$offer_type->type=$this->type;
+					$offer_type->read();
+					$user_organization= new UserOrganization($this->connection);
+					$stmt=$user_organization->readAllNeedApprovers($meeting_need->request_organization_id);
+					while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+						echo "sending";
+						sendHtmlMail($row['email']
+						,get_string("need_req_changed_subject")
+						,get_string("need_req_changed_body"
+						,array("%LINK%"=>$site_address.$ui_root."index.html?root=requests%2F".$this->id
+										,"%USER_NAME%"=>$row['user_name']
+										,"%CLIENT_NAME%"=>$client->name
+										,"%SOURCE_ORG_NAME%"=>$_SESSION["organization_name"]
+										,"%REQUEST_TYPE_ORIG%"=>$meeting_need->type_name
+										,"%TARGET_DATE%"=>$meeting_need->target_date
+										,"%CLIENT_ADDRESS%"=>$client->address
+										,"%CLIENT_POSTCODE%"=>$client->postcode
+										,"%REQUEST_TYPE%"=>$offer_type->name
+										,"%DATE_NEEDED%"=>$this->date_needed
+										,"%NOTES%"=>$this->notes
+							)));
+					}
+	
+				}
+				return $success;
 			}
 		} 
 		return false;

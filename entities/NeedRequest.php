@@ -31,6 +31,7 @@ class NeedRequest{
 	public $update_date;
 	public $updated_by;
 	public $overdue;
+	private $force_read=false;
 
 	public function __construct($connection){
 		$this->connection = $connection;
@@ -227,18 +228,25 @@ class NeedRequest{
 		$this->updated_by=$row['updated_by'];
    }
 
+   public function forceRead($id){
+	$this->force_read=true;
+	$this->id=$id;
+	$this->read();
+}
+
+
 	public function readOne($id){
-		if(is_admin()&&$_SESSION["view_all"]){
+		if((is_admin()&&$_SESSION["view_all"])||$this->force_read){
 			$query =$this->base_query." and request.id=:id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['id'=>$id]);
-			return $stmt;
 		} else {
 			$query =$this->base_query." and request.organization_id=:organization_id and request.id=:id";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['id'=>$id,'organization_id'=>$_SESSION["organization_id"]]);
-			return $stmt;
 		}
+		$this->force_read=false;
+		return $stmt;
 
 	}
 
