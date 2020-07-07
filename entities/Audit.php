@@ -48,6 +48,7 @@ class Audit{
 		,'key_code'=>$key_code
 		,'name'=>$name
 		])){
+			$stmt->closeCursor();
 			return true;
 		} else {
 			print_r($connection->errorInfo());

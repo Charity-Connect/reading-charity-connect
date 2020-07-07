@@ -222,6 +222,25 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 })
                             );
                         };
+
+                        self.deleteButton = function () {
+                            return $.when(restClient.doDeleteJson('/rest/offers/'+self.offerId())
+                                .then(
+                                    success = function (response) {
+                                        router.go('offers');
+                                    },
+                                    error = function (response) {
+                                        self.postText("Error: Offer changes not deleted.");
+                                        self.postTextColor("red");
+                                        console.log("offer data not deleted");
+                                    }).then(function () {
+                                    self.fileContentPosted(true);
+                                    $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                        //self.disableSaveButton(false);
+                                    });
+                                })
+                            );
+                        };
                     }();
 
                     var getData = function () {
