@@ -189,6 +189,7 @@ class Offer{
 			// TODO: add a database transaction				
 			$stmt= $this->connection->prepare("DELETE FROM offers WHERE id=:id; DELETE FROM need_requests WHERE offer_id=:id");
 			if( $stmt->execute(['id'=>$this->id])){
+				$stmt->closeCursor();
 				return Audit::add($this->connection,"delete","offer",$this->id);
 			}
 			}

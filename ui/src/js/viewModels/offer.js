@@ -185,7 +185,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             var responseJson = {
                                 id: self.offerId(),
                                 date_available: self.startDate(),
-                                date_end: self.endDate(),
+                                date_end: self.endDate()===""?null:self.endDate(),
                                 details: self.notes().length<1?" ":self.notes(),
                                 distance: self.distance()===""?null:self.distance(),
                                 name: self.offerName(),
@@ -219,6 +219,25 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                     });
                                 }).then(function () {
                                     console.log(responseJson);
+                                })
+                            );
+                        };
+
+                        self.deleteButton = function () {
+                            return $.when(restClient.doDeleteJson('/rest/offers/'+self.offerId())
+                                .then(
+                                    success = function (response) {
+                                        router.go('offers');
+                                    },
+                                    error = function (response) {
+                                        self.postText("Error: Offer changes not deleted.");
+                                        self.postTextColor("red");
+                                        console.log("offer data not deleted");
+                                    }).then(function () {
+                                    self.fileContentPosted(true);
+                                    $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                        //self.disableSaveButton(false);
+                                    });
                                 })
                             );
                         };

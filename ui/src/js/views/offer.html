@@ -13,13 +13,16 @@
                 <div class="oj-helper-clearfix">
                     <div class="oj-flex sm-1x-row oj-sm-float-end">
                         <div class="oj-sm-padding-1x-horizontal">
-								<oj-button id="cancelButton" on-oj-action='[[cancelButton]]'>
-									<span data-bind="text: cancelButtonName"></span>
-								</oj-button>
-						<oj-button id="saveButton" chroming='callToAction' on-oj-action='[[saveButton]]'
+                            <oj-button id="cancelButton" on-oj-action='[[cancelButton]]'>
+                                <span data-bind="text: cancelButtonName"></span>
+                            </oj-button>
+						    <oj-button id="saveButton" chroming='callToAction' on-oj-action='[[saveButton]]'
                                 disabled="[[disableSaveButton]]">
                                 <span>Save</span>
                             </oj-button>
+                            <oj-button id="deleteButton" on-oj-action='[[deleteButton]]'>
+                                <span>Delete</span>
+                            </oj-button>                            
                         </div>
                     </div>
                 </div>
