@@ -307,7 +307,7 @@ class NeedRequest{
 				if(!$result){return false;}
 			}
 
-			if($this->complete=$orig_complete){
+			if($this->complete==$orig_complete){
 				$sql= "update client_needs set need_met=:complete where id=:client_need_id";
 				$stmt= $this->connection->prepare($sql);
 				$result= $stmt->execute(['complete'=>$this->complete, 'client_need_id'=>$client_need_id]);
