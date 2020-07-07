@@ -128,7 +128,7 @@ class ClientNeed{
 		and n.id=:id
 		and o.type=n.type
 		and o.quantity_taken<o.quantity
-		and trunc(n.date_needed) between trunc(o.date_available) and trunc(coalesce(o.date_end,n.date_needed+1))";
+		and date(n.date_needed) between date(o.date_available) and date(coalesce(o.date_end,n.date_needed))";
 		$stmt = $this->connection->prepare($sql);
 		$stmt->execute(['id'=>$this->id]);
 
