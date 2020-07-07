@@ -134,7 +134,7 @@ class ClientNeed{
 
 		$offer_list=array();
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-			if(!is_null($row['distance'])&&!is_null($row['offer_postcode'])){
+			if(!is_null($row['distance'])&&!is_null($row['offer_latitude'])){
 				if(is_null($row['offer_latitude'])||is_null($row['offer_longitude'])||is_null($row['client_latitude'])||is_null($row['client_longitude'])){
 					continue;
 				} else {
