@@ -185,7 +185,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             var responseJson = {
                                 id: self.offerId(),
                                 date_available: self.startDate(),
-                                date_end: self.endDate(),
+                                date_end: self.endDate()===""?null:self.endDate(),
                                 details: self.notes().length<1?" ":self.notes(),
                                 distance: self.distance()===""?null:self.distance(),
                                 name: self.offerName(),
