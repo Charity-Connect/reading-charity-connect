@@ -116,7 +116,7 @@ CREATE TABLE `offers` (
   `postcode` varchar(10) DEFAULT NULL,
   `latitude` decimal(10,8) DEFAULT NULL,
   `longitude` decimal(11,8) DEFAULT NULL,
-  `distance` decimal(10,5) DEFAULT NULL,
+  `distance` decimal(5,1) DEFAULT NULL,
   `creation_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` int(11) DEFAULT NULL,
   `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -139,6 +139,9 @@ REPLACE INTO `offer_types` (`type`, `name`, `category`, `default_text`, `active`
 ('company', 'Companionship visit', 'company', 'Suitable times: ', 'Y', '2020-06-30 09:51:46', 1, '2020-06-30 09:51:46', 1),
 ('cooking', 'Help with cooking', 'food', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('food_parcel', 'Food Parcel', 'food', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+('home', 'Home', 'befriending', '', 'Y', '2020-07-07 09:04:56', 1, '2020-07-07 09:04:56', 1),
+('OR1', 'CV help', 'benefits_advice', '', 'Y', '2020-07-07 09:07:43', 31, '2020-07-07 09:07:43', 31),
+('phone', 'Phone', 'befriending', '', 'Y', '2020-07-07 09:04:42', 1, '2020-07-07 09:04:42', 1),
 ('prescription_collection', 'Prescription Collection', 'medical', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
 ('readifood', 'ReadiFood Referral', 'food', 'Please complete the following fields so that we can submit the request automatically. Fields with a * next to them must be completed. Any optional fields not completed will be set to No.\n\n* Reason for food parcel request: \n\nHome Delivery (Y/N):\n\nFood Preferences\nNo Cooking Facilities (Y/N):\nVegetarian (Y/N):\nHalal (Y/N):\nDiabetic (Y/N):\nGluten Free (Y/N):\nOther:\n\n* Number of weeks (1-4):\n\nAdditional Items\nNappies (Y/N):\nNappy Size:\nBaby Toiletries (Y/N):\nBaby Food 4-6m (Y/N):\nBaby Food 7-12m (Y/N):\nOther:\n\n* Number of Adults (0-5):\n* Number of Children (0-5):\nAge and gender of Children: ', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
 

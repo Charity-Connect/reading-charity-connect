@@ -78,7 +78,7 @@ class Offer{
 			,'details'=>$this->details
 			,'quantity'=>$this->quantity
 			,'date_available'=>$this->date_available
-			,'date_end'=>$this->date_end
+			,'date_end'=>($this->date_end==="")?null:$this->date_end
 			,'postcode'=>$this->postcode
 			,'latitude'=>($latitude==-1) ? null:$latitude
 			,'longitude'=>($latitude==-1) ? null:$longitude
