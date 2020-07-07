@@ -117,6 +117,7 @@ class ClientNeed{
 		,o.latitude as offer_latitude
 		,o.longitude as offer_longitude
 		, o.distance
+		, o.postcode as offer_postcode
 		,c.latitude as client_latitude
 		,o.longitude as client_longitude
 		from clients c
@@ -127,13 +128,13 @@ class ClientNeed{
 		and n.id=:id
 		and o.type=n.type
 		and o.quantity_taken<o.quantity
-		and n.date_needed between coalesce(o.date_available,n.date_needed) and coalesce(o.date_end,n.date_needed)";
+		and trunc(n.date_needed) between trunc(o.date_available) and trunc(coalesce(o.date_end,n.date_needed+1))";
 		$stmt = $this->connection->prepare($sql);
 		$stmt->execute(['id'=>$this->id]);
 
 		$offer_list=array();
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-			if(!is_null($row['distance'])){
+			if(!is_null($row['distance'])&&!is_null($row['offer_postcode'])){
 				if(is_null($row['offer_latitude'])||is_null($row['offer_longitude'])||is_null($row['client_latitude'])||is_null($row['client_longitude'])){
 					continue;
 				} else {
