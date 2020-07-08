@@ -83,6 +83,7 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
 					self.currentType="";
 					self.currentNeedId="";
 					self.loadingNeed=false;
+					self.matchingOffersFound=ko.observable(false);
 
 					
 					self.needMatchesHeaderCheckStatus=ko.observableArray(['checked']);
@@ -496,7 +497,7 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
 										// get just the unique organizations
 										self.organization_list=response.map(function(obj){ return {organization_id:obj.organization_id,organization_name:obj.organization_name,selected:['checked']}});
 										self.organization_list=[...new Map(self.organization_list.map(item =>[item['organization_id'], item])).values()];
-
+										self.matchingOffersFound(self.organization_list.length>0);
 										self.clientNeedMatchesDataProvider(new ArrayDataProvider(self.organization_list, { keyAttributes: 'organization_id', implicitSort: [{ attribute: 'organization_name', direction: 'ascending' }] }));
 									},
 									error = function (response) {
@@ -515,18 +516,22 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
 
 						self.saveMatchesButton = function(event){
 							postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${self.clientId()}/client_needs`;
+							var org_list_out=[];
+							self.organization_list.forEach(function(organization){if(organization.selected.length>0) org_list_out.push(organization.organization_id)});
 							if(self.currentNeedId===""){
 								responseJson = {
 								type: $('#selectEditNeedType')[0].valueItem.data.value,
 								date_needed: utils.formatDate($('#datepickerEditNeedDateNeeded')[0].value),
-								notes: $('#textareaEditNeedNotes')[0].value
+								notes: $('#textareaEditNeedNotes')[0].value,
+								organization_list:org_list_out
 							};
 							} else {
 								responseJson = {
 									id:self.currentNeedId,
 									type: $('#selectEditNeedType')[0].valueItem.data.value,
 									date_needed: utils.formatDate($('#datepickerEditNeedDateNeeded')[0].value),
-									notes: $('#textareaEditNeedNotes')[0].value
+									notes: $('#textareaEditNeedNotes')[0].value,
+									organization_list:org_list_out
 								};
 
 							}	
