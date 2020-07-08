@@ -6,9 +6,10 @@ class OfferType{
 	private $connection;
 
 	// table columns
-	public $type;
+	public $id;
 	public $name;
-	public $category;
+	public $category_id;
+	public $category_name;
 	public $default_text;
 	public $active;
 	public $creation_date;
@@ -16,18 +17,39 @@ class OfferType{
 	public $update_date;
 	public $updated_by;
 
+	private $base_query ="SELECT ot.id
+	,ot.name
+	,ot.category_id
+	,tc.name as category_name
+	, ot.default_text
+	,ot.active
+	,ot.creation_date
+	,COALESCE(create_user.display_name,'System') as created_by
+	,ot.update_date
+	,COALESCE(update_user.display_name,'System') as updated_by 
+	from offer_types ot
+	left join users create_user on create_user.id=ot.created_by
+		left join users update_user on update_user.id=ot.updated_by
+	, type_categories tc 
+	where ot.category_id=tc.id ";
+
 	public function __construct($connection){
 		$this->connection = $connection;
 	}
 
-	public function replace(){
+	public function create(){
 
 		if(is_admin()){
-			$sql = "REPLACE INTO offer_types ( type,name,category,default_text,active,created_by,updated_by) values (:type,:name,:category,:default_text,:active,:user_id,:user_id)";
+			$sql = "INSERT INTO offer_types ( name,category_id,default_text,active,created_by,updated_by) values (:type,:name,:category_id,:default_text,:active,:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
-			if( $stmt->execute(['type'=>$this->type,'name'=>$this->name,'category'=>$this->category,'default_text'=>$this->default_text,'active'=>$this->active,'user_id'=>$_SESSION['id']])){
-				Audit::add($this->connection,"create","offer_type",null,$this->type,$this->name);
-				return $this->type;
+			if( $stmt->execute(['name'=>$this->name,'category_id'=>$this->category_id,'default_text'=>$this->default_text,'active'=>$this->active,'user_id'=>$_SESSION['id']])){
+				$this->id=$this->connection->lastInsertId();
+				Audit::add($this->connection,"create","offer_type",$this->id,null,$this->name);
+				$this->creation_date=date("Y-m-d H:i:s");
+				$this->created_by=$_SESSION['display_name'];
+				$this->update_date=date("Y-m-d H:i:s");
+				$this->updated_by=$_SESSION['display_name'];
+					return $this->id;
 			} else {
 				return "";
 			}
@@ -37,32 +59,33 @@ class OfferType{
 
 	}
 	public function readAll(){
-		$query = "SELECT type,name,category,default_text,active,creation_date,created_by,update_date,updated_by from offer_types ORDER BY name";
+		$query = $this->base_query." ORDER BY ot.name";
 		$stmt = $this->connection->prepare($query);
 		$stmt->execute();
 		return $stmt;
 	}
 
 	public function readActive(){
-		$query = "SELECT type,name,category,default_text,creation_date,created_by,update_date,updated_by from offer_types where active='Y' ORDER BY name";
+		$query = $this->base_query." and ot.active='Y' ORDER BY ot.name";
 		$stmt = $this->connection->prepare($query);
 		$stmt->execute();
 		return $stmt;
 	}
 
-	public function readActiveCategory($category){
-		$query = "SELECT type,name,category,default_text,creation_date,created_by,update_date,updated_by from offer_types where active='Y' and category=:category ORDER BY name";
+	public function readActiveCategory($category_id){
+		$query = $this->base_query." and ot.active='Y' and ot.category_id=:category_id ORDER BY ot.name";
 		$stmt = $this->connection->prepare($query);
-		$stmt->execute(['category'=>$category]);
+		$stmt->execute(['category_id'=>$category_id]);
 		return $stmt;
 	}
 
 	public function read(){
-		$stmt=$this->readOne($this->type);
+		$stmt=$this->readOne($this->id);
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		$this->type=$row['type'];
+		$this->id=$row['id'];
 		$this->name=$row['name'];
-		$this->category=$row['category'];
+		$this->category_id=$row['category_id'];
+		$this->category_name=$row['category_name'];
 		$this->default_text=$row['default_text'];
 		$this->active=$row['active'];
 		$this->creation_date=$row['creation_date'];
@@ -71,10 +94,29 @@ class OfferType{
 		$this->updated_by=$row['updated_by'];
    }
 
-	public function readOne($type){
-			$query = "SELECT type,name,category,default_text,active,creation_date,created_by,update_date,updated_by from offer_types where type=:type";
+	public function readOne($id){
+		$this->id=$id;
+			$query = $this->base_query." and ot.id=:id";
 			$stmt = $this->connection->prepare($query);
-			$stmt->execute(['type'=>$type]);
+			$stmt->execute(['id'=>$this->id]);
 			return $stmt;
 		}
+
+		public function update(){
+			$stmt=$this->readOne($this->id);
+			if($stmt->rowCount()==1){
+				$sql = "UPDATE offer_types SET name=:name, default_text=:default_text,active=:active,updated_by=:updated_by WHERE id=:id";
+				$stmt= $this->connection->prepare($sql);
+				if( $stmt->execute(['id'=>$this->id,'name'=>$this->name,'default_text'=>$this->default_text,'active'=>$this->active
+				,'updated_by'=>$_SESSION['id']
+				])){
+					$this->update_date=date("Y-m-d H:i:s");
+					$this->updated_by=$_SESSION['display_name'];
+		
+					return Audit::add($this->connection,"update","offer_types",$this->id,null,$this->name);
+				}
+			} 
+			return false;
+		}
+	
 }

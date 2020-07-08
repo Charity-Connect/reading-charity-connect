@@ -16,18 +16,20 @@ if(isset($data)&&$method=="POST") {
 
 
     $offer_type->name = $data['name'];
-    $offer_type->type = $data['type'];
-    $offer_type->category = $data['category'];
+    $offer_type->category_id = $data['category_id'];
     $offer_type->default_text = $data['default_text'];
     $offer_type->active = $data['active'];
 
+    if(isset($data['id'])){
+		$offer_type->id=$data['id'];
+		$offer_type->update();
+		$offer_type->read();
+		echo json_encode($offer_type);
 
-	$type=$offer_type->replace();
-	if($type!=""){
-		$offer_type_arr  = array(
+		/*$offer_type_arr  = array(
 				"name" => $offer_type->name,
-				"type" => $offer_type->type,
-				"category" => $offer_type->category,
+				"id" => $offer_type->id,
+				"category_id" => $offer_type->category_id,
 				"default_text" => $offer_type->default_text,
 				"active" => $offer_type->active,
 				"creation_date" => $offer_type->creation_date,
@@ -35,13 +37,15 @@ if(isset($data)&&$method=="POST") {
 				"update_date" => $offer_type->update_date,
 				"updated_by" => $offer_type->updated_by
 				);
-		echo json_encode($offer_type_arr);
+		echo json_encode($offer_type_arr);*/
+			} else {
+				$offer_type->create();
+				$offer_type->read();
+				echo json_encode($offer_type);
+		
+			}
 
-	}else{
-		echo '{';
-			echo '"message": "error"';
-		echo '}';
-	}
+	
 
 
 } else if ($method=="GET") {
@@ -52,7 +56,7 @@ if(isset($data)&&$method=="POST") {
 	    $view = $_GET["view"];
 
     if($view=="one") {
-        $offer_type->type=$_GET["type"];
+        $offer_type->id=$_GET["id"];
         $offer_type->read();
         echo json_encode($offer_type);
     } else if ($view=="active") {
@@ -71,8 +75,9 @@ if(isset($data)&&$method=="POST") {
 
                 $offer_type  = array(
                 "name" => $name,
-                "type" => $type,
-                "category" => $category,
+                "id" => $id,
+                "category_id" => $category_id,
+                "category_name" => $category_name,
                 "default_text" => $default_text,
                 "creation_date" => $creation_date,
                 "created_by" => $created_by,
@@ -92,7 +97,7 @@ if(isset($data)&&$method=="POST") {
             echo json_encode($offer_types);
         }
 	} else if ($view=="active_category") {
-        $stmt = $offer_type->readActiveCategory($_GET["category"]);
+        $stmt = $offer_type->readActiveCategory($_GET["category_id"]);
         $count = $stmt->rowCount();
 
         if($count > 0){
@@ -107,7 +112,9 @@ if(isset($data)&&$method=="POST") {
 
                 $offer_type  = array(
                 "name" => $name,
-                "type" => $type,
+                "id" => $id,
+                "category_id" => $category_id,
+                "category_name" => $category_name,
                 "default_text" => $default_text,
                 "creation_date" => $creation_date,
                 "created_by" => $created_by,
@@ -143,8 +150,9 @@ if(isset($data)&&$method=="POST") {
 
                 $offer_type  = array(
                 "name" => $name,
-                "type" => $type,
-                "category" => $category,
+                "id" => $id,
+                "category_id" => $category_id,
+                "category_name" => $category_name,
                 "default_text" => $default_text,
                 "active" => $active,
                 "creation_date" => $creation_date,

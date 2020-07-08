@@ -20,7 +20,7 @@ if(isset($_GET["view"]))
 
 
     $client_needs->client_id = $_GET['client_id'];
-    $client_needs->type = $data['type'];
+    $client_needs->type_id = $data['type_id'];
     $client_needs->date_needed = $data['date_needed'];
 	$client_needs->need_met = isset($data['need_met'])?$data['need_met']:'N';
 	$client_needs->notes = isset($data['notes'])?$data['notes']:NULL;
@@ -52,7 +52,7 @@ if(isset($_GET["view"]))
             $client_needs_arr  = array(
                     "id" => $client_needs->id,
                     "client_id" => $client_needs->client_id,
-                    "type" => $client_needs->type,
+                    "type_id" => $client_needs->type_id,
                     "date_needed" => $client_needs->date_needed,
                     "need_met" => $client_needs->need_met,
                     "notes" => $client_needs->notes,
@@ -96,9 +96,9 @@ if(isset($_GET["view"]))
                 "id" => $id,
                 "client_id" => $client_id,
                 "requesting_organization_id" => $requesting_organization_id,
-                "type" => $type,
+                "type_id" => $type_id,
                 "type_name" => $type_name,
-                "category" => $category,
+                "category_id" => $category_id,
                 "date_needed" => $date_needed,
                 "need_met" => $need_met,
                 "notes" => $notes,

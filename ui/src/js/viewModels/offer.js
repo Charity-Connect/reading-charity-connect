@@ -46,10 +46,10 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					self.offerId=ko.observable(offerIdIn);
 					self.offerName= ko.observable("");
 					self.quantity= ko.observable("");
-					self.category= ko.observable("");
-					self.type= ko.observable("");
+					self.category_id= ko.observable("");
+					self.type_id= ko.observable("");
                     self.postcode= ko.observable("");
-                    self.rawDistanceValue= ko.observable("")
+                    self.rawDistanceValue= ko.observable();
 					self.distance= ko.observable(null);
 					self.startDate= ko.observable("");
 					self.endDate= ko.observable("");
@@ -69,30 +69,37 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					}));
 			
 
-					self.getOfferTypesFromCategoryAjax = function(code) {
+					self.getOfferTypesFromCategoryAjax = function(id) {
 						self.offerTypesArray([]);
-						//GET /rest/offer_type_categories/{code}/offer_types - REST
-						return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES)}/${code}/offer_types`)
+						if(id===null){
+							return;
+						}
+						//GET /rest/offer_type_categories/{id}/offer_types - REST
+						return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES)}/${id}/offer_types`)
 							.then(
 								success = function (response) {
 									console.log(response.offer_types);
 									self.offerTypesValues(response.offer_types);
 								},
 								error = function (response) {
-									console.log(`Offer Types from Category "${code}" not loaded`);
+									console.log(`Offer Types from Category "${id}" not loaded`);
 							}).then(function () {
 								//find all names
 								for (var i = 0; i < self.offerTypesValues().length; i++) {
 									self.offerTypesArray().push({
-										"value": self.offerTypesValues()[i].type,
+										"value": self.offerTypesValues()[i].id,
 										"label": self.offerTypesValues()[i].name
 									});
 								};
 								//sort nameValue alphabetically
-								utils.sortAlphabetically(self.offerTypesArray(), "value");
+								utils.sortAlphabetically(self.offerTypesArray(), "label");
 								self.offerTypesDataProvider(new ArrayDataProvider(self.offerTypesArray(), { keyAttributes: 'value' }));
 							}).then(function () {
-									self.type(self.typeVal);
+								if(self.typeVal!=""){
+									self.type_id(self.typeVal);
+								} else {
+									self.type_id(self.offerTypesArray()[0].value);
+								}
 							})
 						);
 					};
@@ -100,12 +107,14 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					self.populateResponse=function(response){
 						self.offerName(response.name);
 						self.quantity(response.quantity);
-						if(response.hasOwnProperty('category')){
-							self.category(response.category);
+						if(response.hasOwnProperty('category_id')){
+							self.category_id(response.category_id);
 						}
-						self.typeVal=response.type;
+						self.typeVal=response.type_id;
 						self.postcode(response.postcode);
-						self.distance(parseFloat(response.distance));
+						if(response.distance!=null){
+							self.distance(parseFloat(response.distance));
+						}
 						self.startDate(response.date_available);
 						self.endDate(response.date_end);
 						self.notes(response.details);
@@ -124,8 +133,9 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					
 						self.offerName("");
 						self.quantity("");
-						self.category("");
-						self.type("");
+						self.typeVal="";
+						self.category_id(null);
+						self.type_id("");
 						self.postcode("");
 						self.distance(null);
 						self.startDate("");
@@ -158,7 +168,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 							var element4 = document.getElementById('inputEditQuantity');
                             var element5 = document.getElementById('datepickerEditDateAvailable');
 
-							if(self.offerName().length<1||self.type().length<1||self.quantity().length<1||self.startDate().length<1){
+							if(self.offerName().length<1||self.type_id().length<1||self.quantity().length<1||self.startDate().length<1){
                                 element1.showMessages();
 								element2.showMessages();
 								element3.showMessages();
@@ -206,7 +216,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 name: self.offerName(),
                                 postcode: self.postcode()===""?null:self.postcode(),
                                 quantity: self.quantity(),
-                                type: self.type()
+                                type_id: self.type_id()
 							};
 							console.log(responseJson);
 
@@ -323,7 +333,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                     //find all names
                                     for (var i = 0; i < self.offerTypesCategoriesValues().length; i++) {
                                         self.offerTypesCategoriesArray().push({
-                                            "value": self.offerTypesCategoriesValues()[i].code,
+                                            "value": self.offerTypesCategoriesValues()[i].id,
                                             "label": self.offerTypesCategoriesValues()[i].name
                                         });
                                     };

@@ -8,8 +8,9 @@ class Offer{
 	public $organization_id;
 	public $organization_name;
 	public $name;
-	public $type;
+	public $type_id;
 	public $type_name;
+	public $category_id;
 	public $details;
 	public $quantity;
 	public $quantity_taken;
@@ -33,9 +34,9 @@ class Offer{
 		,o.organization_id
 		,org.name as organization_name
 		,o.name
-		,o.type
+		,o.type_id
 		,t.name as type_name
-		,t.category
+		,t.category_id
 		,o.details
 		,o.quantity
 		,o.quantity_taken
@@ -55,7 +56,7 @@ class Offer{
 		left join users update_user on update_user.id=o.updated_by
 		,offer_types t
 		,organizations org
-		where o.type=t.type
+		where o.type_id=t.id
 		and o.organization_id=org.id ";
 
 
@@ -69,12 +70,12 @@ class Offer{
 			$longitude=null;
 		}
 
-		$sql = "INSERT INTO offers (organization_id,name,type,details,quantity,date_available,date_end,postcode,latitude,longitude,distance,created_by,updated_by) values
-			(:organization_id,:name,:type,:details,:quantity,:date_available,:date_end,:postcode,:latitude,:longitude,:distance,:user_id,:user_id)";
+		$sql = "INSERT INTO offers (organization_id,name,type_id,details,quantity,date_available,date_end,postcode,latitude,longitude,distance,created_by,updated_by) values
+			(:organization_id,:name,:type_id,:details,:quantity,:date_available,:date_end,:postcode,:latitude,:longitude,:distance,:user_id,:user_id)";
 		$stmt= $this->connection->prepare($sql);
 		if( $stmt->execute(['organization_id'=>$this->organization_id
 			,'name'=>$this->name
-			,'type'=>$this->type
+			,'type_id'=>$this->type_id
 			,'details'=>$this->details
 			,'quantity'=>$this->quantity
 			,'date_available'=>$this->date_available
@@ -116,9 +117,9 @@ class Offer{
 		$this->organization_id=$row['organization_id'];
 		$this->organization_name=$row['organization_name'];
 		$this->name=$row['name'];
-		$this->type=$row['type'];
+		$this->type_id=$row['type_id'];
 		$this->type_name=$row['type_name'];
-		$this->category=$row['category'];
+		$this->category_id=$row['category_id'];
 		$this->details=$row['details'];
 		$this->quantity=$row['quantity'];
 		$this->quantity_taken=$row['quantity_taken'];
@@ -169,9 +170,9 @@ class Offer{
 				$longitude=$offerOrig->getLongitude();
 			}
 
-			$sql = "UPDATE offers SET name=:name, type=:type, details=:details, quantity=:quantity,date_available=:date_available,date_end=:date_end,postcode=:postcode,latitude=:latitude,longitude=:longitude,distance=:distance,updated_by=:updated_by WHERE id=:id";
+			$sql = "UPDATE offers SET name=:name, type_id=:type_id, details=:details, quantity=:quantity,date_available=:date_available,date_end=:date_end,postcode=:postcode,latitude=:latitude,longitude=:longitude,distance=:distance,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			if( $stmt->execute(['id'=>$this->id,'name'=>$this->name,'type'=>$this->type,'details'=>$this->details,'quantity'=>$this->quantity,'date_available'=>$this->date_available,'date_end'=>$this->date_end,'postcode'=>$this->postcode
+			if( $stmt->execute(['id'=>$this->id,'name'=>$this->name,'type_id'=>$this->type_id,'details'=>$this->details,'quantity'=>$this->quantity,'date_available'=>$this->date_available,'date_end'=>$this->date_end,'postcode'=>$this->postcode
 				,'latitude'=>($latitude==-1) ? null:$latitude
 				,'longitude'=>($latitude==-1) ? null:$longitude
 				,'distance'=>$this->distance

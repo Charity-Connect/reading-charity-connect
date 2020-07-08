@@ -7,7 +7,9 @@ $connection=initRest();
 
     $need_request = new NeedRequest($connection);
 $data = json_decode(file_get_contents('php://input'), true);
-if(isset($data)) {
+$method = $_SERVER['REQUEST_METHOD'];
+
+if(isset($data)&&$method=="POST") {
     // doing a create or update
     header("Access-Control-Allow-Methods: POST");
     header("Access-Control-Max-Age: 3600");
@@ -52,7 +54,7 @@ if(isset($data)) {
         }
     }
 
-} else {
+} else if ($method=="GET") {
 
     // querying
 
@@ -99,7 +101,7 @@ if(isset($data)) {
                 "client_postcode" => $client_postcode,
                 "client_phone" => $client_phone,
                 "client_email" => $client_email,
-                "type" => $type,
+                "type_id" => $type_id,
                 "type_name" => $type_name,
                 "category_name" => $category_name,
                 "date_needed" => $date_needed,
@@ -130,5 +132,7 @@ if(isset($data)) {
         }
     }
 
+}else {
+	http_response_code(405);
 }
 ?>

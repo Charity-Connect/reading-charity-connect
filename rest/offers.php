@@ -17,7 +17,7 @@ if(isset($data)&&$method=="POST") {
 
 
     $offer->name = $data['name'];
-    $offer->type = $data['type'];
+    $offer->type_id = $data['type_id'];
     $offer->details = $data['details'];
     $offer->quantity = $data['quantity'];
     $offer->date_available = $data['date_available'];
@@ -43,7 +43,7 @@ if(isset($data)&&$method=="POST") {
                     "id" => $offer->id,
                     "organization_id" => $offer->organization_id,
                     "name" => $offer->name,
-                    "type" => $offer->type,
+                    "type_id" => $offer->type_id,
                     "details" => $offer->details,
                     "quantity" => $offer->quantity,
                     "date_available" => $offer->date_available,
@@ -93,9 +93,9 @@ if(isset($data)&&$method=="POST") {
                 "organization_name" => $organization_name,
                 "id" => $id,
                 "name" => $name,
-                "type" => $type,
+                "type_id" => $type_id,
                 "type_name" => $type_name,
-                "category" => $category,
+                "category_id" => $category_id,
                 "details" => $details,
                 "quantity" => $quantity,
                 "quantity_taken" => $quantity_taken,

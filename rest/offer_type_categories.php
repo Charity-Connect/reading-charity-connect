@@ -14,23 +14,19 @@ if(isset($data)&&$method=="POST") {
     header("Access-Control-Max-Age: 3600");
     header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-    $offer_type_category->code = $data['code'];
     $offer_type_category->name = $data['name'];
     $offer_type_category->active = $data['active'];
 
-	$code=$offer_type_category->replace();
-	if($code!=""){
-		$offer_type_category_arr  = array(
-				"code" => $offer_type_category->code,
-                "name" => $offer_type_category->name,
-                "active" => $offer_type_category->active,
-				);
-		echo json_encode($offer_type_category_arr);
+	if(isset($data['id'])){
+		$offer_type_category->id=$data['id'];
+		$offer_type_category->update();
+		$offer_type_category->read();
+		echo json_encode($offer_type_category);
+	} else {
+		$offer_type_category->create();
+		$offer_type_category->read();
+		echo json_encode($offer_type_category);
 
-	}else{
-		echo '{';
-			echo '"message": "Unable to process offer_type_category."';
-		echo '}';
 	}
 
 
@@ -42,7 +38,7 @@ if(isset($data)&&$method=="POST") {
 	    $view = $_GET["view"];
 
     if($view=="one") {
-        $offer_type_category->code=$_GET["code"];
+        $offer_type_category->id=$_GET["id"];
         $offer_type_category->read();
         echo json_encode($offer_type_category);
     } else if ($view=="active") {
@@ -59,7 +55,7 @@ if(isset($data)&&$method=="POST") {
                 extract($row);
                 
                 $offer_type_category = array(
-                "code" => $code,
+                "id" => $id,
                 "name" => $name,
                 "active" => $active,
                 "creation_date" => $creation_date,
@@ -94,7 +90,7 @@ if(isset($data)&&$method=="POST") {
                 extract($row);
 
                 $offer_type_category  = array(
-                "code" => $code,
+                "id" => $id,
                 "name" => $name,
                 "active" => $active,
                 "creation_date" => $creation_date,

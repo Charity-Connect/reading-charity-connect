@@ -15,7 +15,7 @@ class NeedRequest{
 	public $client_postcode;
 	public $client_phone;
 	public $client_email;
-	public $type;
+	public $type_id;
 	public $type_name;
 	public $date_needed;
 	private $confirmation_code;
@@ -58,7 +58,7 @@ class NeedRequest{
 			,if(STRCMP(request.agreed,'Y') = 0 ,client.postcode,'') as client_postcode
 			,if(STRCMP(request.agreed,'Y') = 0 ,client.phone,'') as client_phone
 			,if(STRCMP(request.agreed,'Y') = 0 ,client.email,'') as client_email
-			,types.type
+			,types.id as type_id
 			,types.name as type_name
 			,categories.name as category_name
 			,client_need.date_needed
@@ -75,8 +75,8 @@ class NeedRequest{
 			where request.client_need_id=client_need.id
 			and request.fulfilled_elsewhere='N'
 			and client_need.client_id=client.id
-			and client_need.type=types.type
-			and types.category=categories.code
+			and client_need.type_id=types.id
+			and types.category_id=categories.id
 			and org.id=client_need.requesting_organization_id ";
 
 
@@ -122,13 +122,13 @@ class NeedRequest{
 			and uo.organization_id=:request_organization_id
 			and uo.need_approver='Y'
 			and u.id=uo.user_id
-			and ot.type=:type
+			and ot.id=:type_id
 			and c.id=:client_id";
 			$stmt = $this->connection->prepare($sql);
 			$stmt->execute(['current_organization_id'=>$_SESSION['organization_id']
 			,'request_organization_id'=>$this->request_organization_id
 			,'client_id'=>$this->client_id
-			,'type'=>$this->type]);
+			,'type_id'=>$this->type_id]);
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 				sendHtmlMail($row['email']
 				,get_string("need_request_subject")
@@ -210,7 +210,7 @@ class NeedRequest{
 		$this->client_need_id=$row['client_need_id'];
 		$this->client_name=$row['client_name'];
 		$this->client_postcode=$row['client_postcode'];
-		$this->type=$row['type'];
+		$this->type_id=$row['type_id'];
 		$this->type_name=$row['type_name'];
 		$this->date_needed=$row['date_needed'];
 		$this->request_organization_id=$row['request_organization_id'];

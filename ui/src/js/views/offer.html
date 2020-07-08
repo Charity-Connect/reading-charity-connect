@@ -70,7 +70,7 @@
                 <oj-label id="editCategoryLabel"><strong>Category:*</strong></oj-label>
                 <oj-select-single id="selectEditCategory" labelled-by="editCategoryLabel"
                     data="[[offerTypesCategoriesDataProvider]]"
-                    value="{{category}}"
+                    value="{{category_id}}"
                     on-value-changed="[[handleOfferTypesCategoryChanged]]"                                
 					placeholder="Select category"
 					required
@@ -81,7 +81,7 @@
                 <oj-label id="editTypeLabel"><strong>Type:*</strong></oj-label>
                 <oj-select-single id="selectEditType" labelled-by="editTypeLabel"
                     data="[[offerTypesDataProvider]]"
-                    value="{{type}}"
+                    value="{{type_id}}"
                     placeholder="Select type"
 					title="Edit type select"
 					required

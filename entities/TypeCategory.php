@@ -6,7 +6,7 @@ class TypeCategory{
 	private $connection;
 
 	// table columns
-	public $code;
+	public $id;
 	public $name;
 	public $active;
 	public $creation_date;
@@ -18,13 +18,14 @@ class TypeCategory{
 		$this->connection = $connection;
 	}
 
-	public function replace(){
+	public function create(){
 		if(is_admin()){
-			$sql = "REPLACE INTO type_categories (code,name,active,created_by,updated_by) values (:code,:name,:active,:user_id,:user_id)";
+			$sql = "INSERT INTO type_categories (id,name,active,created_by,updated_by) values (:id,:name,:active,:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
-			if( $stmt->execute(['code'=>$this->code,'name'=>$this->name,'active'=>$this->active,'user_id'=>$_SESSION['id']])){
-				Audit::add($this->connection,"create","type_category",null,$this->code,$this->name);
-				return $this->code;
+			if( $stmt->execute(['id'=>$this->id,'name'=>$this->name,'active'=>$this->active,'user_id'=>$_SESSION['id']])){
+				$this->id=$this->connection->lastInsertId();
+				Audit::add($this->connection,"create","type_category",$this->id,null,$this->name);
+				return $this->id;
 			} else {
 				return "";
 			}
@@ -34,23 +35,23 @@ class TypeCategory{
 
 	}
 	public function readAll(){
-		$query = "SELECT code,name,active,creation_date,created_by,update_date,updated_by FROM type_categories ORDER BY name";
+		$query = "SELECT id,name,active,creation_date,created_by,update_date,updated_by FROM type_categories ORDER BY name";
 		$stmt = $this->connection->prepare($query);
 		$stmt->execute();
 		return $stmt;
 	}
 
 	public function readActive(){
-		$query = "SELECT code,name,active,creation_date,created_by,update_date,updated_by FROM type_categories WHERE active='Y' ORDER BY name";
+		$query = "SELECT id,name,active,creation_date,created_by,update_date,updated_by FROM type_categories WHERE active='Y' ORDER BY name";
 		$stmt = $this->connection->prepare($query);
 		$stmt->execute();
 		return $stmt;
 	}
 
 	public function read(){
-		$stmt=$this->readOne($this->code);
+		$stmt=$this->readOne($this->id);
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		$this->code=$row['code'];
+		$this->id=$row['id'];
 		$this->name=$row['name'];
 		$this->active=$row['active'];
 		$this->creation_date=$row['creation_date'];
@@ -59,11 +60,26 @@ class TypeCategory{
 		$this->updated_by=$row['updated_by'];
    }
 
-	public function readOne($code){
-			$query = "SELECT code,name,active,creation_date,created_by,update_date,updated_by FROM type_categories WHERE code=:code";
+	public function readOne($id){
+			$query = "SELECT id,name,active,creation_date,created_by,update_date,updated_by FROM type_categories WHERE id=:id";
 			$stmt = $this->connection->prepare($query);
-			$stmt->execute(['code'=>$code]);
+			$stmt->execute(['id'=>$id]);
 			return $stmt;
 		}
+
+		public function update(){
+			$stmt=$this->readOne($this->id);
+			if($stmt->rowCount()==1){
+				$sql = "UPDATE type_categories SET name=:name, active=:active,updated_by=:updated_by WHERE id=:id";
+				$stmt= $this->connection->prepare($sql);
+				if( $stmt->execute(['id'=>$this->id,'name'=>$this->name,'active'=>$this->active
+				,'updated_by'=>$_SESSION['id']
+				])){
+					return Audit::add($this->connection,"update","type_categories",$this->id,null,$this->name);
+				}
+			} 
+			return false;
+		}
+
 
 }

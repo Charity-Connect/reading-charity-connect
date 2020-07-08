@@ -36,7 +36,7 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
 
                     self.needTypesTableColumns = [
                         {headerText: 'Name', field: "name"},
-                        {headerText: 'Category', field: "category"}
+                        {headerText: 'Category', field: "category_name"}
                     ];
 
                     self.addneedTypeButtonSelected = ko.observableArray([]);
@@ -63,9 +63,10 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
 
                     function populateNeedData(params)
                     {
-                        self.needDetailType(params.type);
+						console.log(params);
+                        self.needDetailType(params.id);
                         self.needDetailName(params.name);
-                        self.needDetailCategory(params.category);
+                        self.needDetailCategory(params.category_id);
                         self.needDetailDefaultText(params.default_text);
                         self.needDetailActive([]);
                         if (params.active === "Y"||!params.hasOwnProperty("active")) {
@@ -98,11 +99,11 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                                 //find whether node exists based on selection
                                 function searchNodes(nameKey, myArray) {
                                     for (var i = 0; i < myArray.length; i++) {
-                                        if (myArray[i].type === nameKey) {
+                                        if (myArray[i].id === nameKey) {
                                             return myArray[i];
                                         }
                                     }
-                                };
+								};
                                 self.needTypeSelected(searchNodes(event.target.currentRow.rowKey, self.needTypesValues()));
                                 populateNeedData(self.needTypeSelected());
                             }
@@ -132,8 +133,8 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                         var needData =
                             {
                                 "name": self.needDetailName(),
-                                "type": self.needDetailType(),
-                                "category": self.needDetailCategory(),
+                                "id": self.needDetailType(),
+                                "category_id": self.needDetailCategory(),
                                 "default_text": self.needDetailDefaultText().length>0?self.needDetailDefaultText():"",
                                 "active": (self.needDetailActive().length > 0) ? "Y" : "N"
                             };
@@ -180,7 +181,7 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                                     //find all names
                                     for (var i = 0; i < self.offerTypesCategoriesValues().length; i++) {
                                         self.offerTypesCategoriesArray().push({
-                                            "value": self.offerTypesCategoriesValues()[i].code,
+                                            "value": self.offerTypesCategoriesValues()[i].id,
                                             "label": self.offerTypesCategoriesValues()[i].name
                                         });
                                     };
@@ -206,7 +207,7 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
                                         self.needTypesValid(false);
                                     }).then(function () {
                                     var sortCriteria = {key: 'name', direction: 'ascending'};
-                                    var arrayDataSource = new oj.ArrayTableDataSource(self.needTypesValues(), {idAttribute: 'type'});
+                                    var arrayDataSource = new oj.ArrayTableDataSource(self.needTypesValues(), {idAttribute: 'id'});
                                     arrayDataSource.sort(sortCriteria);
                                     self.needTypesDataProvider(new oj.PagingTableDataSource(arrayDataSource));
                                 }).then(function () {

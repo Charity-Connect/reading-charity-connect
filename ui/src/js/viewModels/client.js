@@ -154,9 +154,9 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
 						} else if (event.target.value === 'edit') {
 						  console.log(context.row);
 						  self.loadingNeed=true;
-						  self.currentType=context.row.type;
+						  self.currentType=context.row.type_id;
 						  self.currentNeedId=context.row.id;
-						  self.offerTypesCategorySelected(context.row.category);
+						  self.offerTypesCategorySelected(context.row.category_id);
 						  self.dateNeededConvertor(context.row.clientDateNeededRaw.toISOString());
 						  self.needNotesUpdateVal(context.row.notes);
 						  document.getElementById('addNeedDialog').open();
@@ -197,9 +197,9 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
                                                 need_met: this.need_met,
                                                 notes: this.notes,
                                                 requesting_organization_id: this.requesting_organization_id,
-                                                type: this.type,
+                                                type_id: this.type_id,
                                                 type_name: this.type_name,
-                                                category: this.category,
+                                                category_id: this.category_id,
                                                 creation_date: this.creation_date,
                                                 created_by: this.created_by,
                                                 update_date: this.update_date,
@@ -228,26 +228,26 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
                                 self.disableSelectEditType(false);
                             }
                         };
-                        _getOfferTypesFromCategoryAjax = function(code) {
+                        _getOfferTypesFromCategoryAjax = function(id) {
                             self.offerTypesArray([]);
-                            //GET /rest/offer_type_categories/{code}/offer_types - REST
-                            return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES)}/${code}/offer_types`)
+                            //GET /rest/offer_type_categories/{id}/offer_types - REST
+                            return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES)}/${id}/offer_types`)
                                 .then(
                                     success = function (response) {
                                         self.offerTypesValues(response.offer_types);
                                     },
                                     error = function (response) {
-                                        console.log(`Offer Types from Category "${code}" not loaded`);
+                                        console.log(`Offer Types from Category "${id}" not loaded`);
                                 }).then(function () {
                                     //find all names
                                     for (var i = 0; i < self.offerTypesValues().length; i++) {
                                         self.offerTypesArray().push({
-                                            "value": self.offerTypesValues()[i].type,
+                                            "value": self.offerTypesValues()[i].id,
                                             "label": self.offerTypesValues()[i].name
                                         });
                                     };
-                                    //sort nameValue alphabetically
-                                    utils.sortAlphabetically(self.offerTypesArray(), "value");
+									//sort nameValue alphabetically
+                                    utils.sortAlphabetically(self.offerTypesArray(), "label");
 									self.offerTypesDataProvider(new ArrayDataProvider(self.offerTypesArray(), { keyAttributes: 'value' }));
 
                                 }).then(function () {
@@ -280,15 +280,15 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
 							   self.loadingNeed=false;
                             }
                         };
-                        _getOfferNotesFromTypeAjax = function (code) {
-                                return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${code}`)
+                        _getOfferNotesFromTypeAjax = function (id) {
+                                return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPES)}/${id}`)
                                 .then(
                                     success = function (response) {
 										self.needNotesUpdateVal(response.default_text);
 										
                                     },
                                     error = function (response) {
-                                        console.log(`Offer Notes from Type "${code}" not loaded`);
+                                        console.log(`Offer Notes from Type "${id}" not loaded`);
                                     }
                                 )
                             );
@@ -484,7 +484,7 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
 							}
 							document.getElementById('addNeedMatchesDialog').open();
 								responseJson = {
-								type: $('#selectEditNeedType')[0].valueItem.data.value,
+								type_id: $('#selectEditNeedType')[0].valueItem.data.value,
 								date_needed: utils.formatDate($('#datepickerEditNeedDateNeeded')[0].value)
 							};
 							
@@ -520,7 +520,7 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
 							self.organization_list.forEach(function(organization){if(organization.selected.length>0) org_list_out.push(organization.organization_id)});
 							if(self.currentNeedId===""){
 								responseJson = {
-								type: $('#selectEditNeedType')[0].valueItem.data.value,
+								type_id: $('#selectEditNeedType')[0].valueItem.data.value,
 								date_needed: utils.formatDate($('#datepickerEditNeedDateNeeded')[0].value),
 								notes: $('#textareaEditNeedNotes')[0].value,
 								organization_list:org_list_out
@@ -528,7 +528,7 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
 							} else {
 								responseJson = {
 									id:self.currentNeedId,
-									type: $('#selectEditNeedType')[0].valueItem.data.value,
+									type_id: $('#selectEditNeedType')[0].valueItem.data.value,
 									date_needed: utils.formatDate($('#datepickerEditNeedDateNeeded')[0].value),
 									notes: $('#textareaEditNeedNotes')[0].value,
 									organization_list:org_list_out
@@ -710,7 +710,7 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
                                     //find all names
                                     for (var i = 0; i < self.offerTypesCategoriesValues().length; i++) {
                                         self.offerTypesCategoriesArray().push({
-                                            "value": self.offerTypesCategoriesValues()[i].code,
+                                            "value": self.offerTypesCategoriesValues()[i].id,
                                             "label": self.offerTypesCategoriesValues()[i].name
                                         });
                                     };
