@@ -175,8 +175,9 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
                             }
 
-                            function isNumber(n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) }
-                            if (self.distance()<0||self.distance()>10000||!isNumber(self.rawDistanceValue())){
+                            var isNumber = function( str ){ return !isNaN( str.toString().replace(/[,.]/g, '') ); }
+
+                            if (self.distance()<0||self.distance()>=10000||!isNumber(String(self.rawDistanceValue()))){
                                 self.postTextColor("red");
 								self.postText("Error: Distance not valid.");
 								self.fileContentPosted(true);
