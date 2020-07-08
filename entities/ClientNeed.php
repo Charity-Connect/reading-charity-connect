@@ -18,7 +18,7 @@ class ClientNeed{
 	public $id;
 	public $client_id;
 	public $requesting_organization_id;
-	public $type;
+	public $type_id;
 	public $date_needed;
 	public $need_met;
 	public $notes;
@@ -38,9 +38,9 @@ class ClientNeed{
 	private $base_query="SELECT cn.id
 	,cn.client_id
 	,cn.requesting_organization_id
-	,cn.type
+	,cn.type_id
 	, types.name type_name
-	,types.category
+	,types.category_id
 	,cn.date_needed
 	,cn.need_met
 	,cn.fulfilling_need_request_id
@@ -53,7 +53,7 @@ class ClientNeed{
 	left join users create_user on create_user.id=cn.created_by
 	left join users update_user on update_user.id=cn.updated_by
 	,offer_types types 
-	where types.type=cn.type ";
+	where types.id=cn.type_id ";
 
 	public function create($organization_list){
 
@@ -67,18 +67,18 @@ class ClientNeed{
 			$this->need_met='N';
 		}
 
-		$sql = "INSERT INTO client_needs ( client_id,requesting_organization_id,type,date_needed,need_met,notes,created_by,updated_by) values (:client_id,:requesting_organization_id,:type,:date_needed,:need_met,:notes,:user_id,:user_id)";
+		$sql = "INSERT INTO client_needs ( client_id,requesting_organization_id,type_id,date_needed,need_met,notes,created_by,updated_by) values (:client_id,:requesting_organization_id,:type,:date_needed,:need_met,:notes,:user_id,:user_id)";
 		$stmt= $this->connection->prepare($sql);
 		if( $stmt->execute(['client_id'=>$this->client_id
 		,'requesting_organization_id'=>$_SESSION['organization_id']
-		,'type'=>$this->type
+		,'type'=>$this->type_id
 		,'date_needed'=>$this->date_needed
 		,'need_met'=>$this->need_met
 		,'notes'=>$this->notes
 		,'user_id'=>$_SESSION['id']])){
 
 			$this->id=$this->connection->lastInsertId();
-			Audit::add($this->connection,"create","client_need",$this->id,null,$this->type);
+			Audit::add($this->connection,"create","client_need",$this->id);
 			$this->creation_date=date("Y-m-d H:i:s");
 			$this->created_by=$_SESSION['display_name'];
 			$this->update_date=date("Y-m-d H:i:s");
@@ -97,7 +97,7 @@ class ClientNeed{
 				$need_request->request_organization_id=$offer_item['organization_id'];
 				$need_request->offer_id=$offer_item['offer_id'];
 				$need_request->client_id=$this->client_id;
-				$need_request->type=$this->type;
+				$need_request->type_id=$this->type_id;
 				$need_request->need_notes=$this->notes;
 				$need_request->date_needed=$this->date_needed;
 				$need_request->create();
@@ -133,11 +133,11 @@ class ClientNeed{
 		where
 		c.id=:client_id
 		and o.organization_id=org.id
-		and o.type=:type
+		and o.type_id=:type_id
 		and o.quantity_taken<o.quantity
 		and date(:date_needed) between date(o.date_available) and date(coalesce(o.date_end,:date_needed))";
 		$stmt = $this->connection->prepare($sql);
-		$stmt->execute(['client_id'=>$this->client_id,'type'=>$this->type,'date_needed'=>$this->date_needed]);
+		$stmt->execute(['client_id'=>$this->client_id,'type_id'=>$this->type_id,'date_needed'=>$this->date_needed]);
 		$offer_list=array();
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 			if(!is_null($row['distance'])&&!is_null($row['offer_latitude'])){
@@ -179,9 +179,9 @@ class ClientNeed{
 		$stmt=$this->readOne($this->id);
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		$this->client_id=$row['client_id'];
-		$this->type=$row['type'];
+		$this->type_id=$row['type_id'];
 		$this->type_name=$row['type_name'];
-		$this->category=$row['category'];
+		$this->category_id=$row['category_id'];
 		$this->date_needed=$row['date_needed'];
 		$this->need_met=$row['need_met'];
 		$this->fulfilling_need_request_id=$row['fulfilling_need_request_id'];
@@ -219,7 +219,7 @@ class ClientNeed{
 		if($stmt->rowCount()==1){
 			// can't update the type or date if it is already complete
 			if($client_need_orig->need_met=='Y' &&
-			 ($this->type!=$client_need_orig->type ||
+			 ($this->type_id!=$client_need_orig->type_id ||
 			 $this->date_needed!=$client_need_orig->date_needed) ){
 				 return false;
 			 }
@@ -229,17 +229,17 @@ class ClientNeed{
 			$meeting_need=false;
 			if($client_need_orig->need_met=='N' 
 			&& $client_need_orig->fulfilling_need_request_id!=null 
-			&& ($this->type!=$client_need_orig->type ||$this->date_needed!=$client_need_orig->date_needed) ){
+			&& ($this->type_id!=$client_need_orig->type_id ||$this->date_needed!=$client_need_orig->date_needed) ){
 				$meeting_need=new NeedRequest($this->connection);
 				$meeting_need->forceRead($client_need_orig->fulfilling_need_request_id);
 			}
 
-			$sql = "UPDATE client_needs SET  type=:type, date_needed=:date_needed, need_met=:need_met,fulfilling_need_request_id=:fulfilling_need_request_id, notes=:notes,updated_by=:updated_by WHERE id=:id";
+			$sql = "UPDATE client_needs SET  type_id=:type_id, date_needed=:date_needed, need_met=:need_met,fulfilling_need_request_id=:fulfilling_need_request_id, notes=:notes,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			if( $stmt->execute(['id'=>$this->id,'type'=>$this->type,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'fulfilling_need_request_id'=>$this->fulfilling_need_request_id,'notes'=>$this->notes
+			if( $stmt->execute(['id'=>$this->id,'type_id'=>$this->type_id,'date_needed'=>$this->date_needed,'need_met'=>$this->need_met,'fulfilling_need_request_id'=>$this->fulfilling_need_request_id,'notes'=>$this->notes
 			,'updated_by'=>$_SESSION['id']])){
 				// if the type or the date has changed, delete the old need requests and create new ones
-				if($this->type!=$client_need_orig->type ||
+				if($this->type_id!=$client_need_orig->type_id ||
 				 $this->date_needed!=$client_need_orig->date_needed ){
 
 					$sql = "DELETE FROM need_requests WHERE client_need_id=:id";
@@ -258,14 +258,14 @@ class ClientNeed{
 						$need_request->request_organization_id=$offer_item['organization_id'];
 						$need_request->offer_id=$offer_item['offer_id'];
 						$need_request->client_id=$this->client_id;
-						$need_request->type=$this->type;
+						$need_request->type_id=$this->type_id;
 						$need_request->need_notes=$this->notes;
 						$need_request->date_needed=$this->date_needed;
 						$need_request->create();		
 					}
 				 }
 	
-				Audit::add($this->connection,"update","client_need",$this->id,null,$this->type);
+				Audit::add($this->connection,"update","client_need",$this->id);
 				$success= $this->connection->commit();
 				if($success&& $meeting_need!=false){
 					
@@ -274,7 +274,7 @@ class ClientNeed{
 					$client->id=$this->client_id;
 					$client->read();
 					$offer_type= new OfferType($this->connection);
-					$offer_type->type=$this->type;
+					$offer_type->type_id=$this->type_id;
 					$offer_type->read();
 					$user_organization= new UserOrganization($this->connection);
 					$stmt=$user_organization->readAllNeedApprovers($meeting_need->request_organization_id);

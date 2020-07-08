@@ -182,7 +182,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 date_available: _formatDate($('#datepickerEditDateAvailable')[0].value),
                                 date_end: _formatDate($('#datepickerEditDateEnd')[0].value),
                                 details: $('#textareaEditOfferNotes')[0].value,
-                                distance: $('#inputEditDistance')[0].value,
+                                distance: self.distance(),
                                 name: $('#inputEditName')[0].value,
                                 postcode: $('#inputEditPostcode')[0].value,
                                 quantity: $('#inputEditQuantity')[0].value,
@@ -298,36 +298,8 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             );
                         };
 
-                        function getOfferTypesCategoriesAjax() {
-                            //GET /rest/offer_type_categories - REST
-                            return $.when(restClient.doGet("/rest/offer_type_categories/active")
-                                .then(
-                                    success = function (response) {
-                                        console.log(response.offer_type_categorys);
-                                        self.offerTypesCategoriesValues(response.offer_type_categorys);
-                                    },
-                                    error = function (response) {
-                                        console.log("Offer Types Categories not loaded");
-                                }).then(function () {
-                                    //find all names
-                                    for (var i = 0; i < self.offerTypesCategoriesValues().length; i++) {
-                                        self.offerTypesCategoriesArray().push({
-                                            "value": self.offerTypesCategoriesValues()[i].code,
-                                            "label": self.offerTypesCategoriesValues()[i].name
-                                        });
-                                    };
-                                    //sort nameValue alphabetically
-                                    utils.sortAlphabetically(self.offerTypesCategoriesArray(), "value");
-                                    self.offerTypesCategoriesDataProvider(new ArrayDataProvider(self.offerTypesCategoriesArray(), { keyAttributes: 'value' }));
-                                }).then(function () {
-                                })
-                            );
-                        };
 
                         Promise.all([self.getOffersAjax()])
-                        .then(function () {
-                            Promise.all([getOfferTypesCategoriesAjax()])
-                        })
                         .catch(function () {
                             //even if error remove loading bar
                             self.offersLoaded(true);

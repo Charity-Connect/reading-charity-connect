@@ -177,7 +177,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                                 request_organization_id: this.request_organization_id,
                                                 request_response_notes: this.request_response_notes,
                                                 source_organization_name: this.source_organization_name,
-                                                type: this.type,
+                                                type_id: this.type_id,
                                                 type_name: this.type_name,
                                                 creation_date: this.creation_date,
                                                 created_by: this.created_by,
