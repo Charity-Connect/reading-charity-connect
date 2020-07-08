@@ -43,13 +43,22 @@ define(['ojs/ojcore', 'knockout', 'ojs/ojconfig', 'ojs/ojmessaging'],
                 detail: detail,
                 autoTimeout: 10000
             });
-        };
+		};
+		
+		formatDate = function(inputDate) {
+			if (inputDate !== null) {
+				return inputDate.split('T')[0];
+			} else {
+				return null;
+			}
+		};
 
         return {
             appConstants: appConstants,
             getSetLanguage: getSetLanguage,
             sortAlphabetically: sortAlphabetically,
-            showErrorMessage: showErrorMessage
+			showErrorMessage: showErrorMessage,
+			formatDate:formatDate
         };
 
     });

@@ -8,7 +8,11 @@ $method = $_SERVER['REQUEST_METHOD'];
 
     $client_needs = new ClientNeed($connection);
 $data = json_decode(file_get_contents('php://input'), true);
-if(isset($data)&&$method=="POST") {
+$view = "";
+if(isset($_GET["view"]))
+	$view = $_GET["view"];
+
+	if(isset($data)&&$method=="POST") {
     // doing a create or update
     header("Access-Control-Allow-Methods: POST");
     header("Access-Control-Max-Age: 3600");
@@ -18,10 +22,15 @@ if(isset($data)&&$method=="POST") {
     $client_needs->client_id = $_GET['client_id'];
     $client_needs->type = $data['type'];
     $client_needs->date_needed = $data['date_needed'];
-    $client_needs->need_met = isset($data['need_met'])?$data['need_met']:'N';
-    $client_needs->notes = $data['notes'];
+	$client_needs->need_met = isset($data['need_met'])?$data['need_met']:'N';
+	$client_needs->notes = isset($data['notes'])?$data['notes']:NULL;
+	
 
-    if(isset($data['id'])){
+    if($view=="matches"){
+		$offer_list=$client_needs->getMatchingOffers();
+		echo json_encode($offer_list);
+
+	} else if(isset($data['id'])){
         $client_needs->id = $data['id'];
         $client_needs->client_id=$_GET["client_id"];
         if($client_needs->update()){
@@ -60,10 +69,6 @@ if(isset($data)&&$method=="POST") {
 
 } else if ($method=="GET") {
     // querying
-
-    $view = "";
-    if(isset($_GET["view"]))
-	    $view = $_GET["view"];
 
     if($view=="one") {
         $client_needs->id=$_GET["id"];

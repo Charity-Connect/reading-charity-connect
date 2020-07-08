@@ -200,8 +200,69 @@
                     <div class="oj-sm-padding-1x-horizontal oj-flex-item">
                         <h3>
                             <span><oj-bind-text value="[[clientName().length>0?(clientName() + '\'s needs'):'']]"></oj-bind-text></span>
-                        </h3>
-                    </div>
+						</h3>
+					</div>
+					<oj-dialog style="display:none" id="addNeedMatchesDialog" class="oj-sm-12 oj-md-8" dialog-title="Matching Offers" cancel-behavior="none">
+						<div slot="body">
+							<p>We found the following offers from other organisations which match your client's needs. We'll send the request to all of them by default, but you can deselect some if you know for sure they wouldn't be right.</p>
+							<oj-table id='matchingOffersTable' aria-label='MatchingOffers'
+							data='[[clientNeedMatchesDataProvider]]'
+							columns='[{ "headerTemplate": "headerCheckTemplate",
+							"field": "selected",
+							"headerText":"Select All",
+							"template": "checkTemplate",
+							"sortable": "disabled"
+						  },
+									  {"headerText": "Organisation Name", 
+									   "field": "organization_name",
+									   "resizable": "enabled"}]'
+							style='width: 100%;'>
+							<template slot="headerCheckTemplate" >
+								<oj-checkboxset value='[[needMatchesHeaderCheckStatus]]'
+												on-value-changed='[[needMatchesHeaderCheckboxListener]]'
+												class='oj-checkboxset-no-chrome oj-selection-checkbox'
+												id="table_header_checkbox">
+									<oj-option  aria-label="Checkbox Select All" value="checked"></oj-option>
+								</oj-checkboxset>   
+							</template>
+							<template slot="checkTemplate" data-oj-as="cell">
+								<oj-checkboxset value='{{cell.row.selected}}'
+												class='oj-checkboxset-no-chrome oj-selection-checkbox'
+												:id="[['table_checkboxset' + cell.key]]"
+												:data-row-key="{{cell.row.organization_id}}">
+									<oj-option :id="[['table_checkbox' + cell.key]]" aria-label="[['Checkbox Select Row ' + cell.row.organization_id]]" value="checked"></oj-option>
+								</oj-checkboxset>   
+							</template>
+			  
+						</oj-table>
+						</div>
+						<div slot="footer">
+							<div class="oj-flex-bar sm-1x-row">
+								<div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
+									<oj-bind-if test="[[fileContentPosted() !== true]]">
+										<span class="oj-helper-text-align-right">Posting...</span>
+										<oj-progress id="progressBar" value="-1"></oj-progress>
+									</oj-bind-if>
+									<oj-label class="postMessage oj-helper-text-align-right oj-sm-hide" for="editNeedSaveButton"
+											  :style.color="[[postTextColor]]">
+										<oj-bind-text value='[[postText]]'></oj-bind-text>
+									</oj-label>
+								</div>
+								<div class="oj-sm-padding-1x-horizontal oj-flex">
+									<oj-button id="editNeedMatchesCancelButton"
+											   on-oj-action="[[closeAddNeedMatchesModalButton]]" >
+										<span>Cancel</span>
+									</oj-button>
+								</div>
+								<div class="oj-sm-padding-1x-horizontal oj-flex">
+									<oj-button id="editNeedSaveButton" on-oj-action='[[saveMatchesButton]]'
+											   disabled="[[disableNeedMatchesSaveButton]]">
+										<span>Save</span>
+									</oj-button>
+								</div>
+							</div>
+						</div>
+					</oj-dialog>
                     <div class="oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                         <oj-dialog style="display:none" id="addNeedDialog" class="oj-sm-12 oj-md-8" dialog-title="Add Need" cancel-behavior="none">
                             <div slot="body">
@@ -244,7 +305,7 @@
                                               value="{{needNotesUpdateVal}}"
                                               placeholder="Enter notes about the client's need"
                                               title="Edit need notes textarea"
-                                              rows="10">
+                                              rows="5">
                                 </oj-text-area>
                             </div>
                             <div slot="footer">
@@ -266,9 +327,9 @@
                                         </oj-button>
                                     </div>
                                     <div class="oj-sm-padding-1x-horizontal oj-flex">
-                                        <oj-button id="editNeedSaveButton" on-oj-action='[[saveButton]]'
+                                        <oj-button id="editNeedSaveButton" on-oj-action='[[submitNeed]]'
                                                    disabled="[[disableNeedSaveButton]]">
-                                            <span>Save</span>
+                                            <span>Submit</span>
                                         </oj-button>
                                     </div>
                                 </div>

@@ -7,10 +7,10 @@
 /*
  * Your clients ViewModel code goes here
  */
-define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
+define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
-    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol','ojs/ojvalidation-datetime'],
-        function (app,Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
+    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojcheckboxset', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol','ojs/ojvalidation-datetime'],
+        function (app,keySet,Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
 
             function ClientViewModel() {
                 var self = this;
@@ -25,6 +25,8 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 				self.clientNeedRowSelected = ko.observableArray();
 				self.dateNeededConvertor = ko.observable("");
 				self.needNotesUpdateVal = ko.observable("");
+				self.clientNeedMatchesDataProvider = ko.observable();
+
 
 
                 self.connected = function () {
@@ -46,6 +48,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 						sortable:"disabled"}
 					];
 					
+					
 					self.dateConverter = ko.observable(oj.Validation.converterFactory(oj.ConverterFactory.CONVERTER_TYPE_DATETIME).
 					createConverter(
 					{
@@ -65,6 +68,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                     self.offerTypeSelected = ko.observable("");
                     self.offerTypesCategorySelected = ko.observable("");
 					self.disableNeedSaveButton = ko.observable(true);
+					self.disableNeedMatchesSaveButton = ko.observable(false);
 					self.clientName=ko.observable("");
 					self.clientEmail=ko.observable("");
 					self.clientAddress=ko.observable("");
@@ -79,7 +83,11 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					self.currentType="";
 					self.currentNeedId="";
 					self.loadingNeed=false;
+
 					
+					self.needMatchesHeaderCheckStatus=ko.observableArray(['checked']);
+
+
 					self.populateResponse=function(response){
 						self.clientName(response.name);
 						self.clientEmail(response.email);
@@ -294,7 +302,25 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             self.needNotesUpdateVal("");
                             self.disableNeedSaveButton(true);
                             document.getElementById('addNeedDialog').close();
-                        };
+						};
+						
+						self.needMatchesHeaderCheckboxListener= function (event) {
+							if (event.detail != null) {
+							  var value = event.detail.value;
+							  if (value.length > 0) {
+								self.organization_list.forEach(function (part,index, theArray) {
+									self.organization_list[index].selected=['checked'];
+								});
+								self.clientNeedMatchesDataProvider(new ArrayDataProvider(self.organization_list, { keyAttributes: 'organization_id', implicitSort: [{ attribute: 'organization_name', direction: 'ascending' }] }));
+							  } else if (value.length === 0 && event.detail.updatedFrom == 'internal') {
+								  self.organization_list.forEach(function (part,index, theArray) {
+									self.organization_list[index].selected=[];
+								});
+								self.clientNeedMatchesDataProvider(new ArrayDataProvider(self.organization_list, { keyAttributes: 'organization_id', implicitSort: [{ attribute: 'organization_name', direction: 'ascending' }] }));
+							}
+							}
+						  }.bind(self);																	
+
                     }();
 
 					var duplicateCheckDialogLogic = function() {
@@ -445,16 +471,99 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 								}
 						}
 
+						self.organization_list=[];
+
+
+						self.submitNeed = function(event){
+							if($('#datepickerEditNeedDateNeeded')[0].value.length<1){
+								var element1 = document.getElementById('datepickerEditNeedDateNeeded');
+								element1.showMessages();
+								self.postText("Error: Need not saved.");
+								return;
+							}
+							document.getElementById('addNeedMatchesDialog').open();
+								responseJson = {
+								type: $('#selectEditNeedType')[0].valueItem.data.value,
+								date_needed: utils.formatDate($('#datepickerEditNeedDateNeeded')[0].value)
+							};
+							
+
+							//POST /rest/need_requests - REST
+							return $.when(restClient.doPostJson(`/rest/clients/${self.clientId()}/client_needs/matches`, responseJson)
+								.then(
+									success = function (response) {
+										console.log(response);
+										// get just the unique organizations
+										self.organization_list=response.map(function(obj){ return {organization_id:obj.organization_id,organization_name:obj.organization_name,selected:['checked']}});
+										self.organization_list=[...new Map(self.organization_list.map(item =>[item['organization_id'], item])).values()];
+
+										self.clientNeedMatchesDataProvider(new ArrayDataProvider(self.organization_list, { keyAttributes: 'organization_id', implicitSort: [{ attribute: 'organization_name', direction: 'ascending' }] }));
+									},
+									error = function (response) {
+										self.postTextColor("red");
+											self.postText("Error: Could not find matches.");
+											console.log("could not find matches");
+
+								})
+							);
+
+						}
+
+						self.closeAddNeedMatchesModalButton = function(event){
+							document.getElementById('addNeedMatchesDialog').close();
+						}
+
+						self.saveMatchesButton = function(event){
+							postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${self.clientId()}/client_needs`;
+							if(self.currentNeedId===""){
+								responseJson = {
+								type: $('#selectEditNeedType')[0].valueItem.data.value,
+								date_needed: utils.formatDate($('#datepickerEditNeedDateNeeded')[0].value),
+								notes: $('#textareaEditNeedNotes')[0].value
+							};
+							} else {
+								responseJson = {
+									id:self.currentNeedId,
+									type: $('#selectEditNeedType')[0].valueItem.data.value,
+									date_needed: utils.formatDate($('#datepickerEditNeedDateNeeded')[0].value),
+									notes: $('#textareaEditNeedNotes')[0].value
+								};
+
+							}	
+							self.fileContentPosted(false);
+							self.disableSaveButton(true);
+							//POST /rest/need_requests - REST
+							return $.when(restClient.doPost(postAddress, responseJson)
+								.then(
+									success = function (response) {
+										self.postTextColor("green");
+											self.postText("You have succesfully saved the need.");
+											console.log("need data posted");
+											//update clientNeedsTable
+											self.getClientNeedsAjax(self.clientId());
+									},
+									error = function (response) {
+										self.postTextColor("red");
+											self.postText("Error: Need not saved.");
+											console.log("need data not posted");
+
+								}).then(function () {
+									self.fileContentPosted(true);
+									$(".postMessage").css('display', 'inline-block').fadeOut(2000, function(){
+										self.disableSaveButton(false);
+									});
+								}).then(function () {
+									self.closeAddNeedModalButton();
+									document.getElementById('addNeedMatchesDialog').close();
+									console.log(responseJson);
+								})
+							);
+							document.getElementById('addNeedMatchesDialog').close();
+						}
+
 
                         self.saveButton = function (event) {
-                            //locale "en-GB" - change UTC to YYYY-MM-DD
-                            _formatDate = function(inputDate) {
-                                if (inputDate !== null) {
-                                    return inputDate.split('T')[0];
-                                } else {
-                                    return null;
-                                }
-                            };
+							//locale "en-GB" - change UTC to YYYY-MM-DD
 
                             var postAddress;
                             var responseJson;
@@ -538,55 +647,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 								}
 
                             } else if (event.target.id === "editNeedSaveButton")  {
-								if($('#datepickerEditNeedDateNeeded')[0].value.length<1){
-									var element1 = document.getElementById('datepickerEditNeedDateNeeded');
-									element1.showMessages();
-									self.postText("Error: Need not saved.");
-									return;
-								}
-                                postAddress = `${restUtils.constructUrl(restUtils.EntityUrl.CLIENTS)}/${self.clientId()}/client_needs`;
-								if(self.currentNeedId===""){
-									responseJson = {
-                                    type: $('#selectEditNeedType')[0].valueItem.data.value,
-                                    date_needed: _formatDate($('#datepickerEditNeedDateNeeded')[0].value),
-                                    notes: $('#textareaEditNeedNotes')[0].value
-								};
-								} else {
-									responseJson = {
-										id:self.currentNeedId,
-										type: $('#selectEditNeedType')[0].valueItem.data.value,
-										date_needed: _formatDate($('#datepickerEditNeedDateNeeded')[0].value),
-										notes: $('#textareaEditNeedNotes')[0].value
-									};
-	
-								}	
-								self.fileContentPosted(false);
-								self.disableSaveButton(true);
-								//POST /rest/need_requests - REST
-								return $.when(restClient.doPost(postAddress, responseJson)
-									.then(
-										success = function (response) {
-											self.postTextColor("green");
-												self.postText("You have succesfully saved the need.");
-												console.log("need data posted");
-												//update clientNeedsTable
-												self.getClientNeedsAjax(self.clientId());
-										},
-										error = function (response) {
-											self.postTextColor("red");
-												self.postText("Error: Need not saved.");
-												console.log("need data not posted");
 
-									}).then(function () {
-										self.fileContentPosted(true);
-										$(".postMessage").css('display', 'inline-block').fadeOut(2000, function(){
-											self.disableSaveButton(false);
-										});
-									}).then(function () {
-										self.closeAddNeedModalButton();
-										console.log(responseJson);
-									})
-								);
                             };
 
                         };
@@ -664,7 +725,9 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             //even if error remove loading bar
                             self.clientsLoaded(true);
                         });
-                    }();
+					}();
+					
+	
                 };
 
                 self.disconnected = function () {

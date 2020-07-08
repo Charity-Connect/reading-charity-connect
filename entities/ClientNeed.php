@@ -85,12 +85,17 @@ class ClientNeed{
 			$this->updated_by=$_SESSION['display_name'];
 
 			$offer_list=$this->getMatchingOffers();
-			foreach($offer_list as $org_id=>$off_id){
+			$org_list=array();
+			foreach($offer_list as $offer_item){
+				if(in_array($offer_item->organization_id,$org_list)){
+					continue;
+				}
+				array_push($org_list,$offer_item->organization_id);
 
 				$need_request=new NeedRequest($this->connection);
 				$need_request->client_need_id=$this->id;
-				$need_request->request_organization_id=$org_id;
-				$need_request->offer_id=$off_id;
+				$need_request->request_organization_id=$offer_item->organization_id;
+				$need_request->offer_id=$offer_item->offer_id;
 				$need_request->client_id=$this->client_id;
 				$need_request->type=$this->type;
 				$need_request->need_notes=$this->notes;
@@ -113,6 +118,8 @@ class ClientNeed{
 
 	public function getMatchingOffers(){
 		$sql="select o.id
+		,o.name
+		,org.name as organization_name
 		,o.organization_id
 		,o.latitude as offer_latitude
 		,o.longitude as offer_longitude
@@ -122,16 +129,15 @@ class ClientNeed{
 		,o.longitude as client_longitude
 		from clients c
 		, offers o
-		, client_needs n
+		,organizations org
 		where
-		c.id=n.client_id
-		and n.id=:id
-		and o.type=n.type
+		c.id=:client_id
+		and o.organization_id=org.id
+		and o.type=:type
 		and o.quantity_taken<o.quantity
-		and date(n.date_needed) between date(o.date_available) and date(coalesce(o.date_end,n.date_needed))";
+		and date(:date_needed) between date(o.date_available) and date(coalesce(o.date_end,:date_needed))";
 		$stmt = $this->connection->prepare($sql);
-		$stmt->execute(['id'=>$this->id]);
-
+		$stmt->execute(['client_id'=>$this->client_id,'type'=>$this->type,'date_needed'=>$this->date_needed]);
 		$offer_list=array();
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 			if(!is_null($row['distance'])&&!is_null($row['offer_latitude'])){
@@ -144,7 +150,12 @@ class ClientNeed{
 					}
 				}
 			}
-		$offer_list[$row['organization_id']]=$row['id'];
+		array_push($offer_list,array("offer_id"=>$row['id']
+		,"offer_name"=>$row['name']
+		,"organization_id"=>$row['organization_id']
+		,"organization_name"=>$row['organization_name']
+		));
+		//$offer_list[$row['organization_id']]=$row['id'];
 		}
 		return $offer_list;
 
@@ -236,11 +247,16 @@ class ClientNeed{
 					$stmt->execute(['id'=>$this->id]);
 		
 					$offer_list=$this->getMatchingOffers();
-					foreach($offer_list as $org_id=>$off_id){
+					$org_list=array();
+					foreach($offer_list as $offer_item){
+						if(in_array($offer_item['organization_id'],$org_list)){
+							continue;
+						}
+						array_push($org_list,$offer_item['organization_id']);
 						$need_request=new NeedRequest($this->connection);
 						$need_request->client_need_id=$this->id;
-						$need_request->request_organization_id=$org_id;
-						$need_request->offer_id=$off_id;
+						$need_request->request_organization_id=$offer_item['organization_id'];
+						$need_request->offer_id=$offer_item['offer_id'];
 						$need_request->client_id=$this->client_id;
 						$need_request->type=$this->type;
 						$need_request->need_notes=$this->notes;
