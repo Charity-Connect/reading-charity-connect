@@ -48,8 +48,9 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					self.quantity= ko.observable("");
 					self.category= ko.observable("");
 					self.type= ko.observable("");
-					self.postcode= ko.observable("");
-					self.distance= ko.observable("");
+                    self.postcode= ko.observable("");
+                    self.rawDistanceValue= ko.observable("")
+					self.distance= ko.observable(null);
 					self.startDate= ko.observable("");
 					self.endDate= ko.observable("");
 					self.notes= ko.observable("");
@@ -104,7 +105,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 						}
 						self.typeVal=response.type;
 						self.postcode(response.postcode);
-						self.distance(response.distance);
+						self.distance(parseFloat(response.distance));
 						self.startDate(response.date_available);
 						self.endDate(response.date_end);
 						self.notes(response.details);
@@ -126,7 +127,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 						self.category("");
 						self.type("");
 						self.postcode("");
-						self.distance("");
+						self.distance(null);
 						self.startDate("");
 						self.endDate("");
 						self.notes("");
@@ -155,25 +156,38 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 							var element2 = document.getElementById('selectEditCategory');
 							var element3 = document.getElementById('selectEditType');
 							var element4 = document.getElementById('inputEditQuantity');
-							var element5 = document.getElementById('datepickerEditDateAvailable');
+                            var element5 = document.getElementById('datepickerEditDateAvailable');
 
 							if(self.offerName().length<1||self.type().length<1||self.quantity().length<1||self.startDate().length<1){
-								element1.showMessages();
+                                element1.showMessages();
 								element2.showMessages();
 								element3.showMessages();
 								element4.showMessages();
-								element5.showMessages();
-								self.postTextColor("red");
+                                element5.showMessages();
+                                self.postTextColor("red");
 								self.postText("Error: Offer not saved.");
 								self.fileContentPosted(true);
-								$(".postMessage").css('display', 'inline-block').fadeOut(4000, function(){
+								$("#postMessage").css('display', 'inline-block').fadeOut(4000, function(){
 									self.disableSaveButton(false);
 								});
 
 								return;
 
-							}
-	
+                            }
+
+                            function isNumber(n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) }
+                            if (self.distance()<0||self.distance()>10000||!isNumber(self.rawDistanceValue())){
+                                self.postTextColor("red");
+								self.postText("Error: Distance not valid.");
+								self.fileContentPosted(true);
+								$("#postMessage").css('display', 'inline-block').fadeOut(4000, function(){
+									self.disableSaveButton(false);
+								});
+                                
+                                return;
+
+                            }
+
                             //locale "en-GB" - change UTC to YYYY-MM-DD
                             _formatDate = function(inputDate) {
                                 if (inputDate !== null) {
