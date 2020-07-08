@@ -52,6 +52,7 @@ CREATE TABLE `client_needs` (
   `client_id` int(11) NOT NULL,
   `requesting_organization_id` int(11) DEFAULT NULL,
   `type` varchar(30) NOT NULL,
+  `type_id` int(11) NOT NULL,
   `date_needed` date DEFAULT NULL,
   `notes` varchar(2000) DEFAULT NULL,
   `need_met` varchar(1) NOT NULL DEFAULT 'N',
@@ -108,6 +109,7 @@ CREATE TABLE `offers` (
   `organization_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `type` varchar(30) NOT NULL,
+  `type_id` int(11) NOT NULL,
   `details` varchar(2000) DEFAULT NULL,
   `quantity` int(11) DEFAULT NULL,
   `quantity_taken` int(11) NOT NULL DEFAULT '0',
@@ -124,9 +126,10 @@ CREATE TABLE `offers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `offer_types` (
-  `type` varchar(30) NOT NULL,
+  `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `category` varchar(30) DEFAULT NULL,
+  `category_id` int(11) NOT NULL,
   `default_text` varchar(2000) DEFAULT NULL,
   `active` varchar(1) NOT NULL DEFAULT 'Y',
   `creation_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -135,15 +138,15 @@ CREATE TABLE `offer_types` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-REPLACE INTO `offer_types` (`type`, `name`, `category`, `default_text`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
-('company', 'Companionship visit', 'company', 'Suitable times: ', 'Y', '2020-06-30 09:51:46', 1, '2020-06-30 09:51:46', 1),
-('cooking', 'Help with cooking', 'food', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
-('food_parcel', 'Food Parcel', 'food', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
-('home', 'Home', 'befriending', '', 'Y', '2020-07-07 09:04:56', 1, '2020-07-07 09:04:56', 1),
-('OR1', 'CV help', 'benefits_advice', '', 'Y', '2020-07-07 09:07:43', 31, '2020-07-07 09:07:43', 31),
-('phone', 'Phone', 'befriending', '', 'Y', '2020-07-07 09:04:42', 1, '2020-07-07 09:04:42', 1),
-('prescription_collection', 'Prescription Collection', 'medical', NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
-('readifood', 'ReadiFood Referral', 'food', 'Please complete the following fields so that we can submit the request automatically. Fields with a * next to them must be completed. Any optional fields not completed will be set to No.\n\n* Reason for food parcel request: \n\nHome Delivery (Y/N):\n\nFood Preferences\nNo Cooking Facilities (Y/N):\nVegetarian (Y/N):\nHalal (Y/N):\nDiabetic (Y/N):\nGluten Free (Y/N):\nOther:\n\n* Number of weeks (1-4):\n\nAdditional Items\nNappies (Y/N):\nNappy Size:\nBaby Toiletries (Y/N):\nBaby Food 4-6m (Y/N):\nBaby Food 7-12m (Y/N):\nOther:\n\n* Number of Adults (0-5):\n* Number of Children (0-5):\nAge and gender of Children: ', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL);
+REPLACE INTO `offer_types` (`id`, `name`, `category`, `category_id`, `default_text`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+(1, 'Companionship visit', 'company', 4, 'Suitable times: ', 'Y', '2020-06-30 09:51:46', 1, '2020-07-08 22:13:17', 1),
+(2, 'Help with cooking', 'food', 6, NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-07-08 22:13:17', NULL),
+(3, 'Food Parcel', 'food', 6, NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-07-08 22:13:17', NULL),
+(4, 'Home', 'befriending', 1, '', 'Y', '2020-07-07 09:04:56', 1, '2020-07-08 22:13:17', 1),
+(5, 'CV help', 'benefits_advice', 2, '', 'Y', '2020-07-07 09:07:43', 31, '2020-07-08 22:13:17', 31),
+(6, 'Phone', 'befriending', 1, '', 'Y', '2020-07-07 09:04:42', 1, '2020-07-08 22:13:17', 1),
+(7, 'Prescription Collection', 'medical', 8, NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-07-08 22:13:17', NULL),
+(8, 'ReadiFood Referral', 'food', 6, 'Please complete the following fields so that we can submit the request automatically. Fields with a * next to them must be completed. Any optional fields not completed will be set to No.\n\n* Reason for food parcel request: \n\nHome Delivery (Y/N):\n\nFood Preferences\nNo Cooking Facilities (Y/N):\nVegetarian (Y/N):\nHalal (Y/N):\nDiabetic (Y/N):\nGluten Free (Y/N):\nOther:\n\n* Number of weeks (1-4):\n\nAdditional Items\nNappies (Y/N):\nNappy Size:\nBaby Toiletries (Y/N):\nBaby Food 4-6m (Y/N):\nBaby Food 7-12m (Y/N):\nOther:\n\n* Number of Adults (0-5):\n* Number of Children (0-5):\nAge and gender of Children: ', 'Y', '2020-05-31 14:20:17', NULL, '2020-07-08 22:13:17', NULL);
 
 CREATE TABLE `organizations` (
   `id` int(11) NOT NULL,
@@ -197,7 +200,7 @@ REPLACE INTO `strings` (`code`, `string`, `creation_date`, `created_by`, `update
 ('password_reset_subject', 'Reading Charity Connect Password Reset', '2020-05-31 14:20:17', NULL, '2020-07-06 10:56:10', NULL);
 
 CREATE TABLE `type_categories` (
-  `code` varchar(30) NOT NULL,
+  `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `active` varchar(1) NOT NULL DEFAULT 'Y',
   `creation_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -206,17 +209,17 @@ CREATE TABLE `type_categories` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-REPLACE INTO `type_categories` (`code`, `name`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
-('befriending', 'Befriending', 'Y', '2020-06-30 15:10:52', NULL, '2020-06-30 15:10:52', NULL),
-('benefits_advice', 'Benefits advice', 'Y', '2020-06-30 15:11:45', NULL, '2020-06-30 15:11:45', NULL),
-('carer_support', 'Carer support', 'Y', '2020-06-30 15:11:20', NULL, '2020-06-30 15:11:20', NULL),
-('company', 'Company and visits', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
-('employement_support', 'Support to employment', 'Y', '2020-06-30 15:10:52', NULL, '2020-06-30 15:10:52', NULL),
-('food', 'Food', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
-('food_parcel', 'Food parcel', 'Y', '2020-06-30 15:11:45', NULL, '2020-06-30 15:11:45', NULL),
-('medical', 'Medical', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
-('mental_health', 'Mental health and wellbeing', 'Y', '2020-06-30 15:11:20', NULL, '2020-06-30 15:11:20', NULL),
-('shopping', 'Shopping', 'Y', '2020-06-30 15:11:56', NULL, '2020-06-30 15:11:56', NULL);
+REPLACE INTO `type_categories` (`id`, `name`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+(1, 'Befriending', 'Y', '2020-06-30 15:10:52', NULL, '2020-06-30 15:10:52', NULL),
+(2, 'Benefits advice', 'Y', '2020-06-30 15:11:45', NULL, '2020-06-30 15:11:45', NULL),
+(3, 'Carer support', 'Y', '2020-06-30 15:11:20', NULL, '2020-06-30 15:11:20', NULL),
+(4, 'Company and visits', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+(5, 'Support to employment', 'Y', '2020-06-30 15:10:52', NULL, '2020-06-30 15:10:52', NULL),
+(6, 'Food', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+(7, 'Food parcel', 'Y', '2020-06-30 15:11:45', NULL, '2020-06-30 15:11:45', NULL),
+(8, 'Medical', 'Y', '2020-05-31 14:20:17', NULL, '2020-05-31 14:20:17', NULL),
+(9, 'Mental health and wellbeing', 'Y', '2020-06-30 15:11:20', NULL, '2020-06-30 15:11:20', NULL),
+(10, 'Shopping', 'Y', '2020-06-30 15:11:56', NULL, '2020-06-30 15:11:56', NULL);
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
@@ -293,7 +296,7 @@ ALTER TABLE `offers`
   ADD KEY `offer_organization` (`organization_id`);
 
 ALTER TABLE `offer_types`
-  ADD PRIMARY KEY (`type`);
+  ADD PRIMARY KEY (`id`) USING BTREE;
 
 ALTER TABLE `organizations`
   ADD PRIMARY KEY (`id`),
@@ -306,7 +309,7 @@ ALTER TABLE `strings`
   ADD PRIMARY KEY (`code`);
 
 ALTER TABLE `type_categories`
-  ADD PRIMARY KEY (`code`);
+  ADD PRIMARY KEY (`id`) USING BTREE;
 
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
@@ -344,11 +347,17 @@ ALTER TABLE `need_requests`
 ALTER TABLE `offers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+ALTER TABLE `offer_types`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
 ALTER TABLE `organizations`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `roles`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+ALTER TABLE `type_categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
