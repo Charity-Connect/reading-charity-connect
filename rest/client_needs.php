@@ -32,8 +32,10 @@ if(isset($_GET["view"]))
 
 	} else if(isset($data['id'])){
         $client_needs->id = $data['id'];
-        $client_needs->client_id=$_GET["client_id"];
-        if($client_needs->update()){
+		$client_needs->client_id=$_GET["client_id"];
+		$organization_list = $data['organization_list'];
+
+        if($client_needs->update($organization_list)){
             $client_needs->read();
             echo json_encode($client_needs);
         }else{
@@ -44,7 +46,8 @@ if(isset($_GET["view"]))
 
     } else {
         $client_needs->client_id=$_GET["client_id"];
-		$id=$client_needs->create();
+		$organization_list = $data['organization_list'];
+		$id=$client_needs->create($organization_list);
         if($id>0){
             $client_needs_arr  = array(
                     "id" => $client_needs->id,

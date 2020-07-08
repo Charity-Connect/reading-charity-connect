@@ -55,7 +55,7 @@ class ClientNeed{
 	,offer_types types 
 	where types.type=cn.type ";
 
-	public function create(){
+	public function create($organization_list){
 
 		$stmt=$this->client->readOne($this->client_id);
 		global $site_address;
@@ -87,15 +87,15 @@ class ClientNeed{
 			$offer_list=$this->getMatchingOffers();
 			$org_list=array();
 			foreach($offer_list as $offer_item){
-				if(in_array($offer_item->organization_id,$org_list)){
+				if(in_array($offer_item['organization_id'],$org_list)||!in_array($offer_item['organization_id'],$organization_list)){
 					continue;
 				}
-				array_push($org_list,$offer_item->organization_id);
+				array_push($org_list,$offer_item['organization_id']);
 
 				$need_request=new NeedRequest($this->connection);
 				$need_request->client_need_id=$this->id;
-				$need_request->request_organization_id=$offer_item->organization_id;
-				$need_request->offer_id=$offer_item->offer_id;
+				$need_request->request_organization_id=$offer_item['organization_id'];
+				$need_request->offer_id=$offer_item['offer_id'];
 				$need_request->client_id=$this->client_id;
 				$need_request->type=$this->type;
 				$need_request->need_notes=$this->notes;
@@ -207,7 +207,7 @@ class ClientNeed{
 
 	}
 
-	public function update(){
+	public function update($organization_list){
 		global $site_address;
 		global $ui_root;
 
@@ -249,7 +249,7 @@ class ClientNeed{
 					$offer_list=$this->getMatchingOffers();
 					$org_list=array();
 					foreach($offer_list as $offer_item){
-						if(in_array($offer_item['organization_id'],$org_list)){
+						if(in_array($offer_item['organization_id'],$org_list)||!in_array($offer_item['organization_id'],$organization_list)){
 							continue;
 						}
 						array_push($org_list,$offer_item['organization_id']);

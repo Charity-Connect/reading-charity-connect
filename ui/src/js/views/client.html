@@ -204,37 +204,44 @@
 					</div>
 					<oj-dialog style="display:none" id="addNeedMatchesDialog" class="oj-sm-12 oj-md-8" dialog-title="Matching Offers" cancel-behavior="none">
 						<div slot="body">
-							<p>We found the following offers from other organisations which match your client's needs. We'll send the request to all of them by default, but you can deselect some if you know for sure they wouldn't be right.</p>
-							<oj-table id='matchingOffersTable' aria-label='MatchingOffers'
-							data='[[clientNeedMatchesDataProvider]]'
-							columns='[{ "headerTemplate": "headerCheckTemplate",
-							"field": "selected",
-							"headerText":"Select All",
-							"template": "checkTemplate",
-							"sortable": "disabled"
-						  },
-									  {"headerText": "Organisation Name", 
-									   "field": "organization_name",
-									   "resizable": "enabled"}]'
-							style='width: 100%;'>
-							<template slot="headerCheckTemplate" >
-								<oj-checkboxset value='[[needMatchesHeaderCheckStatus]]'
-												on-value-changed='[[needMatchesHeaderCheckboxListener]]'
-												class='oj-checkboxset-no-chrome oj-selection-checkbox'
-												id="table_header_checkbox">
-									<oj-option  aria-label="Checkbox Select All" value="checked"></oj-option>
-								</oj-checkboxset>   
-							</template>
-							<template slot="checkTemplate" data-oj-as="cell">
-								<oj-checkboxset value='{{cell.row.selected}}'
-												class='oj-checkboxset-no-chrome oj-selection-checkbox'
-												:id="[['table_checkboxset' + cell.key]]"
-												:data-row-key="{{cell.row.organization_id}}">
-									<oj-option :id="[['table_checkbox' + cell.key]]" aria-label="[['Checkbox Select Row ' + cell.row.organization_id]]" value="checked"></oj-option>
-								</oj-checkboxset>   
-							</template>
-			  
-						</oj-table>
+							<oj-bind-if test="[[matchingOffersFound()===true]]">
+								<p>We found the following offers from other organisations which match your client's needs. We'll send the request to all of them by default, but you can deselect some if you know for sure they wouldn't be right.</p>
+								<oj-table id='matchingOffersTable' aria-label='MatchingOffers'
+								data='[[clientNeedMatchesDataProvider]]'
+								columns='[{ "headerTemplate": "headerCheckTemplate",
+								"field": "selected",
+								"headerText":"Select All",
+								"template": "checkTemplate",
+								"sortable": "disabled"
+							},
+										{"headerText": "Organisation Name", 
+										"field": "organization_name",
+										"resizable": "enabled"}]'
+								style='width: 100%;'>
+								<template slot="headerCheckTemplate" >
+									<oj-checkboxset value='[[needMatchesHeaderCheckStatus]]'
+													on-value-changed='[[needMatchesHeaderCheckboxListener]]'
+													class='oj-checkboxset-no-chrome oj-selection-checkbox'
+													id="table_header_checkbox">
+										<oj-option  aria-label="Checkbox Select All" value="checked"></oj-option>
+									</oj-checkboxset>   
+								</template>
+								<template slot="checkTemplate" data-oj-as="cell">
+									<oj-checkboxset value='{{cell.row.selected}}'
+													class='oj-checkboxset-no-chrome oj-selection-checkbox'
+													:id="[['table_checkboxset' + cell.key]]"
+													:data-row-key="{{cell.row.organization_id}}">
+										<oj-option :id="[['table_checkbox' + cell.key]]" aria-label="[['Checkbox Select Row ' + cell.row.organization_id]]" value="checked"></oj-option>
+									</oj-checkboxset>   
+								</template>
+				
+							</oj-table>
+					</oj-bind-if>
+					<oj-bind-if test="[[matchingOffersFound()===false]]">
+						<p>We could not find any organizations who are able to meet your client's needs. Try another date, or vary the type of request to better find a match.</p>
+
+					</oj-bind-if>
+
 						</div>
 						<div slot="footer">
 							<div class="oj-flex-bar sm-1x-row">
@@ -256,7 +263,7 @@
 								</div>
 								<div class="oj-sm-padding-1x-horizontal oj-flex">
 									<oj-button id="editNeedSaveButton" on-oj-action='[[saveMatchesButton]]'
-											   disabled="[[disableNeedMatchesSaveButton]]">
+											   disabled="[[matchingOffersFound()===false]]">
 										<span>Save</span>
 									</oj-button>
 								</div>
