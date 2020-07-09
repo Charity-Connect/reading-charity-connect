@@ -45,7 +45,8 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					self.cancelButtonName=ko.observable("Cancel");
 					self.offerId=ko.observable(offerIdIn);
 					self.offerName= ko.observable("");
-					self.quantity= ko.observable();
+                    self.rawQuantityValue= ko.observable();
+                    self.quantity= ko.observable();
 					self.category_id= ko.observable("");
 					self.type_id= ko.observable("");
                     self.postcode= ko.observable("");
@@ -198,6 +199,21 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 return;
 
                             }
+
+
+                            if (self.quantity()==null||self.rawQuantityValue()==null||self.quantity()==""||self.rawQuantityValue()==""||self.quantity()<1||self.quantity()>=100000000000||!isNumber(String(self.rawQuantityValue()))||!isNumber(String(self.quantity()))){
+                                self.postTextColor("red");
+								self.postText("Error: Quantity not valid.");
+								self.fileContentPosted(true);
+								$("#postMessage").css('display', 'inline-block').fadeOut(4000, function(){
+									self.disableSaveButton(false);
+								});
+                                
+                                return;
+
+                            }
+
+                            console.log(self.rawQuantityValue());
 
                             //locale "en-GB" - change UTC to YYYY-MM-DD
                             _formatDate = function(inputDate) {
