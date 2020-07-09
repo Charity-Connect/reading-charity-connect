@@ -45,7 +45,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					self.cancelButtonName=ko.observable("Cancel");
 					self.offerId=ko.observable(offerIdIn);
 					self.offerName= ko.observable("");
-					self.quantity= ko.observable("");
+					self.quantity= ko.observable();
 					self.category_id= ko.observable("");
 					self.type_id= ko.observable("");
                     self.postcode= ko.observable("");
@@ -106,7 +106,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					
 					self.populateResponse=function(response){
 						self.offerName(response.name);
-						self.quantity(response.quantity);
+						self.quantity(parseInt(response.quantity));
 						if(response.hasOwnProperty('category_id')){
 							self.category_id(response.category_id);
 						}
@@ -132,7 +132,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 					self.clearResponse=function(){
 					
 						self.offerName("");
-						self.quantity("");
+						self.quantity();
 						self.typeVal="";
 						self.category_id(null);
 						self.type_id("");
@@ -168,7 +168,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 							var element4 = document.getElementById('inputEditQuantity');
                             var element5 = document.getElementById('datepickerEditDateAvailable');
 
-							if(self.offerName().length<1||self.type_id().length<1||self.quantity().length<1||self.startDate().length<1){
+							if(self.offerName().length<1||self.type_id().length<1||self.quantity()==null||self.startDate().length<1){
                                 element1.showMessages();
 								element2.showMessages();
 								element3.showMessages();
@@ -212,7 +212,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 date_available: self.startDate(),
                                 date_end: self.endDate()===""?null:self.endDate(),
                                 details: self.notes().length<1?" ":self.notes(),
-                                distance: self.distance()===""?null:self.distance(),
+                                distance: self.distance(),
                                 name: self.offerName(),
                                 postcode: self.postcode()===""?null:self.postcode(),
                                 quantity: self.quantity(),
