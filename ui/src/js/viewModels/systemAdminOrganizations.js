@@ -7,14 +7,19 @@
 /*
  * Your admin ViewModel code goes here
  */
-define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','restUtils', 'ojs/ojknockouttemplateutils',
+define(['appController','utils','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','restUtils', 'ojs/ojknockouttemplateutils',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
-    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol','ojs/ojformlayout'],
-        function (utils,oj, ko, $, accUtils, restClient, restUtils,KnockoutTemplateUtils) {
+    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol','ojs/ojformlayout', 'ojs/ojdialog', 'ojs/ojcheckboxset'],
+        function (app,utils,Router,oj, ko, $, accUtils, restClient, restUtils,KnockoutTemplateUtils) {
 
             function AdminViewModel() {
                 var self = this;
-                utils.getSetLanguage();
+				utils.getSetLanguage();
+				
+				var router = Router.rootInstance;
+				if(app.userDetails.admin!="Y"){
+					return;
+				}
                 
                 self.postTextColor = ko.observable();
                 self.postText = ko.observable();
@@ -37,7 +42,30 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','re
                         {headerText: 'Name', field: "name"},
                         {headerText: 'Address', field: "address"},
                         {headerText: 'Phone', field: "phone"}
-                    ];
+					];
+					
+					self.userOrgValues = ko.observableArray();
+                    self.userValues = ko.observableArray();
+                    self.userOrgDataProvider = ko.observable();
+                    self.userRowSelected = ko.observableArray();
+                    self.userSelected = ko.observable("");
+                    self.userId = ko.observable();
+                    self.userName = ko.observable();
+                    self.userEmail = ko.observable();
+                    self.userPhone = ko.observable();
+                    self.userOrgId = ko.observable();
+                    self.userAdmin = ko.observableArray([]);
+                    self.userNeedApprover = ko.observableArray([]);
+                    self.userApprover = ko.observableArray([]);
+                    self.userConfirmed = ko.observableArray([]);
+                    self.userManageClients = ko.observableArray([]);
+                    self.userClientShareApprover = ko.observableArray([]);
+					self.userManageOffers = ko.observableArray([]);
+					self.userOrgLoaded= ko.observable();
+					self.userOrgValid= ko.observable();
+					self.duplicateUserId=0;
+
+
 
                     self.addOrganizationButtonSelected = ko.observableArray([]);
                     self.organizationRowSelected = ko.observableArray();
@@ -67,7 +95,16 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','re
 						} else {
 							self.orgUpdateDate("unknown");
 						}
-                         self.orgUpdatedBy(params.updated_by);
+						 self.orgUpdatedBy(params.updated_by);
+						 if(params.id){
+							Promise.all([self.getUserOrgData(params.id)])
+                            .catch(function () {
+                                //even if error remove loading bar
+                                self.organizationsLoaded(true);
+							});
+						}
+
+						 
                      }
 
                     var primaryHandlerLogic = function () {
@@ -90,24 +127,42 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','re
 
                         self.handleUserRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
-                                self.addOrganizationButtonSelected([]);
+								router.go('user/' + event.detail.value[0].startKey.row);
 
-                                //find whether node exists based on selection
-                                function searchNodes(nameKey, myArray) {
-                                    for (var i = 0; i < myArray.length; i++) {
-                                        if (myArray[i].id === nameKey) {
-                                            return myArray[i];
-                                        }
-                                    }
-                                };
-                                self.organizationSelected(searchNodes(event.target.currentRow.rowKey, self.organizationsValues()));
-
-                                console.log(self.organizationSelected());
                             }
                         };
                     }();
 
+					self.getUserOrgData = function (orgId) {
+						//GET /rest/organizations - REST
+						return $.when(restClient.doGetJson('/rest/organizations/' + orgId + '/user_organizations')
+							.then(
+								success = function (response) {
+									self.userOrgValues(response.user_organizations);
+									var userOrgs = self.userOrgValues().filter(function(user){
+										user.adminTable = [];
+										if (user.admin === "Y") {
+											user.adminTable = ['checked'];
+										}
 
+									});
+									
+										var sortCriteria = {key: 'name', direction: 'ascending'};
+										var arrayDataSource = new oj.ArrayTableDataSource(self.userOrgValues(), {idAttribute: 'user_id'});
+										arrayDataSource.sort(sortCriteria);
+										self.userOrgDataProvider(new oj.PagingTableDataSource(arrayDataSource));
+										self.userOrgLoaded(true);
+										self.userOrgValid(true);
+
+								},
+								error = function (response) {
+									console.log("User organizations not loaded");
+									self.userOrgValid(false);
+
+								})
+
+						);
+				}
                     self.saveButton = function (event, context) {
                         var orgData =
                             {
@@ -120,12 +175,13 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','re
                             orgData.id = self.orgDetailid();
                         }
 
-                        return $.when(restClient.doPost('/rest/organizations', orgData)
+                        return $.when(restClient.doPostJson('/rest/organizations', orgData)
                             .then(
                                 success = function (response) {
+									self.orgDetailid(response.id);
                                     self.postText("You have succesfully saved the organization.");
                                     self.postTextColor("green");
-                                    self.getOrganizationsAjax();
+									self.getOrganizationsAjax();
                                     console.log("org data posted");
                                 },
                                 error = function (response) {
@@ -162,6 +218,108 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','re
                         );
                     }
 
+					self.addUserButton = function(){
+						document.getElementById('addUserDialog').open();
+					}
+					self.saveUserButton = function(){
+						document.getElementById('addUserDialog').open();
+					}
+					self.closeAddUserButton = function(){
+						document.getElementById('addUserDialog').close();
+					}
+
+					self.emailChanged=function(event, data, bindingContext) {
+						$.when(restClient.doGetJson('/rest/users/exists/'+self.userEmail())
+						.then(
+							success= function(response){
+								if(response.exists){
+									duplicateUserId=response.id;
+									document.getElementById('duplicateUserDialog').open();
+								};
+							},
+							error=function(response){
+								console.log("could not check email");
+							}
+						)
+						);
+					  }
+
+					  self.closeAddUserToOrganizationButton = function(){
+						document.getElementById('duplicateUserDialog').close();
+						document.getElementById('addUserDialog').close();
+					}
+						self.addUserToOrganizationButton = function(){
+                        var userData =
+                            {
+                                "organization_id":self.orgDetailid(),
+								"user_id": duplicateUserId,
+								"admin":self.userAdmin().length>0?"Y":"N",
+								"user_approver":self.userAdmin().length>0?"Y":"N",
+								"need_approver":self.userAdmin().length>0?"Y":"N",
+								"manage_offers":"Y",
+								"manage_clients":"Y",
+								"client_share_approver":self.userAdmin().length>0?"Y":"N",
+								"confirmed":"Y"
+								
+                            };
+
+                        return $.when(restClient.doPostJson('/rest/user_organizations', userData)
+                            .then(
+                                success = function (response) {
+                                    self.postText("You have succesfully saved added the user to the organization.");
+									self.postTextColor("green");
+									document.getElementById('duplicateUserDialog').close();
+									document.getElementById('addUserDialog').close();
+									self.getUserOrgData(self.orgDetailid());
+
+                                },
+                                error = function (response) {
+                                    self.postText("Error: User changes not saved.");
+                                    self.postTextColor("red");
+                                    console.log("user data not posted");
+                                }).then(function () {
+                                self.fileContentPosted(true);
+                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                    //self.disableSaveButton(false);
+                                });
+                            })
+                        );
+					  }
+
+					self.saveUserButton = function () {
+
+                        var userData =
+                            {
+                                "organization_id":self.orgDetailid(),
+                                "user_name": self.userName(),
+                                "email": self.userEmail(),
+								"phone": null,
+								"admin":self.userAdmin().length>0?"Y":"N"
+                            };
+
+                        return $.when(restClient.doPostJson('/rest/users', userData)
+                            .then(
+                                success = function (response) {
+                                    self.postText("You have succesfully saved user details.");
+									self.postTextColor("green");
+									document.getElementById('addUserDialog').close();
+									self.getUserOrgData(self.orgDetailid());
+
+                                },
+                                error = function (response) {
+                                    self.postText("Error: User changes not saved.");
+                                    self.postTextColor("red");
+                                    console.log("user data not posted");
+                                }).then(function () {
+                                self.fileContentPosted(true);
+                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                    //self.disableSaveButton(false);
+                                });
+                            })
+                        );
+					};
+					
+					
                     var getData = function () {
                         self.organizationsLoaded = ko.observable();
                         self.organizationsValid = ko.observable();

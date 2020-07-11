@@ -46,7 +46,12 @@ if(isset($data)&&$method=="POST") {
 			http_response_code(400);
 			return;
 		}
-		$id=$user->create($organization_id);
+		$admin='N';
+		if(isset($data['admin'])&&is_admin()){
+			$admin=$data['admin'];
+		}
+	
+		$id=$user->create($organization_id,$admin);
 		if($id>0){
 					$user->read();
 					echo json_encode($user);
@@ -69,7 +74,13 @@ if(isset($data)&&$method=="POST") {
     if($view=="one") {
         $user->id=$_GET["id"];
         $user->read();
-        echo json_encode($user);
+		echo json_encode($user);
+	} else if($view=="exists") {
+		if($id=$user->userExists($_GET["email"])){
+			echo '{"exists":true,"id":'.$id.'}';
+		} else {
+			echo '{"exists":false}';
+		}
     } else if ($view=="current"){
         $user->id=$_SESSION["id"];
         $user->read();

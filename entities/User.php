@@ -31,7 +31,7 @@ class User{
 		$this->connection = $connection;
 	}
 
-	public function create($organization_id){
+	public function create($organization_id,$admin='N'){
 		global $site_address;
 
 		$sql = "INSERT INTO users ( password,display_name,email,phone,confirmation_string,created_by,updated_by) values (:password,:display_name,:email,:phone,:confirmation_string,:user_id,:user_id)";
@@ -66,12 +66,12 @@ class User{
 			$organization_user = new UserOrganization($this->connection);
 			$organization_user->user_id=$this->id;
 			$organization_user->organization_id=$organization_id;
-			$organization_user->admin='N';
-			$organization_user->user_approver='N';
-			$organization_user->need_approver='N';
+			$organization_user->admin=$admin;
+			$organization_user->user_approver=$admin;
+			$organization_user->need_approver=$admin;
 			$organization_user->manage_offers='Y';
 			$organization_user->manage_clients='Y';
-			$organization_user->client_share_approver='N';
+			$organization_user->client_share_approver=$admin;
 			if(isset($_SESSION['id'])){
 				$organization_user->confirmed='Y';
 			} else {
@@ -165,6 +165,19 @@ class User{
 					array_push($this->user_organizations,$user_organization);
 			}
 
+	}
+
+	public function userExists($email){
+		if(is_admin()||is_org_admin()){
+			$query = "SELECT id from users u  where u.email=:email";
+			$stmt = $this->connection->prepare($query);
+			$stmt->execute(['email'=>$email]);
+			if( $stmt->rowCount()==1){
+				$row = $stmt->fetch(PDO::FETCH_ASSOC);
+				return $row["id"];
+			}
+		}
+		return false;
 	}
 
 	public function readOne($id){
