@@ -17,9 +17,11 @@ if(isset($data)&&$method=="POST") {
 	if(isset($data['id'])){
 		$user_organization->id = $data['id'];
 	} else {
-		echo '{"error": "ID not set."}';
-		http_response_code(400);
-		return;
+		if(!is_admin()){
+			echo '{"error": "ID not set."}';
+			http_response_code(400);
+			return;
+		}
 	}
     $user_organization->admin = $data['admin'];
     $user_organization->user_approver = $data['user_approver'];
@@ -29,7 +31,10 @@ if(isset($data)&&$method=="POST") {
     $user_organization->client_share_approver = $data['client_share_approver'];
     if(isset($data['confirmed'])){
     	$user_organization->confirmed = $data['confirmed'];
-    }
+	}
+	if(isset($data['organization_id'])&&is_admin()){
+    	$user_organization->organization_id = $data['organization_id'];
+	}
 
 
     if(isset($data['id'])){
@@ -146,6 +151,8 @@ if(isset($data)&&$method=="POST") {
                 $user_organization  = array(
                 "id" => $id,
                 "user_id" => $user_id,
+                "display_name" => $display_name,
+                "email" => $email,
                 "organization_id" => $organization_id,
                 "admin" => $admin,
                 "user_approver" => $user_approver,

@@ -63,7 +63,7 @@ class NeedRequest{
 			,categories.name as category_name
 			,client_need.date_needed
 			,org.name source_organization_name
-			,if(request.complete='Y','N',if(target_date<CURDATE(),'Y','N')) as overdue
+			,if((request.agreed='Y' && request.complete='N' && target_date<CURDATE()),'Y','N') as overdue
 			from need_requests request
 			left join users create_user on create_user.id=request.created_by
 			left join users update_user on update_user.id=request.updated_by
