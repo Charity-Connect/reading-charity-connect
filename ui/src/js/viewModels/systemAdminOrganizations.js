@@ -229,7 +229,7 @@ define(['appController','utils','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery
 					}
 
 					self.emailChanged=function(event, data, bindingContext) {
-						$.when(restClient.doGetJson('/rest/users/exists/'+self.userEmail())
+						$.when(restClient.doPostJson('/rest/users/exists',{"email":self.userEmail()})
 						.then(
 							success= function(response){
 								if(response.exists){

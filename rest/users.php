@@ -7,6 +7,10 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 $user = new User($connection);
 $data = json_decode(file_get_contents('php://input'), true);
+$view = "";
+if(isset($_GET["view"]))
+	$view = $_GET["view"];
+
 if(isset($data)&&$method=="POST") {
     // doing a create or update
     header("Access-Control-Allow-Methods: POST");
@@ -14,7 +18,9 @@ if(isset($data)&&$method=="POST") {
     header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 
-    $user->display_name = $data['display_name'];
+	if(isset($data['display_name'])){
+		$user->display_name = $data['display_name'];
+	} 
 	if(isset($data['email'])){
 		$user->email = $data['email'];
 	} 
@@ -24,9 +30,17 @@ if(isset($data)&&$method=="POST") {
     $organization_id=$_SESSION['organization_id'];
     if(isset($data['organization_id'])){
     	$organization_id=$data['organization_id'];
-    }
+	}
 
-    if(isset($data['id'])){
+
+	
+	if($view=="exists") {
+		if($id=$user->userExists($user->email)){
+			echo '{"exists":true,"id":'.$id.'}';
+		} else {
+			echo '{"exists":false}';
+		}
+    } else if(isset($data['id'])){
         $user->id = $data['id'];
         if($user->update()){
             $user->read();
@@ -67,21 +81,12 @@ if(isset($data)&&$method=="POST") {
 
     // querying
 
-    $view = "";
-    if(isset($_GET["view"]))
-	    $view = $_GET["view"];
 
     if($view=="one") {
         $user->id=$_GET["id"];
         $user->read();
 		echo json_encode($user);
-	} else if($view=="exists") {
-		if($id=$user->userExists($_GET["email"])){
-			echo '{"exists":true,"id":'.$id.'}';
-		} else {
-			echo '{"exists":false}';
-		}
-    } else if ($view=="current"){
+	}  else if ($view=="current"){
         $user->id=$_SESSION["id"];
         $user->read();
         echo json_encode($user);
