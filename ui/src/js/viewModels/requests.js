@@ -104,7 +104,17 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 //                                    console.log(item);
                                 if (activeFilters["decisionFilter"] === "decisionFilterAll") {
                                     return true;
-                                } else if (activeFilters["decisionFilter"] === "decisionFilterCompleted") {
+                                } else if (activeFilters["decisionFilter"] === "decisionFilterUnreviewed") {
+									console.log(item);
+                                    if (item["agreed"] === undefined|| item["agreed"]==null) {
+                                        return true;
+                                    }
+                                }else if (activeFilters["decisionFilter"] === "decisionFilterAccepted") {
+									console.log(item);
+                                    if (item["agreed"] === 'Y'&&item["complete"] != "Y") {
+                                        return true;
+                                    }
+                                }else if (activeFilters["decisionFilter"] === "decisionFilterCompleted") {
                                     if (item["complete"] === "Y") {
                                         return true;
                                     }
