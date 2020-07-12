@@ -148,10 +148,21 @@
                               on-selection-changed="[[handleUserRowChanged]]"
                               selection-mode='{"row": "single"}'
                               columns='[{"headerText": "Name", "field": "display_name"},
-							  {"headerText": "Email", "field": "email"}]'
+							  {"headerText": "Email", "field": "email"},
+							  {"headerText": "Remove", "field":"id",
+							  "headerStyle": "text-align: center;",
+							  "style":"text-align: center; padding-top: 0px; padding-bottom: 0px;",
+							  "template": "deleteTemplate",
+							  "sortable":"disabled"}]'
                               display='grid'
                               data="[[userOrgDataProvider]]"
-                              style="width: 100%; height:100%;'">
+							  style="width: 100%; height:100%;">
+							  <template slot="deleteTemplate" data-oj-as="cell">
+								<oj-button :id="[[cell.data]]" display="icons" on-oj-action='[[userDeleteClicked]]' style="margin: 2px 0px 2px 0px ;">
+									<i slot='startIcon' class="fa fa-trash"></i>
+									remove
+								  </oj-button>
+							</template>
                     </oj-table>
 
                     <oj-paging-control id="userPaging" data='[[userOrgDataProvider]]'
@@ -192,19 +203,6 @@
 				<div class="oj-form oj-sm-odd-cols-1 oj-md-labels-inline oj-padding">
 					<div class="oj-flex oj-padding" >
 						<div class="oj-flex-item oj-padding-end">
-							<oj-label id="editUserNameLabel" for="inputEditUserName">User Name:*</oj-label>
-						</div>
-						<div class="oj-flex-item">
-							<oj-input-text  id="inputEditUserName" labelled-by="editUserNameLabel"
-											value="{{userName}}"
-											placeholder="Enter Name"
-											required>
-							</oj-input-text>
-						</div>
-					</div>
-
-					<div class="oj-flex oj-padding" >
-						<div class="oj-flex-item oj-padding-end">
 							<oj-label id="editEmailLabel" for="inputEditEmail" >Email:*</oj-label>
 						</div>
 						<div class="oj-flex-item">
@@ -216,6 +214,20 @@
 							</oj-input-text>
 						</div>
 					</div>
+					<div class="oj-flex oj-padding" >
+						<div class="oj-flex-item oj-padding-end">
+							<oj-label id="editUserNameLabel" for="inputEditUserName">User Name:*</oj-label>
+						</div>
+						<div class="oj-flex-item">
+							<oj-input-text  id="inputEditUserName" labelled-by="editUserNameLabel"
+											value="{{userName}}"
+											placeholder="Enter Name"
+											required>
+							</oj-input-text>
+						</div>
+					</div>
+
+
 
 					<div class="oj-flex oj-padding" >
 						<div class="oj-flex-item oj-padding-end">

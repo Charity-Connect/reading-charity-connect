@@ -148,7 +148,7 @@ define(['appController','utils','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery
 									});
 									
 										var sortCriteria = {key: 'name', direction: 'ascending'};
-										var arrayDataSource = new oj.ArrayTableDataSource(self.userOrgValues(), {idAttribute: 'user_id'});
+										var arrayDataSource = new oj.ArrayTableDataSource(self.userOrgValues(), {idAttribute: 'id'});
 										arrayDataSource.sort(sortCriteria);
 										self.userOrgDataProvider(new oj.PagingTableDataSource(arrayDataSource));
 										self.userOrgLoaded(true);
@@ -244,11 +244,11 @@ define(['appController','utils','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery
 						);
 					  }
 
-					  self.closeAddUserToOrganizationButton = function(){
+					self.closeAddUserToOrganizationButton = function(){
 						document.getElementById('duplicateUserDialog').close();
 						document.getElementById('addUserDialog').close();
 					}
-						self.addUserToOrganizationButton = function(){
+					self.addUserToOrganizationButton = function(){
                         var userData =
                             {
                                 "organization_id":self.orgDetailid(),
@@ -319,7 +319,27 @@ define(['appController','utils','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery
                         );
 					};
 					
-					
+					self.userDeleteClicked = function (event){
+						event.detail.originalEvent.stopPropagation();
+
+						return $.when(restClient.doDeleteJson('/rest/user_organizations/' + event.target.id)
+						.then(
+							success = function (response) {
+								self.getUserOrgData(self.orgDetailid());
+							},
+							error = function (response) {
+								self.postText("Error: User not deleted.");
+								self.postTextColor("red");
+								console.log("user_organizations data not deleted");
+							}).then(function () {
+							self.fileContentPosted(true);
+							$("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+								//self.disableSaveButton(false);
+							});
+						})
+					);
+
+					}
                     var getData = function () {
                         self.organizationsLoaded = ko.observable();
                         self.organizationsValid = ko.observable();
