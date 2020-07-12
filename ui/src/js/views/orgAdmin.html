@@ -28,10 +28,6 @@
                         </div>
                         <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">
-                                <oj-button id="addUserButton" class="oj-sm-float-end"
-                                           on-oj-action='[[addUserButton]]'>
-                                    <span>Add User</span>
-                                </oj-button>
                                 <oj-button id="saveOrgButton" class="oj-sm-float-end"
                                            on-oj-action='[[saveOrgButton]]'>
                                     <span>Save</span>
@@ -67,25 +63,46 @@
                         </div>
                     </oj-form-layout>
 
-					<div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">
-						<h3>
-							Organisation Users
-						</h3>
+					<div class="oj-flex sm-1x-row">
+						<div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
+							<h3>Organisation Users</h3>    
+						</div>                    
+						<div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+							<div class="oj-helper-clearfix">                                        
+								<oj-button id="addUserButton"  class="oj-sm-float-end oj-margin-end"
+								on-oj-action='[[addUserButton]]'>
+								<span>Add User</span>
+						 </oj-button>
+													  
+							</div>
+						</div>
 					</div>
-				<oj-table id="userTable" class="row-selectable" aria-label="table using array"
-                              selection="{{userRowSelected}}"
-                              on-selection-changed="[[handleUserRowChanged]]"
-                              selection-mode='{"row": "single"}'
-                              columns="{{userTableColumns}}"
-                              display='grid'
-                              data="[[userOrgDataProvider]]"
-                              style="width: 100%; height:100%;'">
-                    </oj-table>
+					
+					<oj-table id="userTable" class="row-selectable" aria-label="table using array"
+					selection="{{userRowSelected}}"
+					on-selection-changed="[[handleUserRowChanged]]"
+					selection-mode='{"row": "single"}'
+					columns='[{"headerText": "Name", "field": "display_name"},
+					{"headerText": "Email", "field": "email"},
+					{"headerText": "Remove", "field":"id",
+					"headerStyle": "text-align: center;",
+					"style":"text-align: center; padding-top: 0px; padding-bottom: 0px;",
+					"template": "deleteTemplate",
+					"sortable":"disabled"}]'
+					display='grid'
+					data="[[userOrgDataProvider]]"
+					style="width: 100%; height:100%;">
+					<template slot="deleteTemplate" data-oj-as="cell">
+					  <oj-button :id="[[cell.data]]" display="icons" on-oj-action='[[userDeleteClicked]]' style="margin: 2px 0px 2px 0px ;">
+						  <i slot='startIcon' class="fa fa-trash"></i>
+						  remove
+						</oj-button>
+				  </template>
+		  </oj-table>
 
-                    <oj-paging-control id="userPaging" data='[[userOrgDataProvider]]'
-                                       page-size='5' slot='bottom'>
-                    </oj-paging-control>
-
+		  <oj-paging-control id="userPaging" data='[[userOrgDataProvider]]'
+							 page-size='5' slot='bottom'>
+		  </oj-paging-control>
 
                 </div>
             </div>
@@ -101,5 +118,82 @@
                 </td>
             </script>
 
-    </oj-bind-if>
+	</oj-bind-if>
+	
+	<oj-dialog style="display:none" id="addUserDialog" class="oj-sm-12 oj-md-8" dialog-title="Add User" cancel-behavior="none">
+		<div slot="body">
+			<oj-form-layout label-edge="start">
+				<div class="oj-form oj-sm-odd-cols-1 oj-md-labels-inline oj-padding">
+					<div class="oj-flex oj-padding" >
+						<div class="oj-flex-item oj-padding-end">
+							<oj-label id="editEmailLabel" for="inputEditEmail" >Email:*</oj-label>
+						</div>
+						<div class="oj-flex-item">
+							<oj-input-text id="inputEditEmail" labelled-by="editEmailLabel"
+										   value="{{userEmail}}"
+										   on-value-changed="[[emailChanged]]"
+										   placeholder="Enter email"
+										   required>
+							</oj-input-text>
+						</div>
+					</div>
+					<div class="oj-flex oj-padding" >
+						<div class="oj-flex-item oj-padding-end">
+							<oj-label id="editUserNameLabel" for="inputEditUserName">User Name:*</oj-label>
+						</div>
+						<div class="oj-flex-item">
+							<oj-input-text  id="inputEditUserName" labelled-by="editUserNameLabel"
+											value="{{userName}}"
+											placeholder="Enter Name"
+											required>
+							</oj-input-text>
+						</div>
+					</div>
+
+			   </div>
+
+			</oj-form-layout>
+
+		</div>
+		<div slot="footer">
+			<div class="oj-flex-bar sm-1x-row">
+				<div class="oj-sm-padding-1x-horizontal oj-flex">
+					<oj-button id="addUserCancelButton"
+						   on-oj-action="[[closeAddUserButton]]" >
+						<span>Cancel</span>
+					</oj-button>
+				</div>
+				<div class="oj-sm-padding-1x-horizontal oj-flex">
+					<oj-button id="addUserSaveButton" on-oj-action='[[saveUserButton]]'>
+						<span>Save</span>
+					</oj-button>
+				</div>
+			</div>
+		</div>
+
+	</oj-dialog>	
+
+		<oj-dialog style="display:none" id="duplicateUserDialog" class="oj-sm-12 oj-md-8" dialog-title="Duplicate User" cancel-behavior="none">
+		<div slot="body">
+			<p>A user with this e-mail address already exists in the system. Do you want to add them to this organization?</p>
+
+		</div>
+		<div slot="footer">
+			<div class="oj-flex-bar sm-1x-row">
+				<div class="oj-sm-padding-1x-horizontal oj-flex">
+					<oj-button id="addUserCancelButton"
+						   on-oj-action="[[closeAddUserToOrganizationButton]]" >
+						<span>No</span>
+					</oj-button>
+				</div>
+				<div class="oj-sm-padding-1x-horizontal oj-flex">
+					<oj-button id="addUserSaveButton" on-oj-action='[[addUserToOrganizationButton]]'>
+						<span>Yes</span>
+					</oj-button>
+				</div>
+			</div>
+		</div>
+
+	</oj-dialog>	
+
 </div>
