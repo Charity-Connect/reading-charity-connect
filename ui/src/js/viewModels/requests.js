@@ -128,20 +128,13 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                         };
 
                         self.handleRequestRowChanged = function (event) {
-
                             if (event.detail.value[0] !== undefined) {
-                                //find whether node exists based on selection
-                                function searchNodes(nameKey, myArray){
-                                    for (var i=0; i < myArray.length; i++) {
-                                        if (myArray[i].id === nameKey) {
-                                            return myArray[i];
-                                        }
-                                    }
-                                };
+
+                                
                                 if (event.target.id === "requestsListview") {
-                                    self.requestSelected(searchNodes(event.target.currentItem, self.requestsValues()));
+                                    self.requestSelected(self.requestsValues().find(request=>request.id==event.target.currentItem));
                                 } else if (event.target.id === "requestsTable") {
-                                    self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));
+                                    self.requestSelected(self.requestsValues().find(request=>request.id==event.target.currentRow.rowKey));
                                 }
 
                                 if (self.requestSelected().requestTargetDateRaw) {
@@ -265,7 +258,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                         self.disableSaveButtonInline = ko.observable(true);
                         self.handleTargetDateChangedInline = function (event) {
                             // target date when loaded is in UTC, when different date selected it is in the form YYYY-MM-DD, so we check for length because UTC is longer and includes time
-                            if (event.target.value.length > 10) {
+                            if (event.target.value==null || event.target.value.length > 10) {
                                 self.disableSaveButtonInline(true);
                             } else {
                                 self.disableSaveButtonInline(false);
