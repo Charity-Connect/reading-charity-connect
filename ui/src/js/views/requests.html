@@ -379,6 +379,19 @@
                                                title="Displays postcode"
                                                readonly="true">
                                 </oj-input-text>
+                                <oj-bind-if test="[[requestSelected().client_address != ''&&requestSelected().client_postcode != '']]">
+                                    <br/>
+                                    <a target="_blank" :href="[['https://www.google.com/maps/search/?api=1&query='+requestSelected().client_address+', '+requestSelected().client_postcode]]">Map</a>
+                                </oj-bind-if>
+                                <oj-bind-if test="[[requestSelected().client_address == ''&&requestSelected().client_postcode != '']]">
+                                    <br/>
+                                    <a target="_blank" :href="[['https://www.google.com/maps/search/?api=1&query='+requestSelected().client_postcode]]">Map</a>
+                                </oj-bind-if>
+                                <oj-bind-if test="[[requestSelected().client_address != ''&&requestSelected().client_postcode == '']]">
+                                    <br/>
+                                    <a target="_blank" :href="[['https://www.google.com/maps/search/?api=1&query='+requestSelected().client_address+', Reading']]">Map</a>
+                                </oj-bind-if>
+
                             </div>
                         </div>
                         <hr />

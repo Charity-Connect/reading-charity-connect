@@ -44,6 +44,8 @@ class ClientNeed{
 	,cn.date_needed
 	,cn.need_met
 	,cn.fulfilling_need_request_id
+	,org.name as fulfilling_organization_name
+	,(select count(*) from need_requests nr1 where nr1.client_need_id=cn.id and nr1.agreed is null and nr1.fulfilled_elsewhere='N') as pending_responses
 	,cn.notes
 	,cn.creation_date
 	,COALESCE(create_user.display_name,'System') as created_by
@@ -52,6 +54,8 @@ class ClientNeed{
 	from client_needs cn
 	left join users create_user on create_user.id=cn.created_by
 	left join users update_user on update_user.id=cn.updated_by
+	left join (need_requests nr inner join organizations org on nr.organization_id=org.id)
+		on nr.id=cn.fulfilling_need_request_id
 	,offer_types types 
 	where types.id=cn.type_id ";
 
@@ -185,6 +189,8 @@ class ClientNeed{
 		$this->date_needed=$row['date_needed'];
 		$this->need_met=$row['need_met'];
 		$this->fulfilling_need_request_id=$row['fulfilling_need_request_id'];
+		$this->fulfilling_organization_name=$row['fulfilling_organization_name'];
+		$this->pending_responses=$row['pending_responses'];
 		$this->notes=$row['notes'];
 		$this->creation_date=$row['creation_date'];
 		$this->created_by=$row['created_by'];

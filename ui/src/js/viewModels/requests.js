@@ -98,19 +98,15 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             var activeFilters = {};
                             //filter decisionFilters search
                             activeFilters.decisionFilter = self.selectedDecisionFilterDisplay();
-                            console.log(activeFilters);
 
                             var requestArray = self.requestsValues().filter(function(item) {
-//                                    console.log(item);
                                 if (activeFilters["decisionFilter"] === "decisionFilterAll") {
                                     return true;
                                 } else if (activeFilters["decisionFilter"] === "decisionFilterUnreviewed") {
-									console.log(item);
                                     if (item["agreed"] === undefined|| item["agreed"]==null) {
                                         return true;
                                     }
                                 }else if (activeFilters["decisionFilter"] === "decisionFilterAccepted") {
-									console.log(item);
                                     if (item["agreed"] === 'Y'&&item["complete"] != "Y") {
                                         return true;
                                     }
@@ -126,27 +122,19 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                     }
                                 }
                             });
-                            console.log(requestArray);
 
                             //update requestsDataProvider
                             self.updateRequestsDataProvider(requestArray);
                         };
 
                         self.handleRequestRowChanged = function (event) {
-
                             if (event.detail.value[0] !== undefined) {
-                                //find whether node exists based on selection
-                                function searchNodes(nameKey, myArray){
-                                    for (var i=0; i < myArray.length; i++) {
-                                        if (myArray[i].id === nameKey) {
-                                            return myArray[i];
-                                        }
-                                    }
-                                };
+
+                                
                                 if (event.target.id === "requestsListview") {
-                                    self.requestSelected(searchNodes(event.target.currentItem, self.requestsValues()));
+                                    self.requestSelected(self.requestsValues().find(request=>request.id==event.target.currentItem));
                                 } else if (event.target.id === "requestsTable") {
-                                    self.requestSelected(searchNodes(event.target.currentRow.rowKey, self.requestsValues()));
+                                    self.requestSelected(self.requestsValues().find(request=>request.id==event.target.currentRow.rowKey));
                                 }
 
                                 if (self.requestSelected().requestTargetDateRaw) {
@@ -179,7 +167,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES)}/${code}/offer_types`)
                                 .then(
                                     success = function (response) {
-                                        console.log(response.offer_types);
                                         self.offerTypesValues(response.offer_types);
                                     },
                                     error = function (response) {
@@ -271,7 +258,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                         self.disableSaveButtonInline = ko.observable(true);
                         self.handleTargetDateChangedInline = function (event) {
                             // target date when loaded is in UTC, when different date selected it is in the form YYYY-MM-DD, so we check for length because UTC is longer and includes time
-                            if (event.target.value.length > 10) {
+                            if (event.target.value==null || event.target.value.length > 10) {
                                 self.disableSaveButtonInline(true);
                             } else {
                                 self.disableSaveButtonInline(false);
@@ -326,7 +313,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                     success = function (response) {
                                         self.postText("You have succesfully saved the request.");
                                         self.postTextColor("green");
-                                        console.log("data posted");
 
                                         //update requestsTable
                                         self.selectedDecisionFilterDisplay('decisionFilterAll');
@@ -341,8 +327,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                     $("#postMessage").css('display', 'inline-block').fadeOut(2000, function(){
                                         self.disableOptionButtons(false);
                                     });
-                                }).then(function () {
-                                    console.log(responseJson);
                                 })
                             );
                         };
@@ -362,7 +346,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 									success = function (response) {
 										self.postText("You have succesfully saved the share request.");
 										self.postTextColor("green");
-										console.log("data posted");
 
 										//update requestsTable
 										self.selectedDecisionFilterDisplay('decisionFilterAll');
@@ -377,8 +360,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 									$("#postMessage").css('display', 'inline-block').fadeOut(2000, function(){
 										self.disableOptionButtons(false);
 									});
-								}).then(function () {
-									console.log(responseJson);
 								})
 							);
                         };
@@ -397,7 +378,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.NEED_REQUESTS))
                                 .then(
                                     success = function (response) {
-                                        console.log(response.need_request);
                                         $.each(response.need_request, function(index, item) {
                                             var targetDateCleansed;
                                             var targetDateCleansedLocale;
@@ -480,7 +460,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 										    .then(
 												success = function (response) {
 													if(response.count>0){
-													console.log(response.client_share_request);
 													$.each(response.client_share_request, function(index, item) {
 														var decisionString = "";
 														var styleState = "";

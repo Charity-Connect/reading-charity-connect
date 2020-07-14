@@ -102,7 +102,9 @@ if(isset($_GET["view"]))
                 "date_needed" => $date_needed,
                 "need_met" => $need_met,
                 "notes" => $notes,
-                "creation_date" => $creation_date,
+				"pending_responses" => $pending_responses,
+				"fulfilling_organization_name" => $fulfilling_organization_name,
+				"creation_date" => $creation_date,
                 "created_by" => $created_by,
                 "update_date" => $update_date,
                 "updated_by" => $updated_by
