@@ -173,6 +173,7 @@
                         <oj-label id="editPostcodeLabel"><strong>Postcode:</strong></oj-label>
                         <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"
                                        value="{{clientPostcode}}"
+                                       validators="[[[asyncPostcodeValidator]]]"
                                        placeholder="Input postcode"
                                        title="Edit postcode input">
                         </oj-input-text>

@@ -7,7 +7,7 @@
 /*
  * Your clients ViewModel code goes here
  */
-define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
+define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider','ojs/ojvalidator-async',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker', 'ojs/ojdialog',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojcheckboxset', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol','ojs/ojvalidation-datetime'],
         function (app,keySet,Router,oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
@@ -221,6 +221,45 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
 
 						self.getClientNeedsAjax(self.clientId());
 
+				  
+						this.asyncPostcodeValidator = {
+							// 'validate' is a required method
+							// that is a function that returns a Promise
+							validate: function (value) {
+							  // used to format the value in the validation error message.
+							  return new Promise(function (resolve, reject) {
+								setTimeout(function () {
+
+
+									$.ajax({ type: "GET",
+									url: "//api.getthedata.com/postcode/"+encodeURIComponent(value),
+									dataType: "json",
+									success: function (response) {
+										if(response.status=="match"){
+											resolve();
+										} else {
+											reject({
+												detail:' Invalid postcode ' +
+												  value+ '.'
+											  });
+	
+										}
+									},
+									error: function(event) {
+										console.error("Error occured in REST client, when sending GET to url: " + url);
+									  //  utils.showErrorMessage("REST get failed", url);
+									  reject({
+										detail:' Could not validate postcode ' +
+										  value+ '.'
+									  });
+									}
+									});
+								}, 1000);
+							});
+						  }
+						};
+								  
+
 
                         self.handleOfferTypesCategoryChanged = function(event) {
                             if (event.target.value !== "") {
@@ -369,7 +408,7 @@ define(['appController', 'ojs/ojknockout-keyset','ojs/ojrouter','ojs/ojcore', 'k
 								id: self.clientId(),
 								name: self.clientName(),
 								address: self.clientAddress(),
-								postcode: self.clientPostcode(),
+								postcode: self.clientPostcode().toUpperCase(),
 								phone: self.clientPhone(),
 								email: self.clientEmail(),
 								notes: self.clientNotes()

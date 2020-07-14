@@ -98,19 +98,15 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             var activeFilters = {};
                             //filter decisionFilters search
                             activeFilters.decisionFilter = self.selectedDecisionFilterDisplay();
-                            console.log(activeFilters);
 
                             var requestArray = self.requestsValues().filter(function(item) {
-//                                    console.log(item);
                                 if (activeFilters["decisionFilter"] === "decisionFilterAll") {
                                     return true;
                                 } else if (activeFilters["decisionFilter"] === "decisionFilterUnreviewed") {
-									console.log(item);
                                     if (item["agreed"] === undefined|| item["agreed"]==null) {
                                         return true;
                                     }
                                 }else if (activeFilters["decisionFilter"] === "decisionFilterAccepted") {
-									console.log(item);
                                     if (item["agreed"] === 'Y'&&item["complete"] != "Y") {
                                         return true;
                                     }
@@ -126,7 +122,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                     }
                                 }
                             });
-                            console.log(requestArray);
 
                             //update requestsDataProvider
                             self.updateRequestsDataProvider(requestArray);
@@ -179,7 +174,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             return $.when(restClient.doGet(`${restUtils.constructUrl(restUtils.EntityUrl.OFFER_TYPE_CATEGORIES)}/${code}/offer_types`)
                                 .then(
                                     success = function (response) {
-                                        console.log(response.offer_types);
                                         self.offerTypesValues(response.offer_types);
                                     },
                                     error = function (response) {
@@ -326,7 +320,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                     success = function (response) {
                                         self.postText("You have succesfully saved the request.");
                                         self.postTextColor("green");
-                                        console.log("data posted");
 
                                         //update requestsTable
                                         self.selectedDecisionFilterDisplay('decisionFilterAll');
@@ -341,8 +334,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                     $("#postMessage").css('display', 'inline-block').fadeOut(2000, function(){
                                         self.disableOptionButtons(false);
                                     });
-                                }).then(function () {
-                                    console.log(responseJson);
                                 })
                             );
                         };
@@ -362,7 +353,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 									success = function (response) {
 										self.postText("You have succesfully saved the share request.");
 										self.postTextColor("green");
-										console.log("data posted");
 
 										//update requestsTable
 										self.selectedDecisionFilterDisplay('decisionFilterAll');
@@ -377,8 +367,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 									$("#postMessage").css('display', 'inline-block').fadeOut(2000, function(){
 										self.disableOptionButtons(false);
 									});
-								}).then(function () {
-									console.log(responseJson);
 								})
 							);
                         };
@@ -397,7 +385,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                             return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.NEED_REQUESTS))
                                 .then(
                                     success = function (response) {
-                                        console.log(response.need_request);
                                         $.each(response.need_request, function(index, item) {
                                             var targetDateCleansed;
                                             var targetDateCleansedLocale;
@@ -480,7 +467,6 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 										    .then(
 												success = function (response) {
 													if(response.count>0){
-													console.log(response.client_share_request);
 													$.each(response.client_share_request, function(index, item) {
 														var decisionString = "";
 														var styleState = "";
