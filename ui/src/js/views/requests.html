@@ -353,19 +353,17 @@
                                                readonly="true">
                                 </oj-input-text>
                                 <oj-label id="phoneNameLabel"><strong>Phone:</strong></oj-label>
-                                <oj-input-text id="inputEditPhone" labelled-by="phoneNameLabel"
+								<oj-bind-if test="[[requestSelected().client_phone!='']]">
+									<oj-input-text id="inputEditPhone" labelled-by="phoneNameLabel"
                                                value="[[requestSelected().client_phone]]"
                                                title="Displays phone"
-											   placeholder="none"
                                                readonly="true">
-                                </oj-input-text>
-                                <oj-label id="emailLabel"><strong>Email address:</strong></oj-label>
-                                <oj-input-text id="inputEditEmail" labelled-by="emailLabel"
-                                               value="[[requestSelected().client_email]]"
-                                               title="Displays email"
-											   placeholder="none"
-                                               readonly="true">
-                                </oj-input-text>
+								</oj-input-text>
+								</oj-bind-if>
+								<oj-label id="emailLabel"><strong>Email address:</strong></oj-label>
+								<oj-bind-if test="[[requestSelected().client_email!='']]">
+									<a :href="[['mailto:'+requestSelected().client_email]]"><oj-bind-text value="[[requestSelected().client_email]]"></oj-bind-text></a>
+								</oj-bind-if>
                             </div>
                             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                                 <oj-label id="editAddressLabel"><strong>Address:</strong></oj-label>

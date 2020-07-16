@@ -427,6 +427,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 											}
 											this.client_address=this.client_address==null?"":this.client_address.trim();
 											this.client_postcode=this.client_postcode==null?"":this.client_postcode.trim();
+											this.client_phone=this.client_phone==null?"":this.client_phone.trim();
 											formatted_address=this.client_address;
 											if(formatted_address!="" && this.client_postcode!=""){
 													formatted_address=formatted_address+",\n"+this.client_postcode;
