@@ -129,15 +129,24 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 
                         self.handleRequestRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
-
-                                
+                        
                                 if (event.target.id === "requestsListview") {
-                                    self.requestSelected(self.requestsValues().find(request=>request.id==event.target.currentItem));
-                                } else if (event.target.id === "requestsTable") {
-                                    self.requestSelected(self.requestsValues().find(request=>request.id==event.target.currentRow.rowKey));
-                                }
+									self.requestId=event.target.currentItem;
 
-                                if (self.requestSelected().requestTargetDateRaw) {
+                                } else if (event.target.id === "requestsTable") {
+									self.requestId=event.target.currentRow.rowKey;
+								}
+								router.go("/requests/"+self.requestId);
+								self.showRequest(self.requestId);
+							}
+						}
+
+						self.showRequest = function(requestId){
+							if(requestId===undefined){
+								return;
+							}
+                            self.requestSelected(self.requestsValues().find(request=>request.id==requestId));
+								if (self.requestSelected().requestTargetDateRaw) {
                                     self.targetDateConvertor(oj.IntlConverterUtils.dateToLocalIso(new Date(self.requestSelected().requestTargetDateRaw)));
                                 } else {
                                     self.targetDateConvertor("");
@@ -153,7 +162,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 } else {
                                     self.requestNotesUpdateVal("");
                                 }
-                            }
+                            
                         };
 
                         self.handleOfferTypesCategoryChanged = function(event) {
@@ -419,6 +428,16 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 											} else {
 												updateDateDisplay="unknown";
 											}
+											this.client_address=this.client_address==null?"":this.client_address.trim();
+											this.client_postcode=this.client_postcode==null?"":this.client_postcode.trim();
+											this.client_phone=this.client_phone==null?"":this.client_phone.trim();
+											formatted_address=this.client_address;
+											if(formatted_address!="" && this.client_postcode!=""){
+													formatted_address=formatted_address+",\n"+this.client_postcode;
+											} else {
+												formatted_address=this.client_postcode;
+											}
+											search_address=encodeURIComponent(formatted_address.replace("\n"," ").trim());
                                             self.requestsValues().push({
                                                 requestTargetDateRaw: targetDateCleansed,
                                                 requestTargetDate: targetDateCleansedLocale,
@@ -431,10 +450,10 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                                 complete: this.complete,
                                                 client_name: this.client_name,
                                                 client_need_id: this.client_need_id,
-                                                client_postcode: this.client_postcode,
                                                 client_phone: this.client_phone,
-                                                client_email: this.client_email,
-                                                client_address: this.client_address,
+												client_email: this.client_email,
+												formatted_address: formatted_address,
+                                                search_address: search_address,
                                                 id: this.id,
                                                 need_notes: this.need_notes,
                                                 request_organization_id: this.request_organization_id,
@@ -528,7 +547,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                             }
                                         }]);
 									}
-									self.handleRequestRowChanged({"detail":{"value":[requestId]},"target":{"id":"requestsTable","currentRow":{"rowKey":requestId}}});
+									self.showRequest(requestId);
 					
                                 }).then(function () {
                                     self.requestsLoaded(true);
