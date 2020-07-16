@@ -369,27 +369,14 @@
                             </div>
                             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                                 <oj-label id="editAddressLabel"><strong>Address:</strong></oj-label>
-                                <oj-input-text id="inputEditAddress" labelled-by="editAddressLabel"
-                                               value="[[requestSelected().client_address]]"
+                                <oj-text-area id="inputEditAddress" labelled-by="editAddressLabel"
+                                               value="[[requestSelected().formatted_address]]"
                                                title="Displays address"
                                                readonly="true">
-                                </oj-input-text>
-                                <oj-input-text id="inputEditPostcode" 
-                                               value="[[requestSelected().client_postcode]]"
-                                               title="Displays postcode"
-                                               readonly="true">
-                                </oj-input-text>
-                                <oj-bind-if test="[[requestSelected().client_address != ''&&requestSelected().client_postcode != '']]">
+                                </oj-text-area>
+                                <oj-bind-if test="[[requestSelected().search_address != '']]">
                                     <br/>
-                                    <a target="_blank" :href="[['https://www.google.com/maps/search/?api=1&query='+requestSelected().client_address+', '+requestSelected().client_postcode]]">Map</a>
-                                </oj-bind-if>
-                                <oj-bind-if test="[[requestSelected().client_address == ''&&requestSelected().client_postcode != '']]">
-                                    <br/>
-                                    <a target="_blank" :href="[['https://www.google.com/maps/search/?api=1&query='+requestSelected().client_postcode]]">Map</a>
-                                </oj-bind-if>
-                                <oj-bind-if test="[[requestSelected().client_address != ''&&requestSelected().client_postcode == '']]">
-                                    <br/>
-                                    <a target="_blank" :href="[['https://www.google.com/maps/search/?api=1&query='+requestSelected().client_address+', Reading']]">Map</a>
+                                    <a target="_blank" :href="[['https://www.google.com/maps/search/?api=1&query='+requestSelected().search_address]]">Map</a>
                                 </oj-bind-if>
 
                             </div>
