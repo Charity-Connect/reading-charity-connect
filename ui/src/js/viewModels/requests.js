@@ -142,8 +142,11 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
 						}
 
 						self.showRequest = function(requestId){
+							if(requestId===undefined){
+								return;
+							}
                             self.requestSelected(self.requestsValues().find(request=>request.id==requestId));
-									if (self.requestSelected().requestTargetDateRaw) {
+								if (self.requestSelected().requestTargetDateRaw) {
                                     self.targetDateConvertor(oj.IntlConverterUtils.dateToLocalIso(new Date(self.requestSelected().requestTargetDateRaw)));
                                 } else {
                                     self.targetDateConvertor("");
