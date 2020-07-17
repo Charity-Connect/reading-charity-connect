@@ -187,13 +187,18 @@ class Offer{
 	public function delete(){
         $stmt=$this->readOne($this->id);
 		if($stmt->rowCount()==1){
-			// TODO: add a database transaction				
-			$stmt= $this->connection->prepare("DELETE FROM offers WHERE id=:id; DELETE FROM need_requests WHERE offer_id=:id");
-			if( $stmt->execute(['id'=>$this->id])){
-				$stmt->closeCursor();
-				return Audit::add($this->connection,"delete","offer",$this->id);
-			}
-			}
+			$this->connection->beginTransaction();		
+			$stmt= $this->connection->prepare("DELETE FROM offers WHERE id=:id"); 
+			$stmt->execute(['id'=>$this->id]);
+			$stmt= $this->connection->prepare("DELETE FROM need_requests WHERE offer_id=:id");
+			$stmt->execute(['id'=>$this->id]);
+			$stmt->closeCursor();
+			Audit::add($this->connection,"delete","offer",$this->id);
+			return $this->connection->commit();
+		} else {
+			$this->connection->rollBack();
+			return false;
+		}
 		return false;
 	}
 }
