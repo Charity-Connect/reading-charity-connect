@@ -179,11 +179,11 @@ class Client{
 	}
 
 	public function delete(){
-		$this->connection->beginTransaction();
 		$stmt=$this->connection->prepare("select link_id,link_type from client_links where client_id=:id");
 		$stmt->execute(['id'=>$this->id]);
 		$active_org_id = $_SESSION['organization_id'];
         if($stmt->rowCount()==1){
+			$this->connection->beginTransaction();
 			$row = $stmt->fetch();
 			if($active_org_id==$row['link_id']){
 				// TODO: add a database transaction
