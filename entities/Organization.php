@@ -97,7 +97,7 @@ class Organization{
 
 	public function delete() {
 		if(is_admin()) {
-			// TODO: add a database transaction
+			$this->connection->beginTransaction();
 			$stmt=$this->connection->prepare("SELECT client_id FROM client_links WHERE link_id=:id AND link_type='ORG'");
 			$stmt->execute(['id'=>$this->id]);
 			$client = new Client($this->connection);
@@ -113,9 +113,13 @@ class Organization{
 		$stmt= $this->connection->prepare($sql);
 			if( $stmt->execute(['id'=>$this->id])){
 				$stmt->closeCursor();
-				return Audit::add($this->connection,"delete","organization",$this->id);
+				Audit::add($this->connection,"delete","organization",$this->id);
+				return $this->connection->commit();
+			} else {
+				$this->connection->rollBack();
+				return false;
 			} 
-		} 
+		}
 		return false;
 	}
 }
