@@ -48,14 +48,14 @@ class Client{
 	where c.id=l.client_id and l.link_type='ORG' ";
 
 	public function create(){
-
+		$this->connection->beginTransaction();
 		if(isset($this->postcode)&&$this->postcode!=""){
 			list($this->latitude,$this->longitude)=getGeocode($this->postcode);
 		}
 
 		$sql = "INSERT INTO clients ( name,address,postcode,latitude,longitude,phone,email,notes,created_by,updated_by) values (:name,:address,:postcode,:latitude,:longitude,:phone,:email,:notes,:user_id,:user_id)";
 		$stmt= $this->connection->prepare($sql);
-		if( $stmt->execute(['name'=>$this->name
+		$stmt->execute(['name'=>$this->name
 			,'address'=>$this->address
 			,'postcode'=>$this->postcode
 			,'latitude'=>($this->latitude==-1) ? null:$this->latitude
@@ -64,20 +64,23 @@ class Client{
 			,'email'=>$this->email
 			,'notes'=>$this->notes
 			,'user_id'=>$_SESSION['id']
-		])){
-			$this->id=$this->connection->lastInsertId();
+		]);
+		
+		$this->id=$this->connection->lastInsertId();
 
-			$sql = "INSERT INTO client_links ( client_id,link_id,link_type,created_by,updated_by) values (:client_id,:organization_id,'ORG',:user_id,:user_id)";
-			$stmt= $this->connection->prepare($sql);
-			$stmt->execute(['client_id'=>$this->id,'organization_id'=>$_SESSION["organization_id"],'user_id'=>$_SESSION['id']]);
-			$this->creation_date=date("Y-m-d H:i:s");
-			$this->created_by=$_SESSION['display_name'];
-			$this->update_date=date("Y-m-d H:i:s");
-			$this->updated_by=$_SESSION['display_name'];
+		$sql = "INSERT INTO client_links ( client_id,link_id,link_type,created_by,updated_by) values (:client_id,:organization_id,'ORG',:user_id,:user_id)";
+		$stmt= $this->connection->prepare($sql);
+		$stmt->execute(['client_id'=>$this->id,'organization_id'=>$_SESSION["organization_id"],'user_id'=>$_SESSION['id']]);
+		$this->creation_date=date("Y-m-d H:i:s");
+		$this->created_by=$_SESSION['display_name'];
+		$this->update_date=date("Y-m-d H:i:s");
+		$this->updated_by=$_SESSION['display_name'];
 
-			Audit::add($this->connection,"create","client",$this->id,null,$this->name);
+		Audit::add($this->connection,"create","client",$this->id,null,$this->name);
+		if ($this->connection->commit()) {
 			return $this->id;
 		} else {
+			$this->connection->rollBack();
 			return -1;
 		}
 
@@ -176,16 +179,27 @@ class Client{
 	}
 
 	public function delete(){
-        $stmt=$this->connection->prepare("select link_id,link_type from client_links where client_id=:id");
+		$this->connection->beginTransaction();
+		$stmt=$this->connection->prepare("select link_id,link_type from client_links where client_id=:id");
 		$stmt->execute(['id'=>$this->id]);
 		$active_org_id = $_SESSION['organization_id'];
         if($stmt->rowCount()==1){
 			$row = $stmt->fetch();
 			if($active_org_id==$row['link_id']){
-				// TODO: add a database transaction				
-				$stmt= $this->connection->prepare("DELETE FROM clients WHERE id=:client_id; DELETE FROM client_needs WHERE client_id=:client_id; DELETE FROM need_requests WHERE client_need_id=:client_id; DELETE FROM client_links WHERE client_id=:client_id AND link_type='ORG'");
+				// TODO: add a database transaction
+				$stmt = $this->connection->prepare("DELETE FROM clients WHERE id=:client_id;");
+				$stmt->execute(['client_id'=>$this->id]);
+				$stmt = $this->connection->prepare("DELETE FROM client_needs WHERE client_id=:client_id;");
+				$stmt->execute(['client_id'=>$this->id]);
+				$stmt = $this->connection->prepare("DELETE FROM need_requests WHERE client_need_id=:client_id;");
+				$stmt->execute(['client_id'=>$this->id]);
+				$stmt = $this->connection->prepare("DELETE FROM client_links WHERE client_id=:client_id AND link_type='ORG';");
+				$stmt->execute(['client_id'=>$this->id]);
 				Audit::add($this->connection,"delete","client",$this->id);
-				return $stmt->execute(['client_id'=>$this->id]);
+				return $this->connection->commit();
+			} else {
+				$this->connection->rollBack();
+				return false;
 			}
         } elseif($stmt->rowCount()>1)  {
 			$stmt= $this->connection->prepare("DELETE FROM client_links WHERE client_id=:client_id AND link_id=:organization_id AND link_type='ORG'");
