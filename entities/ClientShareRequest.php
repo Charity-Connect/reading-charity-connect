@@ -170,6 +170,7 @@ class ClientShareRequest{
 		$stmt=$this->readOne($this->id);
 
 		if($stmt->rowCount()==1){
+			$this->connection->beginTransaction();
 			if($this->approved=='Y'){
 				$sql = "INSERT ignore INTO client_links ( client_id,link_id,link_type,created_by,updated_by) select client_id,requesting_organization_id,'ORG',:user_id,:user_id from client_share_requests where id=:id";
 				$stmt= $this->connection->prepare($sql);
@@ -187,9 +188,13 @@ class ClientShareRequest{
 				,'updated_by'=>$_SESSION['id']
 
 			])){
-				return Audit::add($this->connection,"update","client_share_request",$this->id);
+				Audit::add($this->connection,"update","client_share_request",$this->id);
+				return $this->connection->commit();
+			}else{
+				$this->connection->rollBack();
+				return false;
 			}
-		} 
+		}
 		return false;
 	}
 

@@ -311,6 +311,7 @@ class ClientNeed{
 	}
 
 	public function delete(){
+		$this->connection->beginTransaction();
 		$stmt=$this->readOne($this->id);
 		if($stmt->rowCount()==1){
 			$sql = "DELETE FROM need_requests WHERE client_need_id=:id";
@@ -318,9 +319,12 @@ class ClientNeed{
 			$stmt->execute(['id'=>$this->id]);
 			$sql = "DELETE FROM client_needs WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
-			if( $stmt->execute(['id'=>$this->id])){
-				return Audit::add($this->connection,"delete","client_need",$this->id);
-			}
+			$stmt->execute(['id'=>$this->id]);
+			Audit::add($this->connection,"delete","client_need",$this->id);
+			return $this->connection->commit();
+		} else {
+			$this->connection->rollBack();
+			return false;
 		} 
 		return false;
 	}

@@ -186,7 +186,6 @@ class Client{
 			$this->connection->beginTransaction();
 			$row = $stmt->fetch();
 			if($active_org_id==$row['link_id']){
-				// TODO: add a database transaction
 				$stmt = $this->connection->prepare("DELETE FROM clients WHERE id=:client_id;");
 				$stmt->execute(['client_id'=>$this->id]);
 				$stmt = $this->connection->prepare("DELETE FROM client_needs WHERE client_id=:client_id;");
