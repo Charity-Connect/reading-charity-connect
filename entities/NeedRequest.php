@@ -181,7 +181,7 @@ class NeedRequest{
 		}else if ($agreed==="U")  {
 		  $where_clause=$where_clause." and agreed IS NULL ";
 		}else if ($agreed==="YU")  {
-			$where_clause=$where_clause." and (agreed='Y' or agreed IS NULL) ";
+			$where_clause=$where_clause." and (agreed='Y' or agreed IS NULL or agreed='') ";
 		  }
 		if($completed==="Y"){
 		  $where_clause=$where_clause." and complete='Y' ";
