@@ -255,6 +255,7 @@ class NeedRequest{
 		$stmt=$this->readOne($this->id);
 
 		if($stmt->rowCount()==1){
+			$this->connection->beginTransaction();
 
 			$row = $stmt->fetch(PDO::FETCH_ASSOC);
 			$orig_agreed=$row['agreed'];
@@ -323,9 +324,10 @@ class NeedRequest{
 				]);
 				if(!$result){return false;}
 			}
-			return $this;
+			return $this->connection->commit();
 
 		} else {
+			$this->connection->rollBack();
 			return false;
 		}
 	}
