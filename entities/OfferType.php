@@ -40,9 +40,9 @@ class OfferType{
 	public function create(){
 
 		if(is_admin()){
-			$sql = "INSERT INTO offer_types ( name,category_id,default_text,active,created_by,updated_by) values (:type,:name,:category_id,:default_text,:active,:user_id,:user_id)";
+			$sql = "INSERT INTO offer_types ( name,category,category_id,default_text,active,created_by,updated_by) values (:name,:category_name,:category_id,:default_text,:active,:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
-			if( $stmt->execute(['name'=>$this->name,'category_id'=>$this->category_id,'default_text'=>$this->default_text,'active'=>$this->active,'user_id'=>$_SESSION['id']])){
+			if( $stmt->execute(['name'=>$this->name,'category_name'=>$this->category_name,'category_id'=>$this->category_id,'default_text'=>$this->default_text,'active'=>$this->active,'user_id'=>$_SESSION['id']])){
 				$this->id=$this->connection->lastInsertId();
 				Audit::add($this->connection,"create","offer_type",$this->id,null,$this->name);
 				$this->creation_date=date("Y-m-d H:i:s");

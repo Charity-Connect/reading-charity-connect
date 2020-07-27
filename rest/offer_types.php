@@ -17,13 +17,14 @@ if(isset($data)&&$method=="POST") {
 
     $offer_type->name = $data['name'];
     $offer_type->category_id = $data['category_id'];
+    // $offer_type->category_name = $data['category_name']; // This puts it in but isn't the same format as other records
     $offer_type->default_text = $data['default_text'];
     $offer_type->active = $data['active'];
 
     if(isset($data['id'])){
 		$offer_type->id=$data['id'];
 		$offer_type->update();
-		$offer_type->read();
+		//$offer_type->read();
 		echo json_encode($offer_type);
 
 		/*$offer_type_arr  = array(
@@ -40,7 +41,7 @@ if(isset($data)&&$method=="POST") {
 		echo json_encode($offer_type_arr);*/
 			} else {
 				$offer_type->create();
-				$offer_type->read();
+				//$offer_type->read();
 				echo json_encode($offer_type);
 		
 			}
