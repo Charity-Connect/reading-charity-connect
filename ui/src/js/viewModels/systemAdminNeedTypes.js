@@ -129,13 +129,13 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
 
 
                     self.saveButton = function () {
-
+                        
                         var needData =
                             {
                                 "name": self.needDetailName(),
                                 "id": self.needDetailType(),
                                 "category_id": self.needDetailCategory(),
-                                "default_text": self.needDetailDefaultText().length>0?self.needDetailDefaultText():"",
+                                "default_text": self.needDetailDefaultText(),
                                 "active": (self.needDetailActive().length > 0) ? "Y" : "N"
                             };
                         return $.when(restClient.doPost('/rest/offer_types', needData)
