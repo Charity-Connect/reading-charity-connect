@@ -127,8 +127,17 @@ define(['appController','utils','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery
 
                         self.handleUserRowChanged = function (event) {
                             if (event.detail.value[0] !== undefined) {
-								router.go('user/' + event.detail.value[0].startKey.row);
-
+                                //GET /rest/user_organizations/{user organization id} - REST
+                                return $.when(restClient.doGetJson('/rest/user_organizations/' + event.detail.value[0].startKey.row)
+                                .then(
+                                    success = function (response) {
+                                        router.go('user/' + response.user_id);
+                                    },
+                                    error = function (response) {
+                                        console.log("User organizations not loaded");
+                                        self.userOrgValid(false);
+                                    })
+                                );
                             }
                         };
                     }();
@@ -138,7 +147,7 @@ define(['appController','utils','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery
 						return $.when(restClient.doGetJson('/rest/organizations/' + orgId + '/user_organizations')
 							.then(
 								success = function (response) {
-									self.userOrgValues(response.user_organizations);
+                                    self.userOrgValues(response.user_organizations);
 									var userOrgs = self.userOrgValues().filter(function(user){
 										user.adminTable = [];
 										if (user.admin === "Y") {
