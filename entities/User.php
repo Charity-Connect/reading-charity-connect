@@ -71,6 +71,7 @@ class User{
 			$organization_user->need_approver=$admin;
 			$organization_user->manage_offers='Y';
 			$organization_user->manage_clients='Y';
+			$organization_user->dbs_check='P';
 			$organization_user->client_share_approver=$admin;
 			if(isset($_SESSION['id'])){
 				$organization_user->confirmed='Y';
@@ -155,6 +156,7 @@ class User{
 					"need_approver" => $need_approver,
 					"manage_offers" => $manage_offers,
 					"manage_clients" => $manage_clients,
+					"dbs_check" => $dbs_check,
 					"confirmed" => $confirmed,
 					"creation_date" => $creation_date,
 					"created_by" => $created_by,

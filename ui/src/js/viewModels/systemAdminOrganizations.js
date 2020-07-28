@@ -60,6 +60,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                 self.userConfirmed = ko.observableArray([]);
                 self.userManageClients = ko.observableArray([]);
                 self.userClientShareApprover = ko.observableArray([]);
+                self.userDbsCheck = ko.observable();
                 self.userManageOffers = ko.observableArray([]);
                 self.userOrgLoaded = ko.observable();
                 self.userOrgValid = ko.observable();
@@ -266,6 +267,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                         "manage_offers": "Y",
                         "manage_clients": "Y",
                         "client_share_approver": self.userAdmin().length > 0 ? "Y" : "N",
+                        "dbs_check": "P",
                         "confirmed": "Y"
 
                     };

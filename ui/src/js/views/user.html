@@ -44,7 +44,7 @@
                              </oj-input-text>
                              <div class="oj-flex oj-padding" >
                                  <div class="oj-flex-item oj-padding-end">
-                                     <oj-label id="editUserNameLabel" class="oj-label-inline">User Name:*</oj-label>
+                                     <oj-label id="editUserNameLabel" class="oj-label-inline">Username:*</oj-label>
                                  </div>
                                  <div class="oj-flex-item">
                                      <oj-input-text  id="inputEditUserName" labelled-by="editUserNameLabel"
@@ -83,6 +83,21 @@
                                  </div>
                              </div>
 
+
+                             <div class="oj-flex oj-padding" >
+                                <div class="oj-flex-item oj-padding-end">
+                                    <oj-label id="editDbsCheck">DBS Check</oj-label>
+                                </div>
+                                <div class="oj-flex-item">                                     
+                                      <oj-select-single id="selectEditDbsCheck" labelled-by="editDbsCheck"
+                                                      data="[[dbsCheckDP]]"
+                                                      value="{{userDbsCheck}}"
+                                                      title="Edit DBS check select">
+                                      </oj-select-single>
+                                </div>
+                            </div>
+
+
                             <div class="oj-flex oj-padding" >
                                  <div class="oj-flex-item oj-padding-end">
 
@@ -90,7 +105,7 @@
                                  <div class="oj-flex-item">
                                      <oj-checkboxset id="selectEditAdmin"
                                                      value="{{userAdmin}}">
-                                         <oj-option id="admin" value="admin">Organisation administrator</oj-option>
+                                         <oj-option id="admin" value="admin">Organisation Administrator</oj-option>
                                      </oj-checkboxset>
                                  </div>
                              </div>
@@ -154,8 +169,8 @@
 										  <oj-option id="client_share_approver" value="client_share_approver">Client Share Approver</oj-option>
 									  </oj-checkboxset>
 								  </div>
-							  </div>
-
+                              </div>
+                              
 
                              <div class="oj-flex oj-padding" >
                                  <div class="oj-flex-item oj-padding-end">
