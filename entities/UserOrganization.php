@@ -17,7 +17,7 @@ class UserOrganization{
 	public $manage_offers;
 	public $manage_clients;
 	public $client_share_approver;
-	public $dbs_check='P';
+	public $dbs_check='U';
 	public $confirmed='N';
 	private $confirmation_string;
 	public $creation_date;
@@ -43,7 +43,7 @@ class UserOrganization{
 		}
 
 		if($this->admin=='N'){
-			$this->dbs_check='P';
+			$this->dbs_check='U';
 		}
 
 		if( $stmt->execute(['user_id'=>$this->user_id,'organization_id'=>$this->organization_id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'manage_offers'=>$this->manage_offers,'manage_clients'=>$this->manage_clients,'client_share_approver'=>$this->client_share_approver,'dbs_check'=>$this->dbs_check,'confirmed'=>$this->confirmed,'confirmation_string'=>$this->confirmation_string,'user_id2'=>$uid])){

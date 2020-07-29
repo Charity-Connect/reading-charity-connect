@@ -167,7 +167,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                         "manage_offers": "Y",
                         "manage_clients": "Y",
                         "client_share_approver": self.userAdmin().length > 0 ? "Y" : "N",
-                        "dbs_check": "P",
+                        "dbs_check": "U",
                         "confirmed": "Y"
 
                     };
@@ -203,7 +203,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                         "user_name": self.userName(),
                         "email": self.userEmail(),
                         "phone": null,
-                        "admin": "Y"
+                        "admin": "N"
                     };
 
                     return $.when(restClient.doPostJson('/rest/users', userData)
@@ -302,7 +302,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                         "manage_clients": (self.userManageClients().length > 0) ? "Y" : "N",
                         "manage_offers": (self.userManageOffers().length > 0) ? "Y" : "N",
                         "client_share_approver": (self.userClientShareApprover().length > 0) ? "Y" : "N",
-                        "dbs_check": (self.userDbsCheck()) ? "P" : "P",
+                        "dbs_check": (self.userDbsCheck()) ? "U" : "U",
                         "confirmed": (self.userConfirmed().length > 0) ? "Y" : "N"
                     };
                     */

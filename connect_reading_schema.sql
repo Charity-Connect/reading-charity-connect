@@ -244,7 +244,7 @@ CREATE TABLE `user_organizations` (
   `manage_offers` char(1) NOT NULL DEFAULT 'Y',
   `manage_clients` char(1) NOT NULL DEFAULT 'Y',
   `client_share_approver` char(1) NOT NULL DEFAULT 'N',
-  `dbs_check` char(1) NOT NULL DEFAULT 'P',
+  `dbs_check` char(1) NOT NULL DEFAULT 'U',
   `confirmed` char(1) NOT NULL DEFAULT 'N',
   `confirmation_string` varchar(60) NOT NULL,
   `creation_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

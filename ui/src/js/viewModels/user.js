@@ -139,7 +139,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                                 "manage_clients": (self.userManageClients().length > 0) ? "Y" : "N",
                                 "manage_offers": (self.userManageOffers().length > 0) ? "Y" : "N",
                                 "client_share_approver": (self.userClientShareApprover().length > 0) ? "Y" : "N",
-                                "dbs_check": (self.userDbsCheck().length > 0) ? self.userDbsCheck() : "P",
+                                "dbs_check": (self.userDbsCheck().length > 0) ? self.userDbsCheck() : "U",
                                 "confirmed": (self.userConfirmed().length > 0) ? "Y" : "N"
                             };
                         return $.when(restClient.doPostJson('/rest/users', userData)
@@ -208,7 +208,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                                             var dbsCheckStates = [
                                                 { value: 'Y', label: 'Yes' },
                                                 { value: 'N', label: 'No' },
-                                                { value: 'P', label: 'Pending' }
+                                                { value: 'U', label: 'Unknown' }
                                             ];
                                             this.dbsCheckDP = new ArrayDataProvider(dbsCheckStates, { keyAttributes: 'value' });
                                         })

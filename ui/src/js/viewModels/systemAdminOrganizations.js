@@ -267,7 +267,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                         "manage_offers": "Y",
                         "manage_clients": "Y",
                         "client_share_approver": self.userAdmin().length > 0 ? "Y" : "N",
-                        "dbs_check": "P",
+                        "dbs_check": "U",
                         "confirmed": "Y"
 
                     };
