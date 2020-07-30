@@ -195,39 +195,6 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                     );
                 }
 
-                self.saveUserButton = function () {
-
-                    var userData =
-                    {
-                        "organization_id": self.userOrgId(),
-                        "user_name": self.userName(),
-                        "email": self.userEmail(),
-                        "phone": null,
-                        "admin": "N"
-                    };
-
-                    return $.when(restClient.doPostJson('/rest/users', userData)
-                        .then(
-                            success = function (response) {
-                                self.postText("You have succesfully saved user details.");
-                                self.postTextColor("green");
-                                document.getElementById('addUserDialog').close();
-                                self.getUserOrgData(self.userOrgId());
-
-                            },
-                            error = function (response) {
-                                self.postText("Error: User changes not saved.");
-                                self.postTextColor("red");
-                                console.log("user data not posted");
-                            }).then(function () {
-                                self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
-                                    //self.disableSaveButton(false);
-                                });
-                            })
-                    );
-                };
-
                 self.userDeleteClicked = function (event) {
                     event.detail.originalEvent.stopPropagation();
 
@@ -302,7 +269,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                         "manage_clients": (self.userManageClients().length > 0) ? "Y" : "N",
                         "manage_offers": (self.userManageOffers().length > 0) ? "Y" : "N",
                         "client_share_approver": (self.userClientShareApprover().length > 0) ? "Y" : "N",
-                        "dbs_check": (self.userDbsCheck()) ? "U" : "U",
+                        "dbs_check": (self.userDbsCheck().length > 0) ? self.userDbsCheck() : "U",
                         "confirmed": (self.userConfirmed().length > 0) ? "Y" : "N"
                     };
                     */

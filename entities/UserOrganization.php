@@ -41,9 +41,10 @@ class UserOrganization{
 		if(isset($_SESSION['id'])){
 			$uid=$_SESSION['id'];
 		}
-
-		if($this->admin=='N'){
-			$this->dbs_check='U';
+		if(!is_admin()){
+			if(!is_org_admin()|| $this->organization_id!=$_SESSION['organization_id']){
+				$this->dbs_check='U';
+			}
 		}
 
 		if( $stmt->execute(['user_id'=>$this->user_id,'organization_id'=>$this->organization_id,'admin'=>$this->admin,'user_approver'=>$this->user_approver,'need_approver'=>$this->need_approver,'manage_offers'=>$this->manage_offers,'manage_clients'=>$this->manage_clients,'client_share_approver'=>$this->client_share_approver,'dbs_check'=>$this->dbs_check,'confirmed'=>$this->confirmed,'confirmation_string'=>$this->confirmation_string,'user_id2'=>$uid])){
@@ -171,9 +172,11 @@ class UserOrganization{
 			$orig_confirmed=$row['confirmed'];
 			$organization_id=$row['organization_id'];
 			$orig_dbs_check=$row['dbs_check'];
-			if(!is_org_admin()|| $organization_id!=$_SESSION['organization_id']||!isset($this->confirmed)){
-				$this->confirmed = $orig_confirmed;
-				$this->dbs_check = $orig_dbs_check;
+			if(!is_org_admin()|| $organization_id!=$_SESSION['organization_id']||!isset($this->confirmed)){				
+				if(!is_admin()){
+					$this->confirmed = $orig_confirmed;
+					$this->dbs_check = $orig_dbs_check;
+				}
 			}
 
 			$sql = "UPDATE user_organizations SET admin=:admin, user_approver=:user_approver, need_approver=:need_approver, manage_offers=:manage_offers, manage_clients=:manage_clients, client_share_approver=:client_share_approver, dbs_check=:dbs_check, confirmed=:confirmed,updated_by=:updated_by WHERE id=:id";
