@@ -49,7 +49,7 @@ if(isset($data)&&$method=="POST") {
         }
 
     } else {
-	    // $user_organization->user_id = $data['user_id'];
+	    $user_organization->user_id = $data['user_id'];
 		$id=$user_organization->create();
         if($id>0){
             $user_organization_arr  = array(

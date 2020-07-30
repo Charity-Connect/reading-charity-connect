@@ -24,7 +24,7 @@ if(isset($data)&&$method=="POST") {
     if(isset($data['id'])){
 		$offer_type->id=$data['id'];
 		$offer_type->update();
-		//$offer_type->read();
+		$offer_type->read();
 		echo json_encode($offer_type);
 
 		/*$offer_type_arr  = array(
@@ -39,12 +39,12 @@ if(isset($data)&&$method=="POST") {
 				"updated_by" => $offer_type->updated_by
 				);
 		echo json_encode($offer_type_arr);*/
-			} else {
-				$offer_type->create();
-				//$offer_type->read();
-				echo json_encode($offer_type);
+	} else {
+		$offer_type->create();
+		$offer_type->read();
+		echo json_encode($offer_type);
 		
-			}
+	}
 
 	
 
