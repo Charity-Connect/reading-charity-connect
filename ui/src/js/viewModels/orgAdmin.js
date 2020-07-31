@@ -348,19 +348,12 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                                         }
 
                                     });
-                                    var promises = [];
-                                    $.each(response.user_organizations, function (key, value) {
-                                        promises.push($.when(self.getUsersData(value.user_id)));
-
-                                    });
-                                    Promise.all(promises).then(function () {
-                                        var sortCriteria = { key: 'name', direction: 'ascending' };
-                                        var arrayDataSource = new oj.ArrayTableDataSource(self.userOrgValues(), { idAttribute: 'user_id' });
-                                        arrayDataSource.sort(sortCriteria);
-                                        self.userOrgDataProvider(new oj.PagingTableDataSource(arrayDataSource));
-                                        self.userOrgLoaded(true);
-                                        self.userOrgValid(true);
-                                    });
+                                    var sortCriteria = { key: 'name', direction: 'ascending' };
+                                    var arrayDataSource = new oj.ArrayTableDataSource(self.userOrgValues(), { idAttribute: 'user_id' });
+                                    arrayDataSource.sort(sortCriteria);
+                                    self.userOrgDataProvider(new oj.PagingTableDataSource(arrayDataSource));
+                                    self.userOrgLoaded(true);
+                                    self.userOrgValid(true);
 
                                 },
                                 error = function (response) {
