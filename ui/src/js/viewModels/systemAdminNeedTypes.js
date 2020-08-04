@@ -129,36 +129,48 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
 
 
                     self.saveButton = function () {
-
-                        var needData =
-                            {
-                                "name": self.needDetailName(),
-                                "id": self.needDetailType(),
-                                "category_id": self.needDetailCategory(),
-                                "default_text": self.needDetailDefaultText().length>0?self.needDetailDefaultText():"",
-                                "active": (self.needDetailActive().length > 0) ? "Y" : "N"
-                            };
-                        return $.when(restClient.doPost('/rest/offer_types', needData)
+                        // GET /rest/offer_type_categories/{code}
+                        return $.when(restClient.doGet('/rest/offer_type_categories/' + self.needDetailCategory())
                             .then(
                                 success = function (response) {
-                                    self.postText("You have succesfully saved the Need Type.");
-                                    self.postTextColor("green");
-                                    self.getneedTypesAjax();
-                                    console.log("need type data posted");
+                                console.log(response.name);
+                                var needData =
+                                {
+                                    "name": self.needDetailName(),
+                                    "id": self.needDetailType() == "" ? null:self.needDetailType(),
+                                    "category_name": response.name,
+                                    "category_id": self.needDetailCategory(),
+                                    "default_text": self.needDetailDefaultText(),
+                                    "active": (self.needDetailActive().length > 0) ? "Y" : "N"
+                                };
+                                return $.when(restClient.doPost('/rest/offer_types', needData)
+                                    .then(
+                                        success = function (response) {
+                                            self.postText("You have succesfully saved the Need Type.");
+                                            self.postTextColor("green");
+                                            self.getneedTypesAjax();
+                                            console.log("need type data posted");
+                                        },
+                                        error = function (response) {
+                                            self.postText("Error: Need Type changes not saved.");
+                                            self.postTextColor("red");
+                                            console.log("need type data not posted");
+                                        }).then(function () {
+                                        self.fileContentPosted(true);
+                                        $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                            //self.disableSaveButton(false);
+                                        });
+                                    }).then(function () {
+                                        //console.log(orgData);
+                                    })
+                                    );
                                 },
                                 error = function (response) {
-                                    self.postText("Error: Need Type changes not saved.");
+                                    self.postText("Error: Type Categories data not retrieved.");
                                     self.postTextColor("red");
-                                    console.log("need type data not posted");
-                                }).then(function () {
-                                self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
-                                    //self.disableSaveButton(false);
-                                });
-                            }).then(function () {
-                                //console.log(orgData);
-                            })
-                        );
+                                    console.log("type categroies data not retrieved");
+                                })
+                        )
                     };
 
 

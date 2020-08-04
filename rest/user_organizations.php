@@ -29,6 +29,7 @@ if(isset($data)&&$method=="POST") {
     $user_organization->manage_offers = $data['manage_offers'];
     $user_organization->manage_clients = $data['manage_clients'];
     $user_organization->client_share_approver = $data['client_share_approver'];
+    $user_organization->dbs_check = $data['dbs_check'];
     if(isset($data['confirmed'])){
     	$user_organization->confirmed = $data['confirmed'];
 	}
@@ -59,7 +60,8 @@ if(isset($data)&&$method=="POST") {
                     "need_approver" => $user_organization->need_approver,
                     "manage_offers" => $user_organization->manage_offers,
                     "manage_clients" => $user_organization->manage_clients,
-                    "client_share_approver" => $user_organization->client_share_approver
+                    "client_share_approver" => $user_organization->client_share_approver,
+                    "dbs_check" => $user_organization->dbs_check
                     );
             echo json_encode($user_organization_arr);
 
@@ -115,6 +117,7 @@ if(isset($data)&&$method=="POST") {
                 "manage_offers" => $manage_offers,
                 "manage_clients" => $manage_clients,
                 "client_share_approver" => $client_share_approver,
+                "dbs_check" => $dbs_check,
                 "confirmed" => $confirmed,
                 "creation_date" => $creation_date,
                 "created_by" => $created_by,
@@ -160,6 +163,7 @@ if(isset($data)&&$method=="POST") {
                 "manage_offers" => $manage_offers,
                 "manage_clients" => $manage_clients,
                 "client_share_approver" => $client_share_approver,
+                "dbs_check" => $dbs_check,
                 "confirmed" => $confirmed,
                 "creation_date" => $creation_date,
                 "created_by" => $created_by,
@@ -202,6 +206,7 @@ if(isset($data)&&$method=="POST") {
                 "manage_offers" => $manage_offers,
                 "manage_clients" => $manage_clients,
                 "client_share_approver" => $client_share_approver,
+                "dbs_check" => $dbs_check,
                 "confirmed" => $confirmed,
                 "creation_date" => $creation_date,
                 "created_by" => $created_by,

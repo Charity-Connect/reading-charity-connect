@@ -126,7 +126,6 @@ CREATE TABLE `offers` (
 CREATE TABLE `offer_types` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `category` varchar(30) DEFAULT NULL,
   `category_id` int(11) NOT NULL,
   `default_text` varchar(2000) DEFAULT NULL,
   `active` varchar(1) NOT NULL DEFAULT 'Y',
@@ -136,15 +135,15 @@ CREATE TABLE `offer_types` (
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-REPLACE INTO `offer_types` (`id`, `name`, `category`, `category_id`, `default_text`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
-(1, 'Companionship visit', 'company', 4, 'Suitable times: ', 'Y', '2020-06-30 09:51:46', 1, '2020-07-08 22:13:17', 1),
-(2, 'Help with cooking', 'food', 6, NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-07-08 22:13:17', NULL),
-(3, 'Food Parcel', 'food', 6, NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-07-08 22:13:17', NULL),
-(4, 'Home', 'befriending', 1, '', 'Y', '2020-07-07 09:04:56', 1, '2020-07-08 22:13:17', 1),
-(5, 'CV help', 'benefits_advice', 2, '', 'Y', '2020-07-07 09:07:43', 31, '2020-07-08 22:13:17', 31),
-(6, 'Phone', 'befriending', 1, '', 'Y', '2020-07-07 09:04:42', 1, '2020-07-08 22:13:17', 1),
-(7, 'Prescription Collection', 'medical', 8, NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-07-08 22:13:17', NULL),
-(8, 'ReadiFood Referral', 'food', 6, 'Please complete the following fields so that we can submit the request automatically. Fields with a * next to them must be completed. Any optional fields not completed will be set to No.\n\n* Reason for food parcel request: \n\nHome Delivery (Y/N):\n\nFood Preferences\nNo Cooking Facilities (Y/N):\nVegetarian (Y/N):\nHalal (Y/N):\nDiabetic (Y/N):\nGluten Free (Y/N):\nOther:\n\n* Number of weeks (1-4):\n\nAdditional Items\nNappies (Y/N):\nNappy Size:\nBaby Toiletries (Y/N):\nBaby Food 4-6m (Y/N):\nBaby Food 7-12m (Y/N):\nOther:\n\n* Number of Adults (0-5):\n* Number of Children (0-5):\nAge and gender of Children: ', 'Y', '2020-05-31 14:20:17', NULL, '2020-07-08 22:13:17', NULL);
+REPLACE INTO `offer_types` (`id`, `name`, `category_id`, `default_text`, `active`, `creation_date`, `created_by`, `update_date`, `updated_by`) VALUES
+(1, 'Companionship visit', 4, 'Suitable times: ', 'Y', '2020-06-30 09:51:46', 1, '2020-07-08 22:13:17', 1),
+(2, 'Help with cooking', 6, NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-07-08 22:13:17', NULL),
+(3, 'Food Parcel', 6, NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-07-08 22:13:17', NULL),
+(4, 'Home', 1, '', 'Y', '2020-07-07 09:04:56', 1, '2020-07-08 22:13:17', 1),
+(5, 'CV help', 2, '', 'Y', '2020-07-07 09:07:43', 31, '2020-07-08 22:13:17', 31),
+(6, 'Phone', 1, '', 'Y', '2020-07-07 09:04:42', 1, '2020-07-08 22:13:17', 1),
+(7, 'Prescription Collection', 8, NULL, 'Y', '2020-05-31 14:20:17', NULL, '2020-07-08 22:13:17', NULL),
+(8, 'ReadiFood Referral', 6, 'Please complete the following fields so that we can submit the request automatically. Fields with a * next to them must be completed. Any optional fields not completed will be set to No.\n\n* Reason for food parcel request: \n\nHome Delivery (Y/N):\n\nFood Preferences\nNo Cooking Facilities (Y/N):\nVegetarian (Y/N):\nHalal (Y/N):\nDiabetic (Y/N):\nGluten Free (Y/N):\nOther:\n\n* Number of weeks (1-4):\n\nAdditional Items\nNappies (Y/N):\nNappy Size:\nBaby Toiletries (Y/N):\nBaby Food 4-6m (Y/N):\nBaby Food 7-12m (Y/N):\nOther:\n\n* Number of Adults (0-5):\n* Number of Children (0-5):\nAge and gender of Children: ', 'Y', '2020-05-31 14:20:17', NULL, '2020-07-08 22:13:17', NULL);
 
 CREATE TABLE `organizations` (
   `id` int(11) NOT NULL,
@@ -244,6 +243,7 @@ CREATE TABLE `user_organizations` (
   `manage_offers` char(1) NOT NULL DEFAULT 'Y',
   `manage_clients` char(1) NOT NULL DEFAULT 'Y',
   `client_share_approver` char(1) NOT NULL DEFAULT 'N',
+  `dbs_check` char(1) NOT NULL DEFAULT 'U',
   `confirmed` char(1) NOT NULL DEFAULT 'N',
   `confirmation_string` varchar(60) NOT NULL,
   `creation_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
