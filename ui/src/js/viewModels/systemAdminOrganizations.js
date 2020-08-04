@@ -193,7 +193,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                                 console.log("org data posted");
                             },
                             error = function (response) {
-                                self.postText("Error: Organization changesnot saved.");
+                                self.postText("Error: Organization changes not saved.");
                                 self.postTextColor("red");
                                 console.log("org data not posted");
                             }).then(function () {
@@ -211,7 +211,9 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doDeleteJson('/rest/organizations/' + self.orgDetailid())
                         .then(
                             success = function (response) {
-                                router.go('organizations');
+                                self.postText("You have succesfully deleted the organization.");
+                                self.postTextColor("green");
+                                self.getOrganizationsAjax();
                             },
                             error = function (response) {
                                 self.postText("Error: Organization changes not deleted.");

@@ -178,14 +178,18 @@ class Client{
 		}
 	}
 
-	public function delete(){
+	public function delete($active_org_id = 0){
 		$stmt=$this->connection->prepare("select link_id,link_type from client_links where client_id=:id");
 		$stmt->execute(['id'=>$this->id]);
-		$active_org_id = $_SESSION['organization_id'];
-        if($stmt->rowCount()==1){
+		
+		if ($active_org_id == 0) {
+			$active_org_id = $_SESSION['organization_id'];
+		}
+		
+		if($stmt->rowCount()==1){
 			$this->connection->beginTransaction();
 			$row = $stmt->fetch();
-			if($active_org_id==$row['link_id']){
+			if($active_org_id==$row['link_id'] || is_admin()){
 				$stmt = $this->connection->prepare("DELETE FROM clients WHERE id=:client_id;");
 				$stmt->execute(['client_id'=>$this->id]);
 				$stmt = $this->connection->prepare("DELETE FROM client_needs WHERE client_id=:client_id;");
