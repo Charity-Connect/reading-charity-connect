@@ -17,7 +17,6 @@ if(isset($data)&&$method=="POST") {
 
     $offer_type->name = $data['name'];
     $offer_type->category_id = $data['category_id'];
-    // $offer_type->category_name = $data['category_name']; // This puts it in but isn't the same format as other records
     $offer_type->default_text = $data['default_text'];
     $offer_type->active = $data['active'];
 
