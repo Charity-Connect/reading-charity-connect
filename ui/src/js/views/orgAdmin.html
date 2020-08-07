@@ -118,7 +118,22 @@
                 </td>
             </script>
 
+			<div class="oj-flex-bar sm-1x-row">
+				<div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
+					<oj-bind-if test="[[fileContentPosted() !== true]]">
+						<span class="oj-helper-text-align-right">Posting...</span>
+						<oj-progress id="progressBar" value="-1"></oj-progress>
+					</oj-bind-if>
+					<oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="saveEditButton"
+							  :style.color="[[postTextColor]]">
+						<oj-bind-text value='[[postText]]'></oj-bind-text>
+					</oj-label>
+				</div>
+			</div>
+		</div>
 	</oj-bind-if>
+</oj-bind-if>            
+
 	
 	<oj-dialog style="display:none" id="addUserDialog" class="oj-sm-12 oj-md-8" dialog-title="Add User" cancel-behavior="none">
 		<div slot="body">
