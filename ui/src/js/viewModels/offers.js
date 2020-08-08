@@ -208,7 +208,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                         console.log("data not posted");
                                 }).then(function () {
                                     self.fileContentPosted(true);
-                                    $("#postMessage").css('display', 'inline-block').fadeOut(2000, function(){
+                                    $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function(){
                                         self.disableSaveButton(false);
                                     });
                                 }).then(function () {

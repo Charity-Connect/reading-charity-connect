@@ -150,7 +150,7 @@ define(['appController', 'ojs/ojknockout-keyset', 'ojs/ojrouter', 'ojs/ojcore', 
 									console.log("client need not deleted");
 								}).then(function () {
 									self.fileContentPosted(true);
-									$("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+									$("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
 									});
 								})
 						);
@@ -413,7 +413,7 @@ define(['appController', 'ojs/ojknockout-keyset', 'ojs/ojrouter', 'ojs/ojcore', 
 							self.postText("Error: Client not saved.");
 							console.log("form errors");
 							self.fileContentPosted(true);
-							$(".postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+							$(".postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
 								self.disableSaveButton(false);
 							});
 
@@ -444,7 +444,7 @@ define(['appController', 'ojs/ojknockout-keyset', 'ojs/ojrouter', 'ojs/ojcore', 
 									console.log("client data not posted");
 								}).then(function () {
 									self.fileContentPosted(true);
-									$(".postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+									$(".postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
 										self.disableSaveButton(false);
 									});
 								})
@@ -498,7 +498,7 @@ define(['appController', 'ojs/ojknockout-keyset', 'ojs/ojrouter', 'ojs/ojcore', 
 									console.log("client data not deleted");
 								}).then(function () {
 									self.fileContentPosted(true);
-									$("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+									$("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
 										//self.disableSaveButton(false);
 									});
 								})
@@ -610,7 +610,7 @@ define(['appController', 'ojs/ojknockout-keyset', 'ojs/ojrouter', 'ojs/ojcore', 
 
 								}).then(function () {
 									self.fileContentPosted(true);
-									$(".postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+									$(".postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
 										self.disableSaveButton(false);
 									});
 								}).then(function () {

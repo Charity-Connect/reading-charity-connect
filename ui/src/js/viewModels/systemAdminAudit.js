@@ -7,11 +7,11 @@
 /*
  * Your admin ViewModel code goes here
  */
-define(['utils','ojs/ojcore','ojs/ojconverterutils-i18n', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
+define(['appController','utils','ojs/ojcore','ojs/ojconverterutils-i18n', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
 	'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource'
 	, 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset','ojs/ojformlayout','ojs/ojdatetimepicker','ojs/ojvalidation-datetime'],
-        function (utils,oj,ConverterUtilsI18n, ko, $, accUtils, restClient,KnockoutTemplateUtils,ArrayDataProvider) {
+        function (app,utils,oj,ConverterUtilsI18n, ko, $, accUtils, restClient,KnockoutTemplateUtils,ArrayDataProvider) {
 
             function AdminViewModel() {
                 var self = this;

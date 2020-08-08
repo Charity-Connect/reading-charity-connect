@@ -93,11 +93,12 @@
 
                              <div class="oj-flex oj-padding" >
                                  <div class="oj-flex-item oj-padding-end">
-                                     <oj-label id="editNameLabel" for="inputEditName" class="oj-label-inline">Display Name:</oj-label>
+                                     <oj-label id="editNameLabel" for="inputEditName" class="oj-label-inline">Display Name:*</oj-label>
                                  </div>
                                  <div class="oj-flex-item">
                                      <oj-input-text id="inputEditName" labelled-by="editNameLabel"
                                                     value="{{needDetailName}}"
+                                                    required
                                                     placeholder="Input name"
                                                     title="Edit name input">
                                      </oj-input-text>
@@ -106,12 +107,13 @@
 
                              <div class="oj-flex oj-padding" >
                                  <div class="oj-flex-item oj-padding-end">
-                                     <oj-label id="editcategoryLabel" class="oj-label-inline">Category:</oj-label>
+                                     <oj-label id="editcategoryLabel" class="oj-label-inline">Category:*</oj-label>
                                  </div>
                                  <div class="oj-flex-item">
                                      <oj-select-single id="selectEditCategory" labelled-by="editcategoryLabel"
                                                        data="[[offerTypesCategoriesDataProvider]]"
                                                        value="{{needDetailCategory}}"
+                                                       required
                                                        placeholder="Select category"
                                                        title="Edit category select">
                                      </oj-select-single>

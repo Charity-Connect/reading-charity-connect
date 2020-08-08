@@ -198,7 +198,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                                 console.log("org data not posted");
                             }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     self.disableSaveButton(false);
                                 });
                             }).then(function () {
@@ -221,7 +221,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                                 console.log("organization data not deleted");
                             }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     //self.disableSaveButton(false);
                                 });
                             })
@@ -290,7 +290,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                                 console.log("user data not posted");
                             }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     //self.disableSaveButton(false);
                                 });
                             })
@@ -323,7 +323,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                                 console.log("user data not posted");
                             }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     //self.disableSaveButton(false);
                                 });
                             })
@@ -344,7 +344,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                                 console.log("user_organizations data not deleted");
                             }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     //self.disableSaveButton(false);
                                 });
                             })
