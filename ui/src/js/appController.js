@@ -13,9 +13,11 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
      function ControllerViewModel() {
         var self = this;
 
+        self.messageFadeTimeout=5000;
+
         self.KnockoutTemplateUtils = KnockoutTemplateUtils;
         self.navData;
-		self.currentOrg={"manage_offers":"N"};
+		    self.currentOrg={"manage_offers":"N"};
         // Handle announcements sent when pages change, for Accessibility.
         self.manner = ko.observable('polite');
         self.message = ko.observable();

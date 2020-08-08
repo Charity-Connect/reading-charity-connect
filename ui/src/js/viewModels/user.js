@@ -110,7 +110,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                                     console.log("user data not deleted");
                                 }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     //self.disableSaveButton(false);
                                 });
                             })
@@ -164,7 +164,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                                     console.log("user data not posted");
                                 }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     //self.disableSaveButton(false);
                                 });
                             })

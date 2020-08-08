@@ -188,7 +188,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                                 console.log("user data not posted");
                             }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     //self.disableSaveButton(false);
                                 });
                             })
@@ -209,7 +209,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                                 console.log("user_organizations data not deleted");
                             }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     //self.disableSaveButton(false);
                                 });
                             })
@@ -229,7 +229,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doPost('/rest/organizations', orgData)
                         .then(
                             success = function (response) {
-                                self.postText("You have succesfully saved user org details.");
+                                self.postText("You have succesfully saved the organization details.");
                                 self.postTextColor("green");
                                 console.log("user org data posted");
                             },
@@ -239,7 +239,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                                 console.log("user org data not posted");
                             }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     //self.disableSaveButton(false);
                                 });
                             })
@@ -277,7 +277,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doPost('/rest/users', userData)
                         .then(
                             success = function (response) {
-                                self.postText("You have succesfully saved user details.");
+                                self.postText("You have succesfully added a new user to the organisation.");
                                 self.postTextColor("green");
                                 document.getElementById('addUserDialog').close();
                                 self.getUserOrgData(self.userOrgId());
@@ -297,7 +297,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                                 console.log("user data not posted");
                             }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     //self.disableSaveButton(false);
                                 });
                             })
