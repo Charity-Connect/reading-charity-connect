@@ -9,7 +9,6 @@ class OfferType{
 	public $id;
 	public $name;
 	public $category_id;
-	public $category_name;
 	public $default_text;
 	public $active;
 	public $creation_date;
@@ -40,7 +39,7 @@ class OfferType{
 	public function create(){
 
 		if(is_admin()){
-			$sql = "INSERT INTO offer_types ( name,category_id,default_text,active,created_by,updated_by) values (:type,:name,:category_id,:default_text,:active,:user_id,:user_id)";
+			$sql = "INSERT INTO offer_types ( name,category_id,default_text,active,created_by,updated_by) values (:name,:category_id,:default_text,:active,:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
 			if( $stmt->execute(['name'=>$this->name,'category_id'=>$this->category_id,'default_text'=>$this->default_text,'active'=>$this->active,'user_id'=>$_SESSION['id']])){
 				$this->id=$this->connection->lastInsertId();
@@ -105,9 +104,9 @@ class OfferType{
 		public function update(){
 			$stmt=$this->readOne($this->id);
 			if($stmt->rowCount()==1){
-				$sql = "UPDATE offer_types SET name=:name, default_text=:default_text,active=:active,updated_by=:updated_by WHERE id=:id";
+				$sql = "UPDATE offer_types SET name=:name,category_id=:category_id, default_text=:default_text,active=:active,updated_by=:updated_by WHERE id=:id";
 				$stmt= $this->connection->prepare($sql);
-				if( $stmt->execute(['id'=>$this->id,'name'=>$this->name,'default_text'=>$this->default_text,'active'=>$this->active
+				if( $stmt->execute(['id'=>$this->id,'category_id'=>$this->category_id,'name'=>$this->name,'default_text'=>$this->default_text,'active'=>$this->active
 				,'updated_by'=>$_SESSION['id']
 				])){
 					$this->update_date=date("Y-m-d H:i:s");

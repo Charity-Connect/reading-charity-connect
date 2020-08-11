@@ -7,10 +7,10 @@
 /*
  * Your admin ViewModel code goes here
  */
-define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
+define(['appController','utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset','ojs/ojformlayout'],
-        function (utils,oj, ko, $, accUtils, restClient,KnockoutTemplateUtils,ArrayDataProvider) {
+        function (app,utils,oj, ko, $, accUtils, restClient,KnockoutTemplateUtils,ArrayDataProvider) {
 
             function AdminViewModel() {
                 var self = this;
@@ -129,36 +129,73 @@ define(['utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','oj
 
 
                     self.saveButton = function () {
+                        // GET /rest/offer_type_categories/{code}
+                        if (self.needDetailName().length < 1) {
+                            var element1 = document.getElementById('inputEditName');
+							console.log(element1.showMessages());
+							self.postTextColor("red");
+							self.postText("Error: Need type not saved.");
+							self.fileContentPosted(true);
+							$(".postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
+								self.disableSaveButton(false);
+							});
 
-                        var needData =
-                            {
-                                "name": self.needDetailName(),
-                                "id": self.needDetailType(),
-                                "category_id": self.needDetailCategory(),
-                                "default_text": self.needDetailDefaultText().length>0?self.needDetailDefaultText():"",
-                                "active": (self.needDetailActive().length > 0) ? "Y" : "N"
-                            };
-                        return $.when(restClient.doPost('/rest/offer_types', needData)
+							return;
+						}
+
+                        if (self.needDetailCategory().length < 1) {
+                            var element1 = document.getElementById('selectEditCategory');
+							console.log(element1.showMessages());
+							self.postTextColor("red");
+							self.postText("Error: Need type not saved.");
+							self.fileContentPosted(true);
+							$(".postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
+								self.disableSaveButton(false);
+							});
+
+							return;
+						}
+
+                        return $.when(restClient.doGet('/rest/offer_type_categories/' + self.needDetailCategory())
                             .then(
                                 success = function (response) {
-                                    self.postText("You have succesfully saved the Need Type.");
-                                    self.postTextColor("green");
-                                    self.getneedTypesAjax();
-                                    console.log("need type data posted");
+                                console.log(response.name);
+                                var needData =
+                                {
+                                    "name": self.needDetailName(),
+                                    "id": self.needDetailType() == "" ? null:self.needDetailType(),
+                                    "category_id": self.needDetailCategory(),
+                                    "default_text": self.needDetailDefaultText(),
+                                    "active": (self.needDetailActive().length > 0) ? "Y" : "N"
+                                };
+                                return $.when(restClient.doPost('/rest/offer_types', needData)
+                                    .then(
+                                        success = function (response) {
+                                            self.postText("You have succesfully saved the Need Type.");
+                                            self.postTextColor("green");
+                                            self.getneedTypesAjax();
+                                            console.log("need type data posted");
+                                        },
+                                        error = function (response) {
+                                            self.postText("Error: Need Type changes not saved.");
+                                            self.postTextColor("red");
+                                            console.log("need type data not posted");
+                                        }).then(function () {
+                                        self.fileContentPosted(true);
+                                        $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
+                                            //self.disableSaveButton(false);
+                                        });
+                                    }).then(function () {
+                                        //console.log(orgData);
+                                    })
+                                    );
                                 },
                                 error = function (response) {
-                                    self.postText("Error: Need Type changes not saved.");
+                                    self.postText("Error: Type Categories data not retrieved.");
                                     self.postTextColor("red");
-                                    console.log("need type data not posted");
-                                }).then(function () {
-                                self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
-                                    //self.disableSaveButton(false);
-                                });
-                            }).then(function () {
-                                //console.log(orgData);
-                            })
-                        );
+                                    console.log("type categroies data not retrieved");
+                                })
+                        )
                     };
 
 

@@ -178,7 +178,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 self.postTextColor("red");
 								self.postText("Error: Offer not saved.");
 								self.fileContentPosted(true);
-								$("#postMessage").css('display', 'inline-block').fadeOut(4000, function(){
+								$("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function(){
 									self.disableSaveButton(false);
 								});
 
@@ -192,7 +192,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 self.postTextColor("red");
 								self.postText("Error: Distance not valid.");
 								self.fileContentPosted(true);
-								$("#postMessage").css('display', 'inline-block').fadeOut(4000, function(){
+								$("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function(){
 									self.disableSaveButton(false);
 								});
                                 
@@ -205,7 +205,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                 self.postTextColor("red");
 								self.postText("Error: Quantity not valid.");
 								self.fileContentPosted(true);
-								$("#postMessage").css('display', 'inline-block').fadeOut(4000, function(){
+								$("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function(){
 									self.disableSaveButton(false);
 								});
                                 
@@ -255,7 +255,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                         console.log("data not posted");
                                 }).then(function () {
                                     self.fileContentPosted(true);
-                                    $("#postMessage").css('display', 'inline-block').fadeOut(2000, function(){
+                                    $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function(){
                                         self.disableSaveButton(false);
                                     });
                                 }).then(function () {
@@ -276,7 +276,7 @@ define(['appController','ojs/ojrouter','ojs/ojcore', 'knockout', 'jquery', 'accU
                                         console.log("offer data not deleted");
                                     }).then(function () {
                                     self.fileContentPosted(true);
-                                    $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                    $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                         //self.disableSaveButton(false);
                                     });
                                 })

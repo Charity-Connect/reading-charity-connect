@@ -333,7 +333,7 @@ define(['appController', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jquery', 'ac
                                     console.log("data not posted");
                                 }).then(function () {
                                     self.fileContentPosted(true);
-                                    $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                    $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                         self.disableOptionButtons(false);
                                     });
                                 })
@@ -366,7 +366,7 @@ define(['appController', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jquery', 'ac
                                     console.log("data not posted");
                                 }).then(function () {
                                     self.fileContentPosted(true);
-                                    $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                    $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                         self.disableOptionButtons(false);
                                     });
                                 })

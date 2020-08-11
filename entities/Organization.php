@@ -97,16 +97,16 @@ class Organization{
 
 	public function delete() {
 		if(is_admin()) {
-			$this->connection->beginTransaction();
 			$stmt=$this->connection->prepare("SELECT client_id FROM client_links WHERE link_id=:id AND link_type='ORG'");
 			$stmt->execute(['id'=>$this->id]);
 			$client = new Client($this->connection);
-
+			
 			while ($row = $stmt->fetch()) {
 				$client->id= $row['client_id'];
-				$client->delete();
+				$client->delete($this->id);
 			}
-
+			
+			$this->connection->beginTransaction();
 			$sql = "DELETE FROM organizations WHERE id=:id; DELETE FROM need_requests WHERE organization_id=:id;
 					DELETE FROM client_share_requests WHERE organization_id=:id OR requesting_organization_id=:id;
 					DELETE FROM user_organizations WHERE organization_id=:id;";

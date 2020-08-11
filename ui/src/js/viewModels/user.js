@@ -8,7 +8,7 @@
  * Your admin ViewModel code goes here
  */
 define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient','ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
-    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext',
+    'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojselectcombobox', 'ojs/ojinputtext',
     'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset','ojs/ojformlayout'],
         function (app,Router,utils,oj, ko, $, accUtils, restClient,KnockoutTemplateUtils,ArrayDataProvider) {
 
@@ -50,8 +50,8 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                     self.userConfirmed = ko.observableArray([]);
                     self.userManageClients = ko.observableArray([]);
                     self.userClientShareApprover = ko.observableArray([]);
+                    self.userDbsCheck = ko.observable();
                     self.userManageOffers = ko.observableArray([]);
-
 
                     function populateUserOrgData(params)
                     {
@@ -61,6 +61,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                         self.userEmail(params.email);
                         self.userPhone(params.phone);
                         self.userOrgId(params.organization_id);
+                        self.userDbsCheck(params.dbs_check);
                         self.userAdmin([]);
                         if (params.admin === "Y") {
                             self.userAdmin(["admin"]);
@@ -109,7 +110,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                                     console.log("user data not deleted");
                                 }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     //self.disableSaveButton(false);
                                 });
                             })
@@ -138,6 +139,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                                 "manage_clients": (self.userManageClients().length > 0) ? "Y" : "N",
                                 "manage_offers": (self.userManageOffers().length > 0) ? "Y" : "N",
                                 "client_share_approver": (self.userClientShareApprover().length > 0) ? "Y" : "N",
+                                "dbs_check": (self.userDbsCheck().length > 0) ? self.userDbsCheck() : "U",
                                 "confirmed": (self.userConfirmed().length > 0) ? "Y" : "N"
                             };
                         return $.when(restClient.doPostJson('/rest/users', userData)
@@ -162,7 +164,7 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                                     console.log("user data not posted");
                                 }).then(function () {
                                 self.fileContentPosted(true);
-                                $("#postMessage").css('display', 'inline-block').fadeOut(2000, function () {
+                                $("#postMessage").css('display', 'inline-block').fadeOut(app.messageFadeTimeout, function () {
                                     //self.disableSaveButton(false);
                                 });
                             })
@@ -202,8 +204,15 @@ define(['appController','ojs/ojrouter','utils','ojs/ojcore', 'knockout', 'jquery
                                             console.log("User organizations not loaded");
                                             self.userOrgValid(false);
 
+                                        }).then(function () {
+                                            var dbsCheckStates = [
+                                                { value: 'Y', label: 'Yes' },
+                                                { value: 'N', label: 'No' },
+                                                { value: 'U', label: 'Unknown' }
+                                            ];
+                                            this.dbsCheckDP = new ArrayDataProvider(dbsCheckStates, { keyAttributes: 'value' });
                                         })
-
+                                            
                                 );
                         }
 
