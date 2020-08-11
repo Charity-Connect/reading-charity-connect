@@ -277,7 +277,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doPostJson('/rest/user_organizations', userData)
                         .then(
                             success = function (response) {
-                                self.postText("You have successfully saved added the user to the organization.");
+                                self.postText("You have successfully added a new user to the organization.");
                                 self.postTextColor("green");
                                 document.getElementById('duplicateUserDialog').close();
                                 document.getElementById('addUserDialog').close();
