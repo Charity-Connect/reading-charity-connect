@@ -7,7 +7,11 @@ function initRest(){
 
 	global $connection;
 	// Initialize the session
-	session_start();
+	
+    if(!isset($_SESSION)) 
+    { 
+        session_start(); 
+    } 
 
 	include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
 	$dbclass = new DBClass();
@@ -38,7 +42,10 @@ function initRest(){
 function initBotRest(){
 
 	global $connection;
-	session_start();
+    if(!isset($_SESSION)) 
+    { 
+        session_start(); 
+    } 
 	$_SESSION["bot"]=true;
 
 	include_once __DIR__ .'/../config/dbclass.php';
@@ -51,7 +58,10 @@ function initBotRest(){
 function initPublicRest(){
 
 	global $connection;
-	session_start();
+    if(!isset($_SESSION)) 
+    { 
+        session_start(); 
+    } 
 
 	include_once $_SERVER['DOCUMENT_ROOT'] .'/config/dbclass.php';
 	$dbclass = new DBClass();
@@ -63,7 +73,10 @@ function initPublicRest(){
 function initBotWeb(){
 	global $connection;
 	// Initialize the session
-	session_start();
+    if(!isset($_SESSION)) 
+    { 
+        session_start(); 
+    } 
 	$_SESSION["bot"]=true;
 	
 	include_once __DIR__ .'/../config/dbclass.php';
@@ -77,7 +90,10 @@ function initBotWeb(){
 function initWeb(){
 global $connection;
 // Initialize the session
-session_start();
+if(!isset($_SESSION)) 
+{ 
+	session_start(); 
+} 
 
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
@@ -274,7 +290,10 @@ function get_current_organizaton(){
 }
 
 function logout($connection){
-	session_start();
+    if(!isset($_SESSION)) 
+    { 
+		session_start();
+	}
 	$uid=null;
 	if(isset($_SESSION['id'])){
 		$uid=$_SESSION['id'];
