@@ -9,7 +9,7 @@
  */
 define(['appController', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'utils', 'restClient', 'restUtils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojinputtext', 'ojs/ojselectsingle', 'ojs/ojdatetimepicker',
-    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojvalidation-datetime'],
+    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojvalidation-datetime', 'ojs/ojdialog'],
     function (app, Router, oj, ko, $, accUtils, utils, restClient, restUtils, ArrayDataProvider) {
 
         function OffersViewModel() {
@@ -104,6 +104,17 @@ define(['appController', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jquery', 'ac
                             })
                     );
                 };
+
+                self.openConfirmDeleteDialog = function () {
+                    document.getElementById('confirmDeleteDialog').open();
+                }
+                self.closeConfirmDeleteDialog = function () {
+                    document.getElementById('confirmDeleteDialog').close();
+                }
+                self.closeSucessfulDeleteDialog = function () {
+                    document.getElementById('successfulDeleteDialog').close();
+                    router.go('offers');
+                }
 
                 self.populateResponse = function (response) {
                     self.offerName(response.name);
@@ -264,11 +275,12 @@ define(['appController', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jquery', 'ac
                         );
                     };
 
-                    self.deleteButton = function () {
+                    self.deleteOffer = function () {
                         return $.when(restClient.doDeleteJson('/rest/offers/' + self.offerId())
                             .then(
                                 success = function (response) {
-                                    router.go('offers');
+                                    document.getElementById('confirmDeleteDialog').close();
+                                    document.getElementById('successfulDeleteDialog').open();
                                 },
                                 error = function (response) {
                                     self.postText("Error: Offer changes not deleted.");
