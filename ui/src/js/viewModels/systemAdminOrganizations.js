@@ -336,6 +336,8 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doDeleteJson('/rest/user_organizations/' + event.target.id)
                         .then(
                             success = function (response) {
+                                self.postText("You have successfully deleted the user from this organisation.");
+                                self.postTextColor("green");
                                 self.getUserOrgData(self.orgDetailid());
                             },
                             error = function (response) {
