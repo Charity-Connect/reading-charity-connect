@@ -352,12 +352,11 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
 
                 }
                 var getData = function () {
-                    self.organizationsLoaded = ko.observable();
+                    self.organizationsLoaded = ko.observable(false);
                     self.organizationsValid = ko.observable();
 
                     self.getOrganizationsAjax = function () {
                         //GET /rest/organizations - REST
-                        self.organizationsLoaded(false);
                         return $.when(restClient.doGet(restUtils.constructUrl(restUtils.EntityUrl.ORGANIZATIONS))
                             .then(
                                 success = function (response) {
