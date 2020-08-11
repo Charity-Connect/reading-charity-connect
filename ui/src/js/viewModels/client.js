@@ -434,7 +434,7 @@ define(['appController', 'ojs/ojknockout-keyset', 'ojs/ojrouter', 'ojs/ojcore', 
 							.then(
 								success = function (response) {
 									self.postTextColor("green");
-									self.postText("You have succesfully saved the client.");
+									self.postText("You have successfully saved the client.");
 									console.log("client data posted");
 									self.populateResponse(response)
 								},
@@ -598,7 +598,7 @@ define(['appController', 'ojs/ojknockout-keyset', 'ojs/ojrouter', 'ojs/ojcore', 
 							.then(
 								success = function (response) {
 									self.postTextColor("green");
-									self.postText("You have succesfully saved the need.");
+									self.postText("You have successfully saved the need.");
 									console.log("need data posted");
 									//update clientNeedsTable
 									self.getClientNeedsAjax(self.clientId());

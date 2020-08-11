@@ -175,7 +175,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doPostJson('/rest/user_organizations', userData)
                         .then(
                             success = function (response) {
-                                self.postText("You have succesfully saved added the user to the organization.");
+                                self.postText("You have successfully saved added the user to the organization.");
                                 self.postTextColor("green");
                                 document.getElementById('duplicateUserDialog').close();
                                 document.getElementById('addUserDialog').close();
@@ -201,6 +201,8 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doDeleteJson('/rest/user_organizations/' + event.target.id)
                         .then(
                             success = function (response) {
+                                self.postText("You have successfully deleted the user from this organization.");
+                                self.postTextColor("green");
                                 self.getUserOrgData(self.userOrgId());
                             },
                             error = function (response) {
@@ -229,7 +231,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doPost('/rest/organizations', orgData)
                         .then(
                             success = function (response) {
-                                self.postText("You have succesfully saved the organization details.");
+                                self.postText("You have successfully saved the organization details.");
                                 self.postTextColor("green");
                                 console.log("user org data posted");
                             },
@@ -277,7 +279,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doPost('/rest/users', userData)
                         .then(
                             success = function (response) {
-                                self.postText("You have succesfully added a new user to the organisation.");
+                                self.postText("You have successfully added a new user to the organisation.");
                                 self.postTextColor("green");
                                 document.getElementById('addUserDialog').close();
                                 self.getUserOrgData(self.userOrgId());
