@@ -2,13 +2,13 @@
  Copyright (c) 2014, 2019, Oracle and/or its affiliates.
  The Universal Permissive License (UPL), Version 1.0
  -->
- <div class="oj-hybrid-padding">
+<div class="oj-hybrid-padding">
 
     <div class="oj-panel oj-panel-alt2">
         <div class="oj-flex sm-1x-row">
             <div class="oj-sm-padding-1x-horizontal oj-flex-item">
-                    <h3>Offer Help</h3>
-                </div>
+                <h3>Offer Help</h3>
+            </div>
             <div class="oj-sm-padding-1x-horizontal oj-flex-item">
                 <div class="oj-helper-clearfix">
                     <div class="oj-flex sm-1x-row oj-sm-float-end">
@@ -16,13 +16,13 @@
                             <oj-button id="cancelButton" on-oj-action='[[cancelButton]]'>
                                 <span data-bind="text: cancelButtonName"></span>
                             </oj-button>
-						    <oj-button id="saveButton" chroming='callToAction' on-oj-action='[[saveButton]]'
+                            <oj-button id="saveButton" chroming='callToAction' on-oj-action='[[saveButton]]'
                                 disabled="[[disableSaveButton]]">
                                 <span>Save</span>
                             </oj-button>
-                            <oj-button id="deleteButton" on-oj-action='[[deleteButton]]'>
+                            <oj-button id="deleteButton" on-oj-action='[[openConfirmDeleteDialog]]'>
                                 <span>Delete</span>
-                            </oj-button>                            
+                            </oj-button>
                         </div>
                     </div>
                 </div>
@@ -37,55 +37,41 @@
                     <oj-progress id="progressBar" value="-1"></oj-progress>
                 </oj-bind-if>
                 <oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="saveButton"
-                          :style.color="[[postTextColor]]">
+                    :style.color="[[postTextColor]]">
                     <oj-bind-text value='[[postText]]'></oj-bind-text>
                 </oj-label>
             </div>
         </div>
         <hr />
-               
-        <div class="oj-flex sm-1x-row">                                                               
+
+        <div class="oj-flex sm-1x-row">
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                 <oj-label id="editNameLabel"><strong>Offer Name:*</strong></oj-label>
-                <oj-input-text id="inputEditName" labelled-by="editNameLabel"
-                    value="{{offerName}}"
-					placeholder="Input name"
-					required
-                    title="Edit name input">
+                <oj-input-text id="inputEditName" labelled-by="editNameLabel" value="{{offerName}}"
+                    placeholder="Input name" required title="Edit name input">
                 </oj-input-text>
             </div>
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                 <oj-label id="editQuantityLabel"><strong>Quantity:*</strong></oj-label>
-                <oj-input-number id="inputEditQuantity" labelled-by="editQuantityLabel"
-                    value="{{quantity}}"
-                    raw-value="{{rawQuantityValue}}"
-					required
-                    placeholder="Input quantity"
-                    title="Edit quantity input">
+                <oj-input-number id="inputEditQuantity" labelled-by="editQuantityLabel" value="{{quantity}}"
+                    raw-value="{{rawQuantityValue}}" required placeholder="Input quantity" title="Edit quantity input">
                 </oj-input-number>
-            </div>                       
+            </div>
         </div>
         <hr />
         <div class="oj-flex sm-1x-row">
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                 <oj-label id="editCategoryLabel"><strong>Category:*</strong></oj-label>
                 <oj-select-single id="selectEditCategory" labelled-by="editCategoryLabel"
-                    data="[[offerTypesCategoriesDataProvider]]"
-                    value="{{category_id}}"
-                    on-value-changed="[[handleOfferTypesCategoryChanged]]"                                
-					placeholder="Select category"
-					required
+                    data="[[offerTypesCategoriesDataProvider]]" value="{{category_id}}"
+                    on-value-changed="[[handleOfferTypesCategoryChanged]]" placeholder="Select category" required
                     title="Edit category select">
                 </oj-select-single>
             </div>
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                 <oj-label id="editTypeLabel"><strong>Type:*</strong></oj-label>
-                <oj-select-single id="selectEditType" labelled-by="editTypeLabel"
-                    data="[[offerTypesDataProvider]]"
-                    value="{{type_id}}"
-                    placeholder="Select type"
-					title="Edit type select"
-					required
+                <oj-select-single id="selectEditType" labelled-by="editTypeLabel" data="[[offerTypesDataProvider]]"
+                    value="{{type_id}}" placeholder="Select type" title="Edit type select" required
                     disabled="[[disableSelectEditType]]">
                 </oj-select-single>
             </div>
@@ -94,67 +80,93 @@
         <div class="oj-flex sm-1x-row">
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                 <oj-label id="editPostcodeLabel"><strong>Postcode:</strong></oj-label>
-                <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel"
-                    value="{{postcode}}"
-                    placeholder="Input postcode"
-                    title="Edit postcode input">
+                <oj-input-text id="inputEditPostcode" labelled-by="editPostcodeLabel" value="{{postcode}}"
+                    placeholder="Input postcode" title="Edit postcode input">
                 </oj-input-text>
-            </div>                        
+            </div>
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                 <oj-label id="editDistanceLabel"><strong>Distance (miles):</strong></oj-label>
-                <oj-input-number id="inputEditDistance" labelled-by="editDistanceLabel"
-                    raw-value="{{rawDistanceValue}}"
-                    value="{{distance}}"
-                    step=0
-                    placeholder="Input distance"
-                    title="Edit distance input">
+                <oj-input-number id="inputEditDistance" labelled-by="editDistanceLabel" raw-value="{{rawDistanceValue}}"
+                    value="{{distance}}" step=0 placeholder="Input distance" title="Edit distance input">
                 </oj-input-number>
-            </div>                                
+            </div>
         </div>
         <hr />
         <div class="oj-flex sm-1x-row">
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                 <oj-label id="editDateAvailableLabel"><strong>Start Date:*</strong></oj-label>
                 <oj-input-date id="datepickerEditDateAvailable" labelled-by="editDateAvailableLabel"
-                    keyboard-edit='disabled'
-                    date-picker.footer-layout=''
-                    min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                
-					value="{{startDate}}"
-					required
-					converter="[[dateConverter]]"
-                    placeholder="Input date available"                                
+                    keyboard-edit='disabled' date-picker.footer-layout=''
+                    min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]" value="{{startDate}}"
+                    required converter="[[dateConverter]]" placeholder="Input date available"
                     title="Pick date available">
                 </oj-input-date>
             </div>
             <div class="oj-sm-12 oj-md-6 oj-lg-4 oj-sm-padding-1x-horizontal oj-flex-item">
                 <oj-label id="editDateEndLabel"><strong>End Date:</strong></oj-label>
-                <oj-input-date id="datepickerEditDateEnd" labelled-by="editDateEndLabel"
-                    keyboard-edit='disabled'
+                <oj-input-date id="datepickerEditDateEnd" labelled-by="editDateEndLabel" keyboard-edit='disabled'
                     date-picker.footer-layout=''
-                    min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]"                                
-                    value="{{endDate}}"
-					converter="[[dateConverter]]"
-                    placeholder="Input date end"                                
-                    title="Pick date end">
-                </oj-input-date>                            
-            </div>                                
+                    min="[[oj.IntlConverterUtils.dateToLocalIso(new Date().setHours(0,0,0,0))]]" value="{{endDate}}"
+                    converter="[[dateConverter]]" placeholder="Input date end" title="Pick date end">
+                </oj-input-date>
+            </div>
         </div>
-        <hr />                    
+        <hr />
         <oj-label id="editOfferNotesLabel"><strong>Offer Notes:</strong></oj-label>
-        <oj-text-area id="textareaEditOfferNotes" class="oj-form-control-full-width"
-            labelled-by="editOfferNotesLabel"
-            value="{{notes}}"
-            placeholder="Input offer notes"
-            title="Edit offer notes textarea"
-            rows="5">                                
-        </oj-text-area>  
-         <!-- // if Edit Creation and Update dates are shown -->                  
-         <div id="datesInformation" class="datesPlaceholders">
+        <oj-text-area id="textareaEditOfferNotes" class="oj-form-control-full-width" labelled-by="editOfferNotesLabel"
+            value="{{notes}}" placeholder="Input offer notes" title="Edit offer notes textarea" rows="5">
+        </oj-text-area>
+        <!-- // if Edit Creation and Update dates are shown -->
+        <div id="datesInformation" class="datesPlaceholders">
             <oj-bind-if test="[[offerId!=null]]">
-                <hr />  
-                <oj-label id="UpdateDateLabel"><strong>Last updated at </strong><oj-bind-text value="{{updateDate}}"></oj-bind-text> <strong>by</strong> <oj-bind-text value="{{updatedBy}}"></oj-bind-text></oj-label>
-            </oj-bind-if> 
+                <hr />
+                <oj-label id="UpdateDateLabel"><strong>Last updated at </strong>
+                    <oj-bind-text value="{{updateDate}}"></oj-bind-text> <strong>by</strong>
+                    <oj-bind-text value="{{updatedBy}}"></oj-bind-text>
+                </oj-label>
+            </oj-bind-if>
         </div>
     </div>
+
+    <oj-dialog style="display:none" id="confirmDeleteDialog" class="oj-sm-12 oj-md-4" dialog-title="Confirm Deletion"
+        cancel-behavior="none">
+        <div slot="body">
+            <p>Are you sure you want to delete this offer?</p>
+
+        </div>
+        <div slot="footer">
+            <div class="oj-flex-bar sm-1x-row">
+                <div class="oj-sm-padding-1x-horizontal oj-flex">
+                    <oj-button id="confirmDeleteDialogCancelButton" on-oj-action="[[closeConfirmDeleteDialog]]">
+                        <span>No</span>
+                    </oj-button>
+                </div>
+                <div class="oj-sm-padding-1x-horizontal oj-flex">
+                    <oj-button id="confirmDeleteDialogDeleteButton" on-oj-action='[[deleteOffer]]'>
+                        <span>Yes</span>
+                    </oj-button>
+                </div>
+            </div>
+        </div>
+
+    </oj-dialog>
+
+    <oj-dialog style="display:none" id="successfulDeleteDialog" class="oj-sm-12 oj-md-4" dialog-title="Offer Deleted"
+        cancel-behavior="none">
+        <div slot="body">
+            <p>You have deleted this offer.</p>
+
+        </div>
+        <div slot="footer">
+            <div class="oj-flex-bar sm-1x-row">
+                <div class="oj-sm-padding-1x-horizontal oj-flex">
+                    <oj-button id="successfulDeleteDialogOkButton" on-oj-action="[[closeSucessfulDeleteDialog]]">
+                        <span>OK</span>
+                    </oj-button>
+                </div>
+            </div>
+        </div>
+
+    </oj-dialog>
 
 </div>

@@ -91,6 +91,16 @@ define(['appController', 'ojs/ojknockout-keyset', 'ojs/ojrouter', 'ojs/ojcore', 
 
 				self.needMatchesHeaderCheckStatus = ko.observableArray(['checked']);
 
+				self.openConfirmDeleteDialog = function () {
+					document.getElementById('confirmDeleteDialog').open();
+				}
+				self.closeConfirmDeleteDialog = function () {
+					document.getElementById('confirmDeleteDialog').close();
+				}
+				self.closeSucessfulDeleteDialog = function () {
+					document.getElementById('successfulDeleteDialog').close();
+					router.go('clients');
+				}
 
 				self.populateResponse = function (response) {
 					self.clientName(response.name);
@@ -434,7 +444,7 @@ define(['appController', 'ojs/ojknockout-keyset', 'ojs/ojrouter', 'ojs/ojcore', 
 							.then(
 								success = function (response) {
 									self.postTextColor("green");
-									self.postText("You have succesfully saved the client.");
+									self.postText("You have successfully saved the client.");
 									console.log("client data posted");
 									self.populateResponse(response)
 								},
@@ -486,11 +496,12 @@ define(['appController', 'ojs/ojknockout-keyset', 'ojs/ojrouter', 'ojs/ojcore', 
 						router.go('clients');
 					}
 
-					self.deleteButton = function () {
+					self.deleteClient = function () {
 						return $.when(restClient.doDeleteJson('/rest/clients/' + self.clientId())
 							.then(
 								success = function (response) {
-									router.go('clients');
+									document.getElementById('confirmDeleteDialog').close();
+									document.getElementById('successfulDeleteDialog').open();
 								},
 								error = function (response) {
 									self.postText("Error: Client changes not deleted.");
@@ -598,7 +609,7 @@ define(['appController', 'ojs/ojknockout-keyset', 'ojs/ojrouter', 'ojs/ojcore', 
 							.then(
 								success = function (response) {
 									self.postTextColor("green");
-									self.postText("You have succesfully saved the need.");
+									self.postText("You have successfully saved the need.");
 									console.log("need data posted");
 									//update clientNeedsTable
 									self.getClientNeedsAjax(self.clientId());

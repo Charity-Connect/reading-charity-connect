@@ -3,121 +3,116 @@
  The Universal Permissive License (UPL), Version 1.0
  -->
 <div class="oj-hybrid-padding">
-    <oj-bind-if test="[[userOrgLoaded() !== true]]">
-        Loading...
-        <oj-progress id="progressBar" value="-1"></oj-progress>
-    </oj-bind-if>
-    <oj-bind-if test="[[userOrgLoaded() == true]]">
+	<oj-bind-if test="[[userOrgLoaded() !== true]]">
+		Loading...
+		<oj-progress id="progressBar" value="-1"></oj-progress>
+	</oj-bind-if>
+	<oj-bind-if test="[[userOrgLoaded() == true]]">
 
 
-        <oj-bind-if test="[[userOrgValid() == true]]">
-            <div class="spacer-sm">
-                <div class="oj-panel">
-                    <strong>Info:</strong>
-                    please select a row from the below table to edit user
-                </div>
-            </div>
+		<oj-bind-if test="[[userOrgValid() == true]]">
+			<div class="spacer-sm">
+				<div class="oj-panel">
+					<strong>Info:</strong>
+					please select a row from the below table to edit user
+				</div>
+			</div>
 
-            <div class="spacer-sm">
-                <div class="oj-panel oj-panel-alt2">
-                    <div class="oj-flex sm-1x-row">
-                        <div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">
-                            <h2>
-                                <oj-bind-text  value='[[userOrgName]]'> </oj-bind-text>
-                            </h2>
-                        </div>
-                        <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
-							<div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
+			<div class="spacer-sm">
+				<div class="oj-panel oj-panel-alt2">
+					<div class="oj-flex sm-1x-row">
+						<div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">
+							<h2>
+								<oj-bind-text value='[[userOrgName]]'> </oj-bind-text>
+							</h2>
+						</div>
+						<div
+							class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+							<div
+								class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
 								<oj-bind-if test="[[fileContentPosted() !== true]]">
 									<span class="oj-helper-text-align-right">Posting...</span>
 									<oj-progress id="progressBar" value="-1"></oj-progress>
 								</oj-bind-if>
-								<oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="addUserSaveButton"
-										  :style.color="[[postTextColor]]">
+								<oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide"
+									for="addUserSaveButton" :style.color="[[postTextColor]]">
 									<oj-bind-text value='[[postText]]'></oj-bind-text>
 								</oj-label>
 							</div>
-						   <div class="oj-helper-clearfix">
-                                <oj-button id="saveOrgButton" class="oj-sm-float-end"
-                                           on-oj-action='[[saveOrgButton]]'>
-                                    <span>Save</span>
-                                </oj-button>
-                            </div>
-                        </div>
-                    </div>
-                    <oj-form-layout label-edge="start">
-                        <div class="oj-form oj-sm-odd-cols-1 oj-md-labels-inline oj-padding">
-                            <div class="oj-flex " >
-                                <div class="oj-flex-item oj-padding-end">
-                                    <oj-label id="edituserOrgAddressLabel" class="oj-label-inline">Address:</oj-label>
-                                </div>
-                                <div class="oj-flex-item" style="width: 75%;">
-                                    <oj-input-text id="inputuserOrgAddressEmail" labelled-by="edituserOrgAddressLabel"
-                                                   value="{{userOrgAddress}}"
-                                                   title="Edit address input">
-                                    </oj-input-text>
-                                </div>
-                            </div>
-
-                            <div class="oj-flex " >
-                                <div class="oj-flex-item oj-padding-end">
-                                    <oj-label id="edituserOrgPhoneLabel" class="oj-label-inline">Phone:</oj-label>
-                                </div>
-                                <div class="oj-flex-item" style="width: 75%;">
-                                    <oj-input-text id="inputuserOrgEditPhone" labelled-by="edituserOrgPhoneLabel"
-                                                   value="{{userOrgPhone}}"
-                                                   title="Edit phone input">
-                                    </oj-input-text>
-                                </div>
-                            </div>
-                        </div>
-                    </oj-form-layout>
-
-					<div class="oj-flex sm-1x-row">
-						<div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">                    
-							<h3>Organisation Users</h3>    
-						</div>                    
-						<div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
-							<div class="oj-helper-clearfix">                                        
-								<oj-button id="addUserButton"  class="oj-sm-float-end oj-margin-end"
-								on-oj-action='[[addUserButton]]'>
-								<span>Add User</span>
-						 </oj-button>
-													  
+							<div class="oj-helper-clearfix">
+								<oj-button id="saveOrgButton" class="oj-sm-float-end" on-oj-action='[[saveOrgButton]]'>
+									<span>Save</span>
+								</oj-button>
 							</div>
 						</div>
 					</div>
-					
+					<oj-form-layout label-edge="start">
+						<div class="oj-form oj-sm-odd-cols-1 oj-md-labels-inline oj-padding">
+							<div class="oj-flex ">
+								<div class="oj-flex-item oj-padding-end">
+									<oj-label id="edituserOrgAddressLabel" class="oj-label-inline">Address:</oj-label>
+								</div>
+								<div class="oj-flex-item" style="width: 75%;">
+									<oj-input-text id="inputuserOrgAddressEmail" labelled-by="edituserOrgAddressLabel"
+										value="{{userOrgAddress}}" title="Edit address input">
+									</oj-input-text>
+								</div>
+							</div>
+
+							<div class="oj-flex ">
+								<div class="oj-flex-item oj-padding-end">
+									<oj-label id="edituserOrgPhoneLabel" class="oj-label-inline">Phone:</oj-label>
+								</div>
+								<div class="oj-flex-item" style="width: 75%;">
+									<oj-input-text id="inputuserOrgEditPhone" labelled-by="edituserOrgPhoneLabel"
+										value="{{userOrgPhone}}" title="Edit phone input">
+									</oj-input-text>
+								</div>
+							</div>
+						</div>
+					</oj-form-layout>
+
+					<div class="oj-flex sm-1x-row">
+						<div class="oj-sm-12 oj-md-9 oj-sm-padding-1x-horizontal oj-flex-item">
+							<h3>Organisation Users</h3>
+						</div>
+						<div
+							class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
+							<div class="oj-helper-clearfix">
+								<oj-button id="addUserButton" class="oj-sm-float-end oj-margin-end"
+									on-oj-action='[[addUserButton]]'>
+									<span>Add User</span>
+								</oj-button>
+
+							</div>
+						</div>
+					</div>
+
 					<oj-table id="userTable" class="row-selectable" aria-label="table using array"
-					selection="{{userRowSelected}}"
-					on-selection-changed="[[handleUserRowChanged]]"
-					selection-mode='{"row": "single"}'
-					columns='[{"headerText": "Name", "field": "display_name"},
+						selection="{{userRowSelected}}" on-selection-changed="[[handleUserRowChanged]]"
+						selection-mode='{"row": "single"}' columns='[{"headerText": "Name", "field": "display_name"},
 					{"headerText": "Email", "field": "email"},
 					{"headerText": "Remove", "field":"id",
 					"headerStyle": "text-align: center;",
 					"style":"text-align: center; padding-top: 0px; padding-bottom: 0px;",
 					"template": "deleteTemplate",
-					"sortable":"disabled"}]'
-					display='grid'
-					data="[[userOrgDataProvider]]"
-					style="width: 100%; height:100%;">
-					<template slot="deleteTemplate" data-oj-as="cell">
-					  <oj-button :id="[[cell.data]]" display="icons" on-oj-action='[[userDeleteClicked]]' style="margin: 2px 0px 2px 0px ;">
-						  <i slot='startIcon' class="fa fa-trash"></i>
-						  remove
-						</oj-button>
-				  </template>
-		  </oj-table>
+					"sortable":"disabled"}]' display='grid' data="[[userOrgDataProvider]]" style="width: 100%; height:100%;">
+						<template slot="deleteTemplate" data-oj-as="cell">
+							<oj-button :id="[[cell.data]]" display="icons" on-oj-action='[[userDeleteClicked]]'
+								style="margin: 2px 0px 2px 0px ;">
+								<i slot='startIcon' class="fa fa-trash"></i>
+								remove
+							</oj-button>
+						</template>
+					</oj-table>
 
-		  <oj-paging-control id="userPaging" data='[[userOrgDataProvider]]'
-							 page-size='5' slot='bottom'>
-		  </oj-paging-control>
+					<oj-paging-control id="userPaging" data='[[userOrgDataProvider]]' page-size='5' slot='bottom'>
+					</oj-paging-control>
 
-                </div>
-            </div>
+				</div>
+			</div>
 
-            <script type="text/html" id="adminTemplate">
+			<script type="text/html" id="adminTemplate">
                 <td style="padding-top: 0px;padding-bottom: 0px;">
                     <div >
                          <oj-checkboxset id="cs2" value="{{$context.row.adminTable}}"  disabled="true" class="oj-choice-direction-row" >
@@ -129,85 +124,81 @@
             </script>
 
 
-		</div>
-	</oj-bind-if>
+</div>
+</oj-bind-if>
 
-	
-	<oj-dialog style="display:none" id="addUserDialog" class="oj-sm-12 oj-md-8" dialog-title="Add User" cancel-behavior="none">
-		<div slot="body">
-			<oj-form-layout label-edge="start">
-				<div class="oj-form oj-sm-odd-cols-1 oj-md-labels-inline oj-padding">
-					<div class="oj-flex oj-padding" >
-						<div class="oj-flex-item oj-padding-end">
-							<oj-label id="editEmailLabel" for="inputEditEmail" >Email:*</oj-label>
-						</div>
-						<div class="oj-flex-item">
-							<oj-input-text id="inputEditEmail" labelled-by="editEmailLabel"
-										   value="{{userEmail}}"
-										   on-value-changed="[[emailChanged]]"
-										   placeholder="Enter email"
-										   required>
-							</oj-input-text>
-						</div>
+
+<oj-dialog style="display:none" id="addUserDialog" class="oj-sm-12 oj-md-8" dialog-title="Add User"
+	cancel-behavior="none">
+	<div slot="body">
+		<oj-form-layout label-edge="start">
+			<div class="oj-form oj-sm-odd-cols-1 oj-md-labels-inline oj-padding">
+				<div class="oj-flex oj-padding">
+					<div class="oj-flex-item oj-padding-end">
+						<oj-label id="editEmailLabel" for="inputEditEmail">Email:*</oj-label>
 					</div>
-					<div class="oj-flex oj-padding" >
-						<div class="oj-flex-item oj-padding-end">
-							<oj-label id="editUserNameLabel" for="inputEditUserName">User Name:*</oj-label>
-						</div>
-						<div class="oj-flex-item">
-							<oj-input-text  id="inputEditUserName" labelled-by="editUserNameLabel"
-											value="{{userName}}"
-											placeholder="Enter Name"
-											required>
-							</oj-input-text>
-						</div>
+					<div class="oj-flex-item">
+						<oj-input-text id="inputEditEmail" labelled-by="editEmailLabel" value="{{userEmail}}"
+							on-value-changed="[[emailChanged]]" placeholder="Enter email" required>
+						</oj-input-text>
 					</div>
-
-			   </div>
-
-			</oj-form-layout>
-
-		</div>
-		<div slot="footer">
-
-			<div class="oj-flex-bar sm-1x-row">
-				<div class="oj-sm-padding-1x-horizontal oj-flex">
-					<oj-button id="addUserCancelButton"
-						   on-oj-action="[[closeAddUserButton]]" >
-						<span>Cancel</span>
-					</oj-button>
 				</div>
-				<div class="oj-sm-padding-1x-horizontal oj-flex">
-					<oj-button id="addUserSaveButton" on-oj-action='[[saveUserButton]]'>
-						<span>Save</span>
-					</oj-button>
+				<div class="oj-flex oj-padding">
+					<div class="oj-flex-item oj-padding-end">
+						<oj-label id="editUserNameLabel" for="inputEditUserName">User Name:*</oj-label>
+					</div>
+					<div class="oj-flex-item">
+						<oj-input-text id="inputEditUserName" labelled-by="editUserNameLabel" value="{{userName}}"
+							placeholder="Enter Name" required>
+						</oj-input-text>
+					</div>
 				</div>
+
+			</div>
+
+		</oj-form-layout>
+
+	</div>
+	<div slot="footer">
+
+		<div class="oj-flex-bar sm-1x-row">
+			<div class="oj-sm-padding-1x-horizontal oj-flex">
+				<oj-button id="addUserCancelButton" on-oj-action="[[closeAddUserButton]]">
+					<span>Cancel</span>
+				</oj-button>
+			</div>
+			<div class="oj-sm-padding-1x-horizontal oj-flex">
+				<oj-button id="addUserSaveButton" on-oj-action='[[saveUserButton]]'>
+					<span>Save</span>
+				</oj-button>
 			</div>
 		</div>
+	</div>
 
-	</oj-dialog>	
+</oj-dialog>
 
-		<oj-dialog style="display:none" id="duplicateUserDialog" class="oj-sm-12 oj-md-8" dialog-title="Duplicate User" cancel-behavior="none">
-		<div slot="body">
-			<p>A user with this e-mail address already exists in the system. Do you want to add them to this organization?</p>
+<oj-dialog style="display:none" id="duplicateUserDialog" class="oj-sm-12 oj-md-4" dialog-title="Duplicate User"
+	cancel-behavior="none">
+	<div slot="body">
+		<p>A user with this e-mail address already exists in the system. Do you want to add them to this organization?
+		</p>
 
-		</div>
-		<div slot="footer">
-			<div class="oj-flex-bar sm-1x-row">
-				<div class="oj-sm-padding-1x-horizontal oj-flex">
-					<oj-button id="addUserCancelButton"
-						   on-oj-action="[[closeAddUserToOrganizationButton]]" >
-						<span>No</span>
-					</oj-button>
-				</div>
-				<div class="oj-sm-padding-1x-horizontal oj-flex">
-					<oj-button id="addUserSaveButton" on-oj-action='[[addUserToOrganizationButton]]'>
-						<span>Yes</span>
-					</oj-button>
-				</div>
+	</div>
+	<div slot="footer">
+		<div class="oj-flex-bar sm-1x-row">
+			<div class="oj-sm-padding-1x-horizontal oj-flex">
+				<oj-button id="addUserCancelButton" on-oj-action="[[closeAddUserToOrganizationButton]]">
+					<span>No</span>
+				</oj-button>
+			</div>
+			<div class="oj-sm-padding-1x-horizontal oj-flex">
+				<oj-button id="addUserSaveButton" on-oj-action='[[addUserToOrganizationButton]]'>
+					<span>Yes</span>
+				</oj-button>
 			</div>
 		</div>
+	</div>
 
-	</oj-dialog>	
+</oj-dialog>
 
 </div>

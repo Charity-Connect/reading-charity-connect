@@ -70,6 +70,11 @@
                         </div>                    
                         <div class="oj-sm-12 oj-md-3 oj-sm-padding-1x-horizontal oj-flex oj-sm-flex-direction-column oj-helper-justify-content-center">
                             <div class="oj-helper-clearfix">
+								<oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="saveEditButton"
+								:style.color="[[postTextColor]]">
+						  <oj-bind-text value='[[postText]]'></oj-bind-text>
+					  </oj-label>
+
                                 <oj-button id="deleteButton" class="oj-sm-float-end"
                                     on-oj-action='[[deleteButton]]'>
                                         <span>Delete</span>
@@ -187,10 +192,6 @@
                                 <span class="oj-helper-text-align-right">Posting...</span>
                                 <oj-progress id="progressBar" value="-1"></oj-progress>
                             </oj-bind-if>
-                            <oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="saveEditButton"
-                                      :style.color="[[postTextColor]]">
-                                <oj-bind-text value='[[postText]]'></oj-bind-text>
-                            </oj-label>
                         </div>
                     </div>
                 </div>
