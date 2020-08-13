@@ -320,7 +320,7 @@ define(['appController', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jquery', 'ac
                         return $.when(restClient.doPost(restUtils.constructUrl(restUtils.EntityUrl.NEED_REQUESTS), responseJson)
                             .then(
                                 success = function (response) {
-                                    self.postText("You have succesfully saved the request.");
+                                    self.postText("You have successfully saved the request.");
                                     self.postTextColor("green");
 
                                     //update requestsTable
@@ -353,7 +353,7 @@ define(['appController', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jquery', 'ac
                         return $.when(restClient.doPost('/rest/client_share_requests', responseJson)
                             .then(
                                 success = function (response) {
-                                    self.postText("You have succesfully saved the share request.");
+                                    self.postText("You have successfully saved the share request.");
                                     self.postTextColor("green");
 
                                     //update requestsTable

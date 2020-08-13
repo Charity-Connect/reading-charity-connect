@@ -187,7 +187,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                         .then(
                             success = function (response) {
                                 self.orgDetailid(response.id);
-                                self.postText("You have succesfully saved the organization.");
+                                self.postText("You have successfully saved the organization.");
                                 self.postTextColor("green");
                                 self.getOrganizationsAjax();
                                 console.log("org data posted");
@@ -211,7 +211,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doDeleteJson('/rest/organizations/' + self.orgDetailid())
                         .then(
                             success = function (response) {
-                                self.postText("You have succesfully deleted the organization.");
+                                self.postText("You have successfully deleted the organization.");
                                 self.postTextColor("green");
                                 self.getOrganizationsAjax();
                             },
@@ -277,7 +277,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doPostJson('/rest/user_organizations', userData)
                         .then(
                             success = function (response) {
-                                self.postText("You have succesfully saved added the user to the organization.");
+                                self.postText("You have successfully added a new user to the organization.");
                                 self.postTextColor("green");
                                 document.getElementById('duplicateUserDialog').close();
                                 document.getElementById('addUserDialog').close();
@@ -311,7 +311,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doPostJson('/rest/users', userData)
                         .then(
                             success = function (response) {
-                                self.postText("You have succesfully saved user details.");
+                                self.postText("You have successfully saved user details.");
                                 self.postTextColor("green");
                                 document.getElementById('addUserDialog').close();
                                 self.getUserOrgData(self.orgDetailid());
@@ -336,6 +336,8 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                     return $.when(restClient.doDeleteJson('/rest/user_organizations/' + event.target.id)
                         .then(
                             success = function (response) {
+                                self.postText("You have successfully deleted the user from this organisation.");
+                                self.postTextColor("green");
                                 self.getUserOrgData(self.orgDetailid());
                             },
                             error = function (response) {
