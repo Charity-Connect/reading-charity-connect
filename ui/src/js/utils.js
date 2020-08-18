@@ -8,6 +8,7 @@ define(['ojs/ojcore', 'knockout', 'ojs/ojconfig', 'ojs/ojmessaging'],
         var appConstants = {
             sysModuleConfig: {},
             users: {
+                userId: "",
                 organizationId: ""
             }
         }
