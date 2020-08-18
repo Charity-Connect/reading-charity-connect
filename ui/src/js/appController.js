@@ -93,6 +93,7 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                             success = function(response) {
 								self.userDetails=response;
                                 self.userLogin(response.email);
+                                utils.appConstants.users.userId = response.user_id;
                                 utils.appConstants.users.organizationId = response.organization_id;
                                 self.currentOrganization(response.organization_name);
                                 if(response.confirmed!="Y"){
@@ -151,6 +152,8 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
                         window.location.href = "/docs/index.php/documentation/";
                     }else if (event.target.value === "about") {
                         window.location.href = "/docs/index.php/contact-us/";
+                    }else if (event.target.value === "pref") {
+                        self.router.go("preferences");
                     }
                };
 
@@ -165,7 +168,8 @@ define(['knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/
 			'client/{clientId}': {label: 'Client'},
             'user/{userId}': {label: 'User'},
 			'orgAdmin': {label: 'Org Admin'},
-			'admin': {label: 'Admin'}
+			'admin': {label: 'Admin'},
+			'preferences': {label: 'Preferences'}
 		};
 		Router.defaults['urlAdapter'] = new Router.urlParamAdapter();
         self.router.configure(self.routerConfig);

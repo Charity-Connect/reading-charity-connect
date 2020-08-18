@@ -1,0 +1,201 @@
+<!--
+ Copyright (c) 2014, 2019, Oracle and/or its affiliates.
+ The Universal Permissive License (UPL), Version 1.0
+ -->
+<div class="oj-hybrid-padding">
+    <oj-bind-if test="[[userOrgLoaded() !== true]]">
+        Loading...
+        <oj-progress id="progressBar" value="-1"></oj-progress>
+    </oj-bind-if>
+    <oj-bind-if test="[[userOrgLoaded() == true]]">
+
+
+
+                <div class="oj-panel oj-panel-alt2">
+                    <div class="oj-flex sm-1x-row oj-sm-float-end">
+                        <div class="oj-sm-padding-1x-horizontal">
+                            <oj-button id="editNeedCancelButton" class="oj-sm-float-end"
+                                       on-oj-action='[[cancelButton]]'>
+                                <span>Cancel</span>
+                            </oj-button>
+                        </div>
+                        <div class="oj-sm-padding-1x-horizontal">
+                            <oj-button id="saveUserButton" class="oj-sm-float-end"
+                                       on-oj-action='[[saveUserButton]]'>
+                                <span>Save</span>
+                            </oj-button>
+                        </div>
+                    </div>
+
+
+                    <oj-form-layout label-edge="start">
+                         <div class="oj-form oj-sm-odd-cols-1 oj-md-labels-inline oj-padding">
+                             <oj-input-text style="display: none;" id="id"
+                                            value="{{id}}">
+                             </oj-input-text>
+                             <oj-input-text style="display: none;" id="userid"
+                                            value="{{userId}}">
+                             </oj-input-text>
+                             <div class="oj-flex oj-padding" >
+                                 <div class="oj-flex-item oj-padding-end">
+                                     <oj-label id="editUserNameLabel" class="oj-label-inline">Name:*</oj-label>
+                                 </div>
+                                 <div class="oj-flex-item">
+                                     <oj-input-text  id="inputEditUserName" labelled-by="editUserNameLabel"
+                                                     value="{{userName}}"
+													 placeholder="Name"
+													 required="true"
+                                                     title="Edit Name input">
+                                     </oj-input-text>
+                                 </div>
+                             </div>
+
+                             <div class="oj-flex oj-padding" >
+                                 <div class="oj-flex-item oj-padding-end">
+                                     <oj-label id="editEmailLabel" class="oj-label-inline">Email:*</oj-label>
+                                 </div>
+                                 <div class="oj-flex-item">
+                                     <oj-input-text id="inputEditEmail" labelled-by="editEmailLabel"
+                                                    value="{{userEmail}}"
+													placeholder="Input email"
+													required="true"
+                                                    title="Edit email input">
+                                     </oj-input-text>
+                                 </div>
+                             </div>
+
+                             <div class="oj-flex oj-padding" >
+                                 <div class="oj-flex-item oj-padding-end">
+                                     <oj-label id="editPhoneLabel" class="oj-label-inline">Phone:</oj-label>
+                                 </div>
+                                 <div class="oj-flex-item">
+                                     <oj-input-text id="inputEditPhone" labelled-by="editPhoneLabel"
+                                                    value="{{userPhone}}"
+                                                    placeholder="Input phone"
+                                                    title="Edit phone input">
+                                     </oj-input-text>
+                                 </div>
+                             </div>
+
+
+                             <div class="oj-flex oj-padding" >
+                                <div class="oj-flex-item oj-padding-end">
+                                    <oj-label id="editDbsCheck">DBS&nbsp;Check:</oj-label>
+                                </div>
+                                <div class="oj-flex-item">                                     
+                                      <oj-select-single id="selectEditDbsCheck" labelled-by="editDbsCheck"
+                                                      data="[[dbsCheckDP]]"
+                                                      value="{{userDbsCheck}}"
+                                                      title="Edit DBS check">
+                                      </oj-select-single>
+                                </div>
+                            </div>
+
+
+                            <div class="oj-flex oj-padding" >
+                                 <div class="oj-flex-item oj-padding-end">
+
+                                 </div>
+                                 <div class="oj-flex-item">
+                                     <oj-checkboxset id="selectEditAdmin"
+                                                     value="{{userAdmin}}">
+                                         <oj-option id="admin" value="admin">Organisation Administrator</oj-option>
+                                     </oj-checkboxset>
+                                 </div>
+                             </div>
+
+                             <div class="oj-flex oj-padding" >
+                                 <div class="oj-flex-item oj-padding-end">
+
+                                 </div>
+                                 <div class="oj-flex-item">
+                                     <oj-checkboxset id="selectNeedApproverAdmin"
+                                                     value="{{userNeedApprover}}">
+                                         <oj-option id="need_approver" value="need_approver">Receive Need Notifications</oj-option>
+                                     </oj-checkboxset>
+                                 </div>
+                             </div>
+
+                             <div class="oj-flex oj-padding" >
+                                 <div class="oj-flex-item oj-padding-end">
+
+                                 </div>
+                                 <div class="oj-flex-item">
+                                     <oj-checkboxset id="selectEdituserApprover"
+                                                     value="{{userApprover}}">
+                                         <oj-option id="user_approver" value="user_approver">Receive User Requests</oj-option>
+                                     </oj-checkboxset>
+                                 </div>
+                             </div>
+
+							  <div class="oj-flex oj-padding" >
+								  <div class="oj-flex-item oj-padding-end">
+
+								  </div>
+								  <div class="oj-flex-item">
+									  <oj-checkboxset id="selectEditManageClients"
+													  value="{{userManageClients}}">
+										  <oj-option id="manage_clients" value="manage_clients">Manage Clients</oj-option>
+									  </oj-checkboxset>
+								  </div>
+							  </div>
+
+
+							  <div class="oj-flex oj-padding" >
+								  <div class="oj-flex-item oj-padding-end">
+
+								  </div>
+								  <div class="oj-flex-item">
+									  <oj-checkboxset id="selectEditManageOffers"
+													  value="{{userManageOffers}}">
+										  <oj-option id="manage_offers" value="manage_offers">Manage Offers</oj-option>
+									  </oj-checkboxset>
+								  </div>
+							  </div>
+
+							  <div class="oj-flex oj-padding" >
+								  <div class="oj-flex-item oj-padding-end">
+
+								  </div>
+								  <div class="oj-flex-item">
+									  <oj-checkboxset id="selectEditClientShareApprover"
+													  value="{{userClientShareApprover}}">
+										  <oj-option id="client_share_approver" value="client_share_approver">Client Share Approver</oj-option>
+									  </oj-checkboxset>
+								  </div>
+                              </div>
+                              
+
+                             <div class="oj-flex oj-padding" >
+                                 <div class="oj-flex-item oj-padding-end">
+
+                                 </div>
+                                 <div class="oj-flex-item">
+                                     <oj-checkboxset id="selectEditConfirmed"
+                                                     value="{{userConfirmed}}">
+                                         <oj-option id="confirmed" value="confirmed">Confirmed</oj-option>
+                                     </oj-checkboxset>
+                                 </div>
+                             </div>
+
+                        </div>
+
+                     </oj-form-layout>
+
+
+                    <div class="oj-flex-bar sm-1x-row">
+                        <div class="oj-sm-padding-1x-horizontal oj-flex oj-flex-item oj-sm-flex-direction-column oj-helper-justify-content-center">
+                            <oj-bind-if test="[[fileContentPosted() !== true]]">
+                                <span class="oj-helper-text-align-right">Posting...</span>
+                                <oj-progress id="progressBar" value="-1"></oj-progress>
+                            </oj-bind-if>
+                            <oj-label id="postMessage" class="oj-helper-text-align-right oj-sm-hide" for="saveEditButton"
+                                      :style.color="[[postTextColor]]">
+                                <oj-bind-text value='[[postText]]'></oj-bind-text>
+                            </oj-label>
+                        </div>
+                    </div>
+                </div>
+
+    </oj-bind-if>
+</div>
