@@ -26,6 +26,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
             self.postText = ko.observable();
             self.fileContentPosted = ko.observable(true);
             self.userOrgLoaded = ko.observable(false);
+            self.disableSaveButton = ko.observable(false);
 
 
             self.connected = function () {
@@ -137,37 +138,25 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                 }
 
                 self.emailChanged = function (event, data, bindingContext) {
-                    $.when(restClient.doPostJson('/rest/users/exists', { "email": self.userEmail() })
+                    $.when(restClient.doPostJson('/rest/users/exists', { "email": self.userEmail(), "organization_id": self.userOrgId() })
                         .then(
                             success = function (response) {
+                                console.log(response);
                                 if (response.exists) {
                                     //user found with same email address
-                                    console.log(response);
-                                    $.when(restClient.doGetJson('/rest/users/' + response.id + '/user_organizations')
-                                        .then(
-                                            success = function (response) {
-                                                var userInSameOrg = false;
-                                                for(i = 0; i < response.count;i++){
-                                                    if (response.user_organizations[i].organization_id==self.userOrgId()){
-                                                        //duplcate user found to be in same organization
-                                                        console.log("duplicate user in same org");
-                                                        self.closeAddUserToOrganizationButton();
-                                                        document.getElementById('duplicateUserInSameOrgDialog').open();
-                                                        userInSameOrg = true;
-                                                    }
-                                                }
-                                                if (userInSameOrg == false) {
-                                                    //duplicate user found to be in a different organization
-                                                    console.log("duplicate user in different org");
-                                                    duplicateUserId = response.user_organizations[0].user_id;
-                                                    document.getElementById('duplicateUserInDifferentOrgDialog').open();
-                                                }
-                                            },
-                                            error = function (response) {
-                                                console.log("couldn't find user")
-                                            }
-                                        )                                                                                                  
-                                    );
+                                    if (response.existsInOrg) {
+                                        //duplcate user found to be in same organization
+                                        console.log("duplicate user in same org");
+                                        self.closeAddUserToOrganizationButton();
+                                        document.getElementById('duplicateUserInSameOrgDialog').open();
+                                    } else {
+                                        //duplicate user found to be in a different organization
+                                        console.log("duplicate user in different org");
+                                        duplicateUserId = response.id;
+                                        document.getElementById('duplicateUserInDifferentOrgDialog').open();
+                                    }                                    
+                                } else {
+                                    self.disableSaveButton(false);
                                 };
                             },
                             error = function (response) {
@@ -179,10 +168,11 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
 
                 self.closeAddUserToOrganizationButton = function () {
                     document.getElementById('duplicateUserInDifferentOrgDialog').close();
-                    document.getElementById('addUserDialog').close();
+                    self.disableSaveButton(true);
                 }
                 self.closeDuplicateUserInSameOrg = function () {
                     document.getElementById('duplicateUserInSameOrgDialog').close();
+                    self.disableSaveButton(true);
                 }
                 self.addUserToOrganizationButton = function () {
                     var userData =
