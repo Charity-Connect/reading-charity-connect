@@ -141,8 +141,33 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                         .then(
                             success = function (response) {
                                 if (response.exists) {
-                                    duplicateUserId = response.id;
-                                    document.getElementById('duplicateUserDialog').open();
+                                    //user found with same email address
+                                    console.log(response);
+                                    $.when(restClient.doGetJson('/rest/users/' + response.id + '/user_organizations')
+                                        .then(
+                                            success = function (response) {
+                                                var userInSameOrg = false;
+                                                for(i = 0; i < response.count;i++){
+                                                    if (response.user_organizations[i].organization_id==self.userOrgId()){
+                                                        //duplcate user found to be in same organization
+                                                        console.log("duplicate user in same org");
+                                                        self.closeAddUserToOrganizationButton();
+                                                        document.getElementById('duplicateUserInSameOrgDialog').open();
+                                                        userInSameOrg = true;
+                                                    }
+                                                }
+                                                if (userInSameOrg == false) {
+                                                    //duplicate user found to be in a different organization
+                                                    console.log("duplicate user in different org");
+                                                    duplicateUserId = response.user_organizations[0].user_id;
+                                                    document.getElementById('duplicateUserInDifferentOrgDialog').open();
+                                                }
+                                            },
+                                            error = function (response) {
+                                                console.log("couldn't find user")
+                                            }
+                                        )                                                                                                  
+                                    );
                                 };
                             },
                             error = function (response) {
@@ -153,8 +178,11 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                 }
 
                 self.closeAddUserToOrganizationButton = function () {
-                    document.getElementById('duplicateUserDialog').close();
+                    document.getElementById('duplicateUserInDifferentOrgDialog').close();
                     document.getElementById('addUserDialog').close();
+                }
+                self.closeDuplicateUserInSameOrg = function () {
+                    document.getElementById('duplicateUserInSameOrgDialog').close();
                 }
                 self.addUserToOrganizationButton = function () {
                     var userData =
@@ -177,7 +205,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                             success = function (response) {
                                 self.postText("You have successfully added a new user to the organization.");
                                 self.postTextColor("green");
-                                document.getElementById('duplicateUserDialog').close();
+                                document.getElementById('duplicateUserInDifferentOrgDialog').close();
                                 document.getElementById('addUserDialog').close();
                                 self.getUserOrgData(self.userOrgId());
 
