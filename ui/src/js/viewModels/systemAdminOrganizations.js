@@ -132,7 +132,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                             return $.when(restClient.doGetJson('/rest/user_organizations/' + event.detail.value[0].startKey.row)
                                 .then(
                                     success = function (response) {
-                                        router.go('user/' + response.user_id);
+                                        router.go('user/' + response.user_id + "/" + self.orgDetailid() + '/' + 'admin');
                                     },
                                     error = function (response) {
                                         console.log("User organizations not loaded");

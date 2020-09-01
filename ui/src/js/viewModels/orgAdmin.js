@@ -121,8 +121,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                                 }
                             };
                             self.userSelected(searchNodes(event.target.currentRow.rowKey, self.userOrgValues()));
-                            router.go('user/' + self.userSelected().user_id);
-
+                            router.go('user/' + self.userSelected().user_id + '/' + self.userOrgId() + '/' + 'orgAdmin');
                         }
                     };
                 }();

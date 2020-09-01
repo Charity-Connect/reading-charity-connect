@@ -230,7 +230,7 @@ class User{
 
 	public function update(){
 		$stmt=$this->readOne($this->id);
-		if($stmt->rowCount()==1){
+		if($stmt->rowCount()>0){
 			$sql = "UPDATE users SET display_name=:display_name, email=:email,phone=:phone,updated_by=:updated_by WHERE id=:id";
 			$stmt= $this->connection->prepare($sql);
 			if( $stmt->execute(['id'=>$this->id,'display_name'=>$this->display_name,'email'=>$this->email,'phone'=>$this->phone
