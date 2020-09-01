@@ -140,22 +140,27 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                         "client_share_approver": (self.userClientShareApprover().length > 0) ? "Y" : "N",
                         "dbs_check": (self.userDbsCheck().length > 0) ? self.userDbsCheck() : "U",
                         "confirmed": (self.userConfirmed().length > 0) ? "Y" : "N"
-                    };
+					};
                     return $.when(restClient.doPostJson('/rest/users', userData)
                         .then(
                             success = function (response) {
-                                self.postText("You have successfully saved user details.");
-                                self.postTextColor("green");
-                                userOrgData.user_id = response.id;
-                                if (userOrgData.id === undefined) {
-                                    userOrgData.id = response.user_organizations[0].id;
-                                }
-                                return $.when(restClient.doPost('/rest/user_organizations/', userOrgData)
-                                    .then(
-                                        success = function (response) {
-                                            console.log("user data posted");
-                                        })
-                                );
+								if(response.hasOwnProperty('error')){
+									self.postText(response.error);
+									self.postTextColor("red");
+								} else {
+									self.postText("You have successfully saved user details.");
+									self.postTextColor("green");
+									userOrgData.user_id = response.id;
+									if (userOrgData.id === undefined) {
+										userOrgData.id = response.user_organizations[0].id;
+									}
+									return $.when(restClient.doPost('/rest/user_organizations/', userOrgData)
+										.then(
+											success = function (response) {
+												console.log("user data posted");
+											})
+									);
+								}
                             },
                             error = function (response) {
                                 self.postText("Error: User changes not saved.");
