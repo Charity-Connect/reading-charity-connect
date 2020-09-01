@@ -35,10 +35,21 @@ if(isset($data)&&$method=="POST") {
 
 	
 	if($view=="exists") {
-		if($id=$user->userExists($user->email)){
-			echo '{"exists":true,"id":'.$id.'}';
+		if(isset($data['organization_id'])){
+			$organization_id=$data['organization_id'];
+			if($id=$user->userExistsInOrg($user->email,$organization_id)){
+				echo '{"exists":true,"existsInOrg":true,"id":'.$id.'}';
+			} else if($id=$user->userExists($user->email)){
+				echo '{"exists":true,"existsInOrg":false,"id":'.$id.'}';
+			} else {
+				echo '{"exists":false}';
+			}
 		} else {
-			echo '{"exists":false}';
+			if($id=$user->userExists($user->email)){
+				echo '{"exists":true,"id":'.$id.'}';
+			} else {
+				echo '{"exists":false}';
+			}
 		}
     } else if(isset($data['id'])){
         $user->id = $data['id'];

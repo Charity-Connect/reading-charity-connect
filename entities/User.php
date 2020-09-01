@@ -174,7 +174,20 @@ class User{
 			$query = "SELECT id from users u  where u.email=:email";
 			$stmt = $this->connection->prepare($query);
 			$stmt->execute(['email'=>$email]);
-			if( $stmt->rowCount()==1){
+			if( $stmt->rowCount()>0){
+				$row = $stmt->fetch(PDO::FETCH_ASSOC);
+				return $row["id"];
+			}
+		}
+		return false;
+	}
+
+	public function userExistsInOrg($email,$organization_id){
+		if(is_admin()||is_org_admin()){
+			$query = "SELECT u.id from users u,user_organizations o where u.email=:email and u.id=o.user_id and o.organization_id=:organization_id";
+			$stmt = $this->connection->prepare($query);
+			$stmt->execute(['email'=>$email,'organization_id'=>$organization_id]);
+			if( $stmt->rowCount()>0){
 				$row = $stmt->fetch(PDO::FETCH_ASSOC);
 				return $row["id"];
 			}

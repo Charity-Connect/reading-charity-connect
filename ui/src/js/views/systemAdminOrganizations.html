@@ -46,7 +46,7 @@
                         columns="{{organizationsTableColumns}}"
                         display='grid'
                         data="[[organizationsDataProvider]]"
-                        style="width: 100%; height:100%;'">
+                        style="width: 100%; height:100%;">
                     </oj-table>
 
                     <oj-paging-control id="organizationsPaging" data='[[organizationsDataProvider]]'
@@ -257,7 +257,8 @@
 					</oj-button>
 				</div>
 				<div class="oj-sm-padding-1x-horizontal oj-flex">
-					<oj-button id="addUserSaveButton" on-oj-action='[[saveUserButton]]'>
+                    <oj-button id="addUserSaveButton" on-oj-action='[[saveUserButton]]'
+                    disabled="[[disableSaveButton]]">
 						<span>Save</span>
 					</oj-button>
 				</div>
@@ -265,26 +266,46 @@
 		</div>
 
 	</oj-dialog>	
-	<oj-dialog style="display:none" id="duplicateUserDialog" class="oj-sm-12 oj-md-8" dialog-title="Duplicate User" cancel-behavior="none">
-		<div slot="body">
-			<p>A user with this e-mail address already exists in the system. Do you want to add them to this organization?</p>
+	<oj-dialog style="display:none" id="duplicateUserInDifferentOrgDialog" class="oj-sm-12 oj-md-4" dialog-title="Duplicate User"
+	cancel-behavior="none">
+	<div slot="body">
+		<p>A user with this e-mail address already exists in the system. Do you want to add them to this organization?
+		</p>
 
-		</div>
-		<div slot="footer">
-			<div class="oj-flex-bar sm-1x-row">
-				<div class="oj-sm-padding-1x-horizontal oj-flex">
-					<oj-button id="addUserCancelButton"
-						   on-oj-action="[[closeAddUserToOrganizationButton]]" >
-						<span>No</span>
-					</oj-button>
-				</div>
-				<div class="oj-sm-padding-1x-horizontal oj-flex">
-					<oj-button id="addUserSaveButton" on-oj-action='[[addUserToOrganizationButton]]'>
-						<span>Yes</span>
-					</oj-button>
-				</div>
+	</div>
+	<div slot="footer">
+		<div class="oj-flex-bar sm-1x-row">
+			<div class="oj-sm-padding-1x-horizontal oj-flex">
+				<oj-button id="addUserCancelButton" on-oj-action="[[closeAddUserToOrganizationButton]]">
+					<span>No</span>
+				</oj-button>
+			</div>
+			<div class="oj-sm-padding-1x-horizontal oj-flex">
+				<oj-button id="addUserSaveButton" on-oj-action='[[addUserToOrganizationButton]]'>
+					<span>Yes</span>
+				</oj-button>
 			</div>
 		</div>
+	</div>
 
-	</oj-dialog>	
+</oj-dialog>
+
+<oj-dialog style="display:none" id="duplicateUserInSameOrgDialog" class="oj-sm-12 oj-md-4" dialog-title="Duplicate User"
+	cancel-behavior="none">
+	<div slot="body">
+		<p>This e-mail address is already in use by another user in this organisation.
+		</p>
+
+	</div>
+	<div slot="footer">
+		<div class="oj-flex-bar sm-1x-row">
+			<div class="oj-sm-padding-1x-horizontal oj-flex">
+				<oj-button id="addUserCancelButton" on-oj-action="[[closeDuplicateUserInSameOrg]]">
+					<span>OK</span>
+				</oj-button>
+			</div>
+		</div>
+	</div>
+
+</oj-dialog>	
 </div>

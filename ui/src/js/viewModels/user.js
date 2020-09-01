@@ -9,7 +9,7 @@
  */
 define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient', 'ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojselectcombobox', 'ojs/ojinputtext',
-    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset', 'ojs/ojformlayout'],
+    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset', 'ojs/ojdialog', 'ojs/ojformlayout'],
     function (app, Router, utils, oj, ko, $, accUtils, restClient, KnockoutTemplateUtils, ArrayDataProvider) {
 
         function AdminViewModel() {
@@ -27,6 +27,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
             self.postTextColor = ko.observable();
             self.postText = ko.observable();
             self.fileContentPosted = ko.observable(true);
+            self.disableSaveButton = ko.observable(false);
 
             self.connected = function () {
                 accUtils.announce('Organization Admin page loaded.');
@@ -92,7 +93,45 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
 
                 }
 
+                self.emailChanged = function (event, data, bindingContext) {
+                    $.when(restClient.doPostJson('/rest/users/exists', { "email": self.userEmail(), "organization_id": self.userOrgId() })
+                        .then(
+                            success = function (response) {
+                                console.log(response);
+                                if (response.exists) {
+                                    //user found with same email address
+                                    if (response.existsInOrg) {
+                                        //duplcate user found to be in same organization
+                                        console.log("duplicate user in same org");
+                                        self.closeAddUserToOrganizationButton();
+                                        document.getElementById('duplicateUserInSameOrgDialog').open();
+                                    } else {
+                                        //duplicate user found to be in a different organization
+                                        console.log("duplicate user in different org");
+                                        duplicateUserId = response.id;
+                                        document.getElementById('duplicateUserInDifferentOrgDialog').open();
+                                    }                                    
+                                } else {
+                                    self.disableSaveButton(false);
+                                };
+                            },
+                            error = function (response) {
+                                console.log("could not check email");
+                            }
+                        )
+                    );
+                }
+                
+                self.closeAddUserToOrganizationButton = function () {
+                    document.getElementById('duplicateUserInDifferentOrgDialog').close();
+                    self.disableSaveButton(true);
+                }
+                self.closeDuplicateUserInSameOrg = function () {
+                    document.getElementById('duplicateUserInSameOrgDialog').close();
+                    self.disableSaveButton(true);
+                }
 
+                // Could be coming in from org admin or sys admin
                 self.cancelButton = function (event) {
                     router.go('orgAdmin');
                 }
@@ -140,22 +179,27 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                         "client_share_approver": (self.userClientShareApprover().length > 0) ? "Y" : "N",
                         "dbs_check": (self.userDbsCheck().length > 0) ? self.userDbsCheck() : "U",
                         "confirmed": (self.userConfirmed().length > 0) ? "Y" : "N"
-                    };
+					};
                     return $.when(restClient.doPostJson('/rest/users', userData)
                         .then(
                             success = function (response) {
-                                self.postText("You have successfully saved user details.");
-                                self.postTextColor("green");
-                                userOrgData.user_id = response.id;
-                                if (userOrgData.id === undefined) {
-                                    userOrgData.id = response.user_organizations[0].id;
-                                }
-                                return $.when(restClient.doPost('/rest/user_organizations/', userOrgData)
-                                    .then(
-                                        success = function (response) {
-                                            console.log("user data posted");
-                                        })
-                                );
+								if(response.hasOwnProperty('error')){
+									self.postText(response.error);
+									self.postTextColor("red");
+								} else {
+									self.postText("You have successfully saved user details.");
+									self.postTextColor("green");
+									userOrgData.user_id = response.id;
+									if (userOrgData.id === undefined) {
+										userOrgData.id = response.user_organizations[0].id;
+									}
+									return $.when(restClient.doPost('/rest/user_organizations/', userOrgData)
+										.then(
+											success = function (response) {
+												console.log("user data posted");
+											})
+									);
+								}
                             },
                             error = function (response) {
                                 self.postText("Error: User changes not saved.");

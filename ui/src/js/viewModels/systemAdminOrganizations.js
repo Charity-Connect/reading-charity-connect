@@ -24,6 +24,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
             self.postTextColor = ko.observable();
             self.postText = ko.observable();
             self.fileContentPosted = ko.observable(true);
+            self.disableSaveButton = ko.observable(false);
 
             self.connected = function () {
                 accUtils.announce('Admin page loaded.');
@@ -239,12 +240,25 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                 }
 
                 self.emailChanged = function (event, data, bindingContext) {
-                    $.when(restClient.doPostJson('/rest/users/exists', { "email": self.userEmail() })
+                    $.when(restClient.doPostJson('/rest/users/exists', { "email": self.userEmail(), "organization_id": self.orgDetailid() })
                         .then(
                             success = function (response) {
+                                console.log(response);
                                 if (response.exists) {
-                                    duplicateUserId = response.id;
-                                    document.getElementById('duplicateUserDialog').open();
+                                    //user found with same email address
+                                    if (response.existsInOrg) {
+                                        //duplcate user found to be in same organization
+                                        console.log("duplicate user in same org");
+                                        self.closeAddUserToOrganizationButton();
+                                        document.getElementById('duplicateUserInSameOrgDialog').open();
+                                    } else {
+                                        //duplicate user found to be in a different organization
+                                        console.log("duplicate user in different org");
+                                        duplicateUserId = response.id;
+                                        document.getElementById('duplicateUserInDifferentOrgDialog').open();
+                                    }                                    
+                                } else {
+                                    self.disableSaveButton(false);
                                 };
                             },
                             error = function (response) {
@@ -255,9 +269,13 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                 }
 
                 self.closeAddUserToOrganizationButton = function () {
-                    document.getElementById('duplicateUserDialog').close();
-                    document.getElementById('addUserDialog').close();
+                    document.getElementById('duplicateUserInDifferentOrgDialog').close();
+                    self.disableSaveButton(true);
                 }
+                self.closeDuplicateUserInSameOrg = function () {
+                    document.getElementById('duplicateUserInSameOrgDialog').close();
+                    self.disableSaveButton(true);
+                } 
                 self.addUserToOrganizationButton = function () {
                     var userData =
                     {
@@ -279,7 +297,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                             success = function (response) {
                                 self.postText("You have successfully added a new user to the organization.");
                                 self.postTextColor("green");
-                                document.getElementById('duplicateUserDialog').close();
+                                document.getElementById('duplicateUserInDifferentOrgDialog').close();
                                 document.getElementById('addUserDialog').close();
                                 self.getUserOrgData(self.orgDetailid());
 
