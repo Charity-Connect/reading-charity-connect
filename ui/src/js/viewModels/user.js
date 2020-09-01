@@ -18,7 +18,8 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
             var router = Router.rootInstance;
             var stateParams = router.observableModuleConfig().params.ojRouter.parameters;
             var userId = stateParams.userId();
-
+            var orgId = stateParams.orgId();
+            var pageFrom = stateParams.pageFrom();
 
             if (app.currentOrg.organization_admin != "Y") {
                 return;
@@ -54,7 +55,11 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                 self.userDbsCheck = ko.observable();
                 self.userManageOffers = ko.observableArray([]);
 
+                self.cameFromSysAdmin = ko.observable();
+                
                 function populateUserOrgData(params) {
+                    console.log(params);
+                    
                     self.id(params.id);
                     self.userId(params.user_id);
                     self.userName(params.name);
@@ -133,14 +138,14 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
 
                 // Could be coming in from org admin or sys admin
                 self.cancelButton = function (event) {
-                    router.go('orgAdmin');
+                    router.go(pageFrom);
                 }
 
                 self.deleteUserButton = function () {
                     return $.when(restClient.doDeleteJson('/rest/user_organizations/' + self.id())
                         .then(
                             success = function (response) {
-                                router.go('orgAdmin');
+                                router.go(pageFrom);
                             },
                             error = function (response) {
                                 self.postText("Error: User changes not deleted.");
@@ -221,14 +226,20 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                     self.userOrgValid = ko.observable();
                     self.userOrgId = ko.observable(utils.appConstants.users.organizationId);
 
+                    // console.log(utils.appConstants.users.organizationId);
 
                     self.getUserOrgData = function (userId) {
                         //GET /rest/organizations - REST
                         return $.when(restClient.doGet('/rest/users/' + userId + '/user_organizations')
                             .then(
                                 success = function (response) {
-                                    if (response.user_organizations.length > 0) {
-                                        self.userOrgValues(response.user_organizations[0]);
+                                    for (var i = 0; i < response['count']; i++) {
+                                        console.log(response.user_organizations[i].organization_id);
+                                        if (response.user_organizations[i].organization_id == orgId) {
+                                            console.log(i);
+                                            self.userOrgValues(response.user_organizations[i]);
+                                            break;
+                                        }
                                     }
 
                                     var promises = [];
@@ -238,6 +249,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                                     });
                                     Promise.all(promises).then(function () {
                                         self.userOrgLoaded(true);
+                                        console.log(self.userOrgLoaded());
                                         self.userOrgValid(true);
                                     });
 
@@ -266,6 +278,8 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                                     self.userOrgValues().name = response.display_name;
                                     self.userOrgValues().email = response.email;
                                     self.userOrgValues().phone = response.phone;
+
+                                    console.log(self.userOrgValues());
 
                                     populateUserOrgData(self.userOrgValues());
                                 },
