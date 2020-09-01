@@ -182,6 +182,19 @@ class User{
 		return false;
 	}
 
+	public function userExistsInOrg($email,$organization_id){
+		if(is_admin()||is_org_admin()){
+			$query = "SELECT u.id from users u,user_organizations o where u.email=:email and u.id=o.user_id and o.organization_id=:organization_id";
+			$stmt = $this->connection->prepare($query);
+			$stmt->execute(['email'=>$email,'organization_id'=>$organization_id]);
+			if( $stmt->rowCount()==1){
+				$row = $stmt->fetch(PDO::FETCH_ASSOC);
+				return $row["id"];
+			}
+		}
+		return false;
+	}
+
 	public function readOne($id){
 			if(is_admin()||$this->force_read==true){
 				$query = "SELECT u.id,u.display_name,u.email,u.phone,u.confirmed,u.creation_date,u.created_by,u.update_date,u.updated_by, org.id as organization_id, org.name as organization_name, role.role_id as admin from users u left join user_roles role on role.user_id=u.id and role.role_id=1, user_organizations uo, organizations org where u.id=uo.user_id and org.id=uo.organization_id and u.id=:id order by if(org.id=:organization_id,-1,u.id)";
