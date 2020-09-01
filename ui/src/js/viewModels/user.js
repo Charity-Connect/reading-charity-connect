@@ -9,7 +9,7 @@
  */
 define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jquery', 'accUtils', 'restClient', 'ojs/ojknockouttemplateutils', 'ojs/ojarraydataprovider',
     'ojs/ojprogress', 'ojs/ojbutton', 'ojs/ojlabel', 'ojs/ojselectcombobox', 'ojs/ojinputtext',
-    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset', 'ojs/ojformlayout'],
+    'ojs/ojarraytabledatasource', 'ojs/ojtable', 'ojs/ojpagingtabledatasource', 'ojs/ojpagingcontrol', 'ojs/ojselectsingle', 'ojs/ojcheckboxset', 'ojs/ojdialog', 'ojs/ojformlayout'],
     function (app, Router, utils, oj, ko, $, accUtils, restClient, KnockoutTemplateUtils, ArrayDataProvider) {
 
         function AdminViewModel() {
@@ -27,6 +27,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
             self.postTextColor = ko.observable();
             self.postText = ko.observable();
             self.fileContentPosted = ko.observable(true);
+            self.disableSaveButton = ko.observable(false);
 
             self.connected = function () {
                 accUtils.announce('Organization Admin page loaded.');
@@ -92,7 +93,45 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
 
                 }
 
+                self.emailChanged = function (event, data, bindingContext) {
+                    $.when(restClient.doPostJson('/rest/users/exists', { "email": self.userEmail(), "organization_id": self.userOrgId() })
+                        .then(
+                            success = function (response) {
+                                console.log(response);
+                                if (response.exists) {
+                                    //user found with same email address
+                                    if (response.existsInOrg) {
+                                        //duplcate user found to be in same organization
+                                        console.log("duplicate user in same org");
+                                        self.closeAddUserToOrganizationButton();
+                                        document.getElementById('duplicateUserInSameOrgDialog').open();
+                                    } else {
+                                        //duplicate user found to be in a different organization
+                                        console.log("duplicate user in different org");
+                                        duplicateUserId = response.id;
+                                        document.getElementById('duplicateUserInDifferentOrgDialog').open();
+                                    }                                    
+                                } else {
+                                    self.disableSaveButton(false);
+                                };
+                            },
+                            error = function (response) {
+                                console.log("could not check email");
+                            }
+                        )
+                    );
+                }
+                
+                self.closeAddUserToOrganizationButton = function () {
+                    document.getElementById('duplicateUserInDifferentOrgDialog').close();
+                    self.disableSaveButton(true);
+                }
+                self.closeDuplicateUserInSameOrg = function () {
+                    document.getElementById('duplicateUserInSameOrgDialog').close();
+                    self.disableSaveButton(true);
+                }
 
+                // Could be coming in from org admin or sys admin
                 self.cancelButton = function (event) {
                     router.go('orgAdmin');
                 }

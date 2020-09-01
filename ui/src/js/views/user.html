@@ -21,7 +21,7 @@
                         </div>
                         <div class="oj-sm-padding-1x-horizontal">
                             <oj-button id="saveUserButton" class="oj-sm-float-end"
-                                       on-oj-action='[[saveUserButton]]'>
+                            disabled="[[disableSaveButton]]" on-oj-action='[[saveUserButton]]'>
                                 <span>Save</span>
                             </oj-button>
                         </div>
@@ -63,7 +63,8 @@
                                  <div class="oj-flex-item">
                                      <oj-input-text id="inputEditEmail" labelled-by="editEmailLabel"
                                                     value="{{userEmail}}"
-													placeholder="Input email"
+                                                    placeholder="Input email"
+                                                    on-value-changed="[[emailChanged]]"
 													required="true"
                                                     title="Edit email input">
                                      </oj-input-text>
@@ -204,4 +205,43 @@
                 </div>
 
     </oj-bind-if>
+
+    <oj-dialog style="display:none" id="duplicateUserInDifferentOrgDialog" class="oj-sm-12 oj-md-5" dialog-title="Duplicate User"
+	cancel-behavior="none">
+	<div slot="body">
+		<p>This e-mail address is already in use by a user in another organisation.<br>You can't update this user account to use that e-mail address, but you can add the existing user to this organisation on the organisation screen.
+		</p>
+
+	</div>
+	<div slot="footer">
+		<div class="oj-flex-bar sm-1x-row">
+			<div class="oj-sm-padding-1x-horizontal oj-flex">
+				<oj-button id="addUserCancelButton" on-oj-action="[[closeAddUserToOrganizationButton]]">
+					<span>OK</span>
+				</oj-button>
+			</div>			
+		</div>
+	</div>
+
+</oj-dialog>
+
+<oj-dialog style="display:none" id="duplicateUserInSameOrgDialog" class="oj-sm-12 oj-md-4" dialog-title="Duplicate User"
+	cancel-behavior="none">
+	<div slot="body">
+		<p>This e-mail address is already in use by another user in this organisation.
+		</p>
+
+	</div>
+	<div slot="footer">
+		<div class="oj-flex-bar sm-1x-row">
+			<div class="oj-sm-padding-1x-horizontal oj-flex">
+				<oj-button id="addUserCancelButton" on-oj-action="[[closeDuplicateUserInSameOrg]]">
+					<span>OK</span>
+				</oj-button>
+			</div>
+		</div>
+	</div>
+
+</oj-dialog>
+
 </div>
