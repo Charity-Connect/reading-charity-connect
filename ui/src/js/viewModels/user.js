@@ -21,7 +21,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
             var orgId = stateParams.orgId();
             var pageFrom = stateParams.pageFrom();
 
-            if (app.currentOrg.organization_admin != "Y") {
+            if (app.userDetails.admin != "Y") {
                 return;
             }
 
@@ -249,13 +249,13 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                                     });
                                     Promise.all(promises).then(function () {
                                         self.userOrgLoaded(true);
-                                        console.log(self.userOrgLoaded());
                                         self.userOrgValid(true);
                                     });
 
                                 },
                                 error = function (response) {
                                     console.log("User organizations not loaded");
+                                    self.userOrgLoaded(false);
                                     self.userOrgValid(false);
 
                                 }).then(function () {
@@ -279,12 +279,12 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                                     self.userOrgValues().email = response.email;
                                     self.userOrgValues().phone = response.phone;
 
-                                    console.log(self.userOrgValues());
-
                                     populateUserOrgData(self.userOrgValues());
                                 },
                                 error = function (response) {
                                     console.log("Users  not loaded");
+                                    self.userOrgLoaded(false);
+                                    self.userOrgValid(false);
 
                                 }).then(function () {
 
@@ -298,6 +298,7 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                         .catch(function () {
                             //even if error remove loading bar
                             self.userOrgLoaded(true);
+                            self.userOrgValid(true);
                         });
                 }();
 
