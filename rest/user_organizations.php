@@ -16,6 +16,7 @@ if(isset($data)&&$method=="POST") {
 
 	if(isset($data['id'])){
 		$user_organization->id = $data['id'];
+		$user_organization->read();
 	} else {
 		if(!is_admin()){
 			echo '{"error": "ID not set."}';
@@ -23,19 +24,15 @@ if(isset($data)&&$method=="POST") {
 			return;
 		}
 	}
-    $user_organization->admin = $data['admin'];
-    $user_organization->user_approver = $data['user_approver'];
-    $user_organization->need_approver = $data['need_approver'];
-    $user_organization->manage_offers = $data['manage_offers'];
-    $user_organization->manage_clients = $data['manage_clients'];
-    $user_organization->client_share_approver = $data['client_share_approver'];
-    $user_organization->dbs_check = $data['dbs_check'];
-    if(isset($data['confirmed'])){
-    	$user_organization->confirmed = $data['confirmed'];
-	}
-	if(isset($data['organization_id'])&&is_admin()){
-    	$user_organization->organization_id = $data['organization_id'];
-	}
+    if(isset($data['admin'])) { $user_organization->admin = $data['admin'];}
+    if(isset($data['user_approver'])){$user_organization->user_approver = $data['user_approver'];}
+    if(isset($data['need_approver'])){$user_organization->need_approver = $data['need_approver'];}
+	if(isset($data['manage_offers'])){$user_organization->manage_offers = $data['manage_offers'];}
+	if(isset($data['manage_clients'])){$user_organization->manage_clients = $data['manage_clients'];}
+	if(isset($data['client_share_approver'])){$user_organization->client_share_approver = $data['client_share_approver'];}
+	if(isset($data['dbs_check'])){$user_organization->dbs_check = $data['dbs_check'];}
+    if(isset($data['confirmed'])){$user_organization->confirmed = $data['confirmed'];}
+	if(isset($data['organization_id'])&&is_admin()){$user_organization->organization_id = $data['organization_id'];}
 
 
     if(isset($data['id'])){

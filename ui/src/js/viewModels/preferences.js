@@ -38,15 +38,8 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                 self.userEmail = ko.observable();
                 self.userPhone = ko.observable();
                 self.userOrgId = ko.observable();
-                self.userAdmin = ko.observableArray([]);
                 self.userNeedApprover = ko.observableArray([]);
                 self.userApprover = ko.observableArray([]);
-                self.userConfirmed = ko.observableArray([]);
-                self.userManageClients = ko.observableArray([]);
-                self.userClientShareApprover = ko.observableArray([]);
-                self.userDbsCheck = ko.observable();
-				self.userManageOffers = ko.observableArray([]);
-				self.dbsCheckDP= ko.observableArray([]);
 
                 function populateUserOrgData(params) {
                     self.id(params.id);
@@ -55,11 +48,6 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                     self.userEmail(params.email);
                     self.userPhone(params.phone);
                     self.userOrgId(params.organization_id);
-                    self.userDbsCheck(params.dbs_check);
-                    self.userAdmin([]);
-                    if (params.admin === "Y") {
-                        self.userAdmin(["admin"]);
-                    }
                     self.userNeedApprover([]);
                     if (params.need_approver === "Y") {
                         self.userNeedApprover(["need_approver"]);
@@ -67,22 +55,6 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                     self.userApprover([]);
                     if (params.user_approver === "Y") {
                         self.userApprover(["user_approver"]);
-                    }
-                    self.userManageClients([]);
-                    if (params.manage_clients === "Y") {
-                        self.userManageClients(["manage_clients"]);
-                    }
-                    self.userManageOffers([]);
-                    if (params.manage_offers === "Y") {
-                        self.userManageOffers(["manage_offers"]);
-                    }
-                    self.userClientShareApprover([]);
-                    if (params.client_share_approver === "Y") {
-                        self.userClientShareApprover(["client_share_approver"]);
-                    }
-                    self.userConfirmed([]);
-                    if (params.confirmed === "Y") {
-                        self.userConfirmed(["confirmed"]);
                     }
 
                 }
@@ -110,14 +82,8 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
                         "id": self.id(),
                         "user_id": self.userId(),
                         "organization_id": utils.appConstants.users.organizationId,
-                        "admin": (self.userAdmin().length > 0) ? "Y" : "N",
                         "need_approver": (self.userNeedApprover().length > 0) ? "Y" : "N",
-                        "user_approver": (self.userApprover().length > 0) ? "Y" : "N",
-                        "manage_clients": (self.userManageClients().length > 0) ? "Y" : "N",
-                        "manage_offers": (self.userManageOffers().length > 0) ? "Y" : "N",
-                        "client_share_approver": (self.userClientShareApprover().length > 0) ? "Y" : "N",
-                        "dbs_check": (self.userDbsCheck().length > 0) ? self.userDbsCheck() : "U",
-                        "confirmed": (self.userConfirmed().length > 0) ? "Y" : "N"
+                        "user_approver": (self.userApprover().length > 0) ? "Y" : "N"
                     };
                     return $.when(restClient.doPostJson('/rest/users', userData)
                         .then(
@@ -173,12 +139,6 @@ define(['appController', 'ojs/ojrouter', 'utils', 'ojs/ojcore', 'knockout', 'jqu
 
 									  populateUserOrgData(self.userOrgValues());
 
-									  var dbsCheckStates = [
-                                        { value: 'Y', label: 'Yes' },
-                                        { value: 'N', label: 'No' },
-                                        { value: 'U', label: 'Unknown' }
-                                    ];
-                                    self.dbsCheckDP = new ArrayDataProvider(dbsCheckStates, { keyAttributes: 'value' });
                                 },
                                 error = function (response) {
                                     console.log("Users  not loaded");
