@@ -434,7 +434,7 @@ define(['appController', 'ojs/ojknockout-keyset', 'ojs/ojrouter', 'ojs/ojcore', 
 							id: self.clientId(),
 							name: self.clientName(),
 							address: self.clientAddress(),
-							postcode: self.clientPostcode().toUpperCase(),
+							postcode: self.clientPostcode()==null?"":self.clientPostcode().toUpperCase(),
 							phone: self.clientPhone(),
 							email: self.clientEmail(),
 							notes: self.clientNotes()
