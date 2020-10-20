@@ -150,6 +150,7 @@ CREATE TABLE `organizations` (
   `name` varchar(255) NOT NULL,
   `address` varchar(2000) DEFAULT NULL,
   `phone` varchar(100) DEFAULT NULL,
+  `enabled` varchar(1) NOT NULL DEFAULT 'Y',
   `approver_email` varchar(255) DEFAULT NULL,
   `creation_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` int(11) DEFAULT NULL,
