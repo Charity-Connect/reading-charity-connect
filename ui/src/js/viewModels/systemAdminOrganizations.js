@@ -35,6 +35,7 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                 self.orgDetailname = ko.observable();
                 self.orgDetailaddress = ko.observable();
                 self.orgDetailphone = ko.observable();
+                self.orgDetailActive = ko.observableArray(["enabled"]);
                 self.organizationsDataProvider = ko.observable();
                 self.orgUpdateDate = ko.observable("");
                 self.orgUpdatedBy = ko.observable("");
@@ -89,7 +90,11 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                     self.orgDetailid(params.id);
                     self.orgDetailname(params.name);
                     self.orgDetailaddress(params.address);
-                    self.orgDetailphone(params.phone);
+					self.orgDetailphone(params.phone);
+					self.orgDetailActive([]);
+                    if (params.enabled === "Y" || !params.hasOwnProperty("enabled")) {
+                        self.orgDetailActive(["enabled"]);
+                    }
                     if (params.update_date) {
                         updateDt = new Date(params.update_date.replace(/-/g, '/'));
                         self.orgUpdateDate(updateDt.toLocaleTimeString("en-GB", { hour: '2-digit', minute: '2-digit' }) + " " + updateDt.toLocaleDateString("en-GB"));
@@ -178,7 +183,8 @@ define(['appController', 'utils', 'ojs/ojrouter', 'ojs/ojcore', 'knockout', 'jqu
                     {
                         "name": self.orgDetailname(),
                         "address": self.orgDetailaddress(),
-                        "phone": self.orgDetailphone()
+                        "phone": self.orgDetailphone(),
+                        "enabled": (self.orgDetailActive().length > 0) ? "Y" : "N"
                     };
                     if (self.orgDetailid() !== undefined) {
                         orgData.id = self.orgDetailid();
