@@ -10,16 +10,21 @@ global $ui_root;
 
 $connection=initBotWeb();
 
+$verbose=false;
+if(isset($_GET["verbose"])){
+	$verbose=true;
+}
+
 $organization = new Organization($connection);
 $need_request = new NeedRequest($connection);
 $user_organization = new UserOrganization($connection);
 
-$orgStmt = $organization->readAll();
+$orgStmt = $organization->readActive();
 while ($orgRow = $orgStmt->fetch(PDO::FETCH_ASSOC)){
     $_SESSION['organization_id']=$orgRow['id'];
     $needStmt = $need_request->readFiltered("Y","N",TRUE);
     $count = $needStmt->rowCount();
-    echo "<p>Organization:".$orgRow["name"];
+    if($verbose){echo "<p>Organization:".$orgRow["name"];}
     if($count > 0){
         $overdueTable="<table cellspacing=\"0\" cellpadding=\"5\" ><tr><td >Client</td><td>Need</td><td>Date Needed</td><td>Your Target Date</td><td>Days Overdue</td><td>View</td></tr>";
         
@@ -34,16 +39,16 @@ while ($orgRow = $orgStmt->fetch(PDO::FETCH_ASSOC)){
             ."<a href=\"".$site_address.$ui_root."index.html?root=requests%2F".$needRow["id"]."\">View</a></td></tr>";
         }
         $overdueTable.="</table>";
-        echo $overdueTable."</p>";
+        if($verbose){echo $overdueTable."</p>";}
         $userStmt=$user_organization->readAllNeedApprovers($orgRow['id']);
         $overdueSubject=get_string("overdue_subject",array("%ORGANIZATION_NAME%"=>$orgRow["name"]));
         while ($userRow = $userStmt->fetch(PDO::FETCH_ASSOC)){
             $overdueBody=get_string("overdue_body",array("%ORGANIZATION_NAME%"=>$orgRow["name"],"%USER_NAME%"=>(is_null($userRow["user_name"])?$userRow["email"]:$userRow["user_name"]),"%ACTION_TABLE%"=>$overdueTable));
             if(isset($_GET["test"])&&$_GET["test"]=="Y"){
-                echo "<p>sending mail to ".$userRow["email"]."</p>".$overdueBody;
+                if($verbose){echo "<p>sending mail to ".$userRow["email"]."</p>".$overdueBody;}
             } else {
                 sendHtmlMail($userRow["email"],$overdueSubject,$overdueBody);
-                echo "<p>sending mail to ".$userRow["email"]."</p>";
+                if($verbose){echo "<p>sending mail to ".$userRow["email"]."</p>";}
             }
         }
 
