@@ -35,6 +35,9 @@ class Organization{
 
 	public function create(){
 		if(is_admin()){
+			if(!isset($this->enabled)){
+				$this->enabled='Y';
+			}
 			$sql = "INSERT INTO organizations ( name,address,phone,enabled,created_by,updated_by) values (:name,:address,:phone,:enabled,:user_id,:user_id)";
 			$stmt= $this->connection->prepare($sql);
 			if( $stmt->execute(['name'=>$this->name,'address'=>$this->address,'phone'=>$this->phone,'enabled'=>$this->enabled,'user_id'=>$_SESSION['id']])){
