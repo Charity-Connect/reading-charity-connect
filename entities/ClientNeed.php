@@ -137,6 +137,7 @@ class ClientNeed{
 		where
 		c.id=:client_id
 		and o.organization_id=org.id
+		and org.enabled='Y'
 		and o.type_id=:type_id
 		and o.quantity_taken<o.quantity
 		and date(:date_needed) between date(o.date_available) and date(coalesce(o.date_end,:date_needed))";

@@ -23,6 +23,9 @@ if(isset($data)&&$method=="POST") {
     	$organization->phone = $data['phone'];
     }
 
+    if(isset($data['enabled'])){
+    	$organization->enabled = $data['enabled'];
+    }
     if(isset($data['id'])){
         $organization->id = $data['id'];
         if($organization->update()){
@@ -42,6 +45,7 @@ if(isset($data)&&$method=="POST") {
                     "name" => $organization->name,
                     "address" => $organization->address,
                     "phone" => $organization->phone,
+                    "enabled" => $organization->enabled,
 					"creation_date" => $organization->creation_date,
 					"created_by" => $organization->created_by,
 					"update_date" => $organization->update_date,
@@ -87,6 +91,7 @@ if(isset($data)&&$method=="POST") {
                 "name" => $name,
                 "address" => $address,
                 "phone" => $phone,
+                "enabled" => $enabled,
                 "creation_date" => $creation_date,
                 "created_by" => $created_by,
                 "update_date" => $update_date,
