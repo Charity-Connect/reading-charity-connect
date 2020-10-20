@@ -143,9 +143,9 @@ Reading Charity Connect - Sign Up</h2>
                 <label>Organization</label><br/>
                 <select id="organization" name="organization" class="form-control" >
                 <?php
-                    $stmt = $organization->readAll();
+                    $stmt = $organization->readActive();
                     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-                    	if($organization_id==$row['id']){
+                    	if(isset($organization_id)&&$organization_id==$row['id']){
                         	echo "<option value=\"".$row['id']."\" selected=\"selected\">".$row['name']."</option>";
 						} else {
                         	echo "<option value=\"".$row['id']."\">".$row['name']."</option>";

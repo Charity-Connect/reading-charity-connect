@@ -7,7 +7,7 @@ $connection=initPublicRest();
 
 
 $organization = new Organization($connection);
-$stmt = $organization->readAll();
+$stmt = $organization->readActive();
 $count = $stmt->rowCount();
 
 if($count > 0){
